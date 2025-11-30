@@ -1,0 +1,405 @@
+{
+  "version": "5",
+  "dialect": "postgresql",
+  "id": "e7eb9d65-dc56-44a7-8ca9-66c6fb50a70a",
+  "prevId": "2cf91520-98a6-4e2b-aa13-1f95e1553779",
+  "tables": {
+    "beer": {
+      "name": "beer",
+      "columns": {
+        "beer_id": {
+          "name": "beer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "brewery_id": {
+          "name": "brewery_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "style_id": {
+          "name": "style_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "abv": {
+          "name": "abv",
+          "type": "decimal(4,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ibu": {
+          "name": "ibu",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "beer_brewery_id_brewery_brewery_id_fk": {
+          "name": "beer_brewery_id_brewery_brewery_id_fk",
+          "tableFrom": "beer",
+          "tableTo": "brewery",
+          "columnsFrom": ["brewery_id"],
+          "columnsTo": ["brewery_id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "beer_style_id_style_style_id_fk": {
+          "name": "beer_style_id_style_style_id_fk",
+          "tableFrom": "beer",
+          "tableTo": "style",
+          "columnsFrom": ["style_id"],
+          "columnsTo": ["style_id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "beer_beer_id": {
+          "name": "beer_beer_id",
+          "columns": ["beer_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "bjcp_category": {
+      "name": "bjcp_category",
+      "columns": {
+        "bjcp_id": {
+          "name": "bjcp_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "bjcp_category_bjcp_id": {
+          "name": "bjcp_category_bjcp_id",
+          "columns": ["bjcp_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "brewery": {
+      "name": "brewery",
+      "columns": {
+        "brewery_id": {
+          "name": "brewery_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "brewery_brewery_id": {
+          "name": "brewery_brewery_id",
+          "columns": ["brewery_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "menu_category": {
+      "name": "menu_category",
+      "columns": {
+        "menu_cat_id": {
+          "name": "menu_cat_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "menu_category_menu_cat_id": {
+          "name": "menu_category_menu_cat_id",
+          "columns": ["menu_cat_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "menu_category_beer": {
+      "name": "menu_category_beer",
+      "columns": {
+        "menu_cat_id": {
+          "name": "menu_cat_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "beer_id": {
+          "name": "beer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "menu_category_beer_menu_cat_id_menu_category_menu_cat_id_fk": {
+          "name": "menu_category_beer_menu_cat_id_menu_category_menu_cat_id_fk",
+          "tableFrom": "menu_category_beer",
+          "tableTo": "menu_category",
+          "columnsFrom": ["menu_cat_id"],
+          "columnsTo": ["menu_cat_id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "menu_category_beer_beer_id_beer_beer_id_fk": {
+          "name": "menu_category_beer_beer_id_beer_beer_id_fk",
+          "tableFrom": "menu_category_beer",
+          "tableTo": "beer",
+          "columnsFrom": ["beer_id"],
+          "columnsTo": ["beer_id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "menu_category_beer_menu_cat_id_beer_id_pk": {
+          "name": "menu_category_beer_menu_cat_id_beer_id_pk",
+          "columns": ["menu_cat_id", "beer_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "style": {
+      "name": "style",
+      "columns": {
+        "style_id": {
+          "name": "style_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "bjcp_id": {
+          "name": "bjcp_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "bjcp_link": {
+          "name": "bjcp_link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "style_bjcp_id_bjcp_category_bjcp_id_fk": {
+          "name": "style_bjcp_id_bjcp_category_bjcp_id_fk",
+          "tableFrom": "style",
+          "tableTo": "bjcp_category",
+          "columnsFrom": ["bjcp_id"],
+          "columnsTo": ["bjcp_id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "style_style_id": {
+          "name": "style_style_id",
+          "columns": ["style_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "openId": {
+          "name": "openId",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "loginMethod": {
+          "name": "loginMethod",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "role": {
+          "name": "role",
+          "type": "enum('user','admin')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'user'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        },
+        "lastSignedIn": {
+          "name": "lastSignedIn",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "users_id": {
+          "name": "users_id",
+          "columns": ["id"]
+        }
+      },
+      "uniqueConstraints": {
+        "users_openId_unique": {
+          "name": "users_openId_unique",
+          "columns": ["openId"]
+        }
+      },
+      "checkConstraint": {}
+    }
+  },
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
+  }
+}
