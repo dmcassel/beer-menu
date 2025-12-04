@@ -1,0 +1,417 @@
+{
+  "id": "502877a3-ac6e-486d-b0c6-c94808a5e79b",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.beer": {
+      "name": "beer",
+      "schema": "",
+      "columns": {
+        "beer_id": {
+          "name": "beer_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "brewery_id": {
+          "name": "brewery_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "style_id": {
+          "name": "style_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "abv": {
+          "name": "abv",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ibu": {
+          "name": "ibu",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "beer_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'out'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "beer_brewery_id_brewery_brewery_id_fk": {
+          "name": "beer_brewery_id_brewery_brewery_id_fk",
+          "tableFrom": "beer",
+          "tableTo": "brewery",
+          "columnsFrom": [
+            "brewery_id"
+          ],
+          "columnsTo": [
+            "brewery_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "beer_style_id_style_style_id_fk": {
+          "name": "beer_style_id_style_style_id_fk",
+          "tableFrom": "beer",
+          "tableTo": "style",
+          "columnsFrom": [
+            "style_id"
+          ],
+          "columnsTo": [
+            "style_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bjcp_category": {
+      "name": "bjcp_category",
+      "schema": "",
+      "columns": {
+        "bjcp_id": {
+          "name": "bjcp_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.brewery": {
+      "name": "brewery",
+      "schema": "",
+      "columns": {
+        "brewery_id": {
+          "name": "brewery_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.menu_category": {
+      "name": "menu_category",
+      "schema": "",
+      "columns": {
+        "menu_cat_id": {
+          "name": "menu_cat_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.menu_category_beer": {
+      "name": "menu_category_beer",
+      "schema": "",
+      "columns": {
+        "menu_cat_id": {
+          "name": "menu_cat_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beer_id": {
+          "name": "beer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "menu_category_beer_menu_cat_id_menu_category_menu_cat_id_fk": {
+          "name": "menu_category_beer_menu_cat_id_menu_category_menu_cat_id_fk",
+          "tableFrom": "menu_category_beer",
+          "tableTo": "menu_category",
+          "columnsFrom": [
+            "menu_cat_id"
+          ],
+          "columnsTo": [
+            "menu_cat_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "menu_category_beer_beer_id_beer_beer_id_fk": {
+          "name": "menu_category_beer_beer_id_beer_beer_id_fk",
+          "tableFrom": "menu_category_beer",
+          "tableTo": "beer",
+          "columnsFrom": [
+            "beer_id"
+          ],
+          "columnsTo": [
+            "beer_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "menu_category_beer_menu_cat_id_beer_id_pk": {
+          "name": "menu_category_beer_menu_cat_id_beer_id_pk",
+          "columns": [
+            "menu_cat_id",
+            "beer_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.style": {
+      "name": "style",
+      "schema": "",
+      "columns": {
+        "style_id": {
+          "name": "style_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bjcp_id": {
+          "name": "bjcp_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bjcp_link": {
+          "name": "bjcp_link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "style_bjcp_id_bjcp_category_bjcp_id_fk": {
+          "name": "style_bjcp_id_bjcp_category_bjcp_id_fk",
+          "tableFrom": "style",
+          "tableTo": "bjcp_category",
+          "columnsFrom": [
+            "bjcp_id"
+          ],
+          "columnsTo": [
+            "bjcp_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "openId": {
+          "name": "openId",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(320)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loginMethod": {
+          "name": "loginMethod",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "lastSignedIn": {
+          "name": "lastSignedIn",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_openId_unique": {
+          "name": "users_openId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "openId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.beer_status": {
+      "name": "beer_status",
+      "schema": "public",
+      "values": [
+        "on_tap",
+        "bottle_can",
+        "out"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "user",
+        "admin"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

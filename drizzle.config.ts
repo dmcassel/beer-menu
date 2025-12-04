@@ -1,4 +1,7 @@
 import { defineConfig } from "drizzle-kit";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -7,7 +10,7 @@ if (!connectionString) {
 
 export default defineConfig({
   schema: "./drizzle/schema.ts",
-  out: "./drizzle",
+  out: "./drizzle/migrations",
   dialect: "postgresql",
   dbCredentials: {
     url: connectionString,

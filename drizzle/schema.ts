@@ -14,6 +14,12 @@ import { relations } from "drizzle-orm";
 // Enum for role
 export const roleEnum = pgEnum("role", ["user", "admin"]);
 
+export const beerStatusEnum = pgEnum("beer_status", [
+  "on_tap",
+  "bottle_can",
+  "out",
+]);
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Postgres auto-increment
   openId: varchar("openId", { length: 64 }).notNull().unique(),
@@ -82,6 +88,7 @@ export const beer = pgTable("beer", {
   }),
   abv: numeric("abv", { precision: 4, scale: 2 }),
   ibu: integer("ibu"),
+  status: beerStatusEnum("status").notNull().default("out"),
 });
 
 export type Beer = typeof beer.$inferSelect;
