@@ -95,6 +95,7 @@ export const appRouter = router({
         styleId: z.number().optional(),
         abv: z.string().optional(),
         ibu: z.number().optional(),
+        status: z.enum(["on_tap", "bottle_can", "out"]).optional(),
       }))
       .mutation(({ input }) => db.createBeer(input)),
     update: publicProcedure
@@ -106,6 +107,7 @@ export const appRouter = router({
         styleId: z.number().optional(),
         abv: z.string().optional(),
         ibu: z.number().optional(),
+        status: z.enum(["on_tap", "bottle_can", "out"]).optional(),
       }))
       .mutation(({ input }) => {
         const { id, ...data } = input;

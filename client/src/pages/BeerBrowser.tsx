@@ -39,6 +39,9 @@ export default function BeerBrowser() {
   const filteredBeers = useMemo(() => {
     let result = beers;
 
+    // Filter out beers with status "out"
+    result = result.filter(beer => beer.status !== "out");
+
     // Filter by menu category
     if (
       selectedMenuCategory &&
@@ -272,13 +275,29 @@ export default function BeerBrowser() {
                     )}
 
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
+                      <div className="flex items-center gap-2 text-sm flex-wrap">
                         <Badge
                           variant="outline"
                           className="bg-amber-50 text-amber-900 border-amber-300"
                         >
                           {getStyleName(beer.styleId)}
                         </Badge>
+                        {beer.status === "on_tap" && (
+                          <Badge
+                            variant="outline"
+                            className="bg-blue-50 text-blue-900 border-blue-300"
+                          >
+                            On Tap
+                          </Badge>
+                        )}
+                        {beer.status === "bottle_can" && (
+                          <Badge
+                            variant="outline"
+                            className="bg-green-50 text-green-900 border-green-300"
+                          >
+                            Bottle/Can
+                          </Badge>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 pt-2 border-t border-amber-100">
