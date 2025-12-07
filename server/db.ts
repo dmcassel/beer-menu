@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import {
   InsertUser,
@@ -225,6 +225,12 @@ export async function getAllBeers() {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(beer);
+}
+
+export async function getAllAvailableBeers() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(beer).where(ne(beer.status, "out"));
 }
 
 export async function getBeerById(id: number) {
