@@ -25,7 +25,7 @@ export default function BeerBrowser() {
 
   // Fetch all data
   const { data: beers = [], isLoading: beersLoading } =
-    trpc.beer.list.useQuery();
+    trpc.beer.listAvailable.useQuery();
   const { data: styles = [] } = trpc.style.list.useQuery();
   const { data: breweries = [] } = trpc.brewery.list.useQuery();
   const { data: menuCategories = [] } = trpc.menuCategory.list.useQuery();
@@ -38,9 +38,6 @@ export default function BeerBrowser() {
   // Filter beers based on selections
   const filteredBeers = useMemo(() => {
     let result = beers;
-
-    // Filter out beers with status "out"
-    result = result.filter(beer => beer.status !== "out");
 
     // Filter by menu category
     if (
