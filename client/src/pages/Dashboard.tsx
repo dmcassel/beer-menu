@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Beer, Layers, MapPin, Menu, Tag } from "lucide-react";
+import { toast } from "sonner";
 import BJCPCategoryPage from "./BJCPCategoryPage";
 import StylePage from "./StylePage";
 import BreweryPage from "./BreweryPage";
@@ -12,10 +13,43 @@ import MenuCategoryPage from "./MenuCategoryPage";
 import { Link } from "wouter";
 
 export default function Dashboard() {
-  // const { user, logout } = useAuth();
-  const user = { name: "Dave" };
-  const logout = () => console.log("logout");
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("beers");
+  const { data: user, isLoading } = trpc.auth.me.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+
+  // Redirect to login if not authenticated or not a curator/admin
+  useEffect(() => {
+    if (!isLoading && (!user || (user.role !== "curator" && user.role !== "admin"))) {
+      toast.error("Access denied. Please log in with curator credentials.");
+      setLocation("/login");
+    }
+  }, [user, isLoading, setLocation]);
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      toast.success("Logged out successfully");
+      setLocation("/login");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Beer className="w-12 h-12 text-amber-600 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || (user.role !== "curator" && user.role !== "admin")) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,7 +68,7 @@ export default function Dashboard() {
                 <span className="text-sm text-gray-600">
                   Welcome, {user.name}
                 </span>
-                <Button variant="outline" size="sm" onClick={logout}>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>
               </>

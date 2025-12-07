@@ -12,7 +12,7 @@ import {
 import { relations } from "drizzle-orm";
 
 // Enum for role
-export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const roleEnum = pgEnum("role", ["user", "curator", "admin"]);
 
 export const beerStatusEnum = pgEnum("beer_status", [
   "on_tap",
@@ -22,10 +22,10 @@ export const beerStatusEnum = pgEnum("beer_status", [
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Postgres auto-increment
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  username: varchar("username", { length: 64 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
   role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("createdAt", { withTimezone: true })
     .defaultNow()

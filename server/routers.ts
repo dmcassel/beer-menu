@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
+import { publicProcedure, router, protectedProcedure, curatorProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 
@@ -10,6 +10,34 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    login: publicProcedure
+      .input(z.object({ username: z.string(), password: z.string() }))
+      .mutation(async ({ input, ctx }) => {
+        const { verifyPassword } = await import("./auth");
+        const user = await db.getUserByUsername(input.username);
+        
+        if (!user || !verifyPassword(input.password, user.passwordHash)) {
+          throw new Error("Invalid username or password");
+        }
+        
+        // Update last signed in
+        await db.updateUserLastSignedIn(user.id);
+        
+        // Set session cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, JSON.stringify({ userId: user.id }), cookieOptions);
+        
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          },
+        };
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -25,13 +53,13 @@ export const appRouter = router({
     getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) =>
       db.getBJCPCategoryById(input.id)
     ),
-    create: publicProcedure
+    create: curatorProcedure
       .input(z.object({ label: z.string(), name: z.string() }))
       .mutation(({ input }) => db.createBJCPCategory(input)),
-    update: publicProcedure
+    update: curatorProcedure
       .input(z.object({ id: z.number(), label: z.string().optional(), name: z.string().optional() }))
       .mutation(({ input }) => db.updateBJCPCategory(input.id, { label: input.label, name: input.name })),
-    delete: publicProcedure
+    delete: curatorProcedure
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => db.deleteBJCPCategory(input.id)),
   }),
@@ -41,7 +69,7 @@ export const appRouter = router({
     getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) =>
       db.getStyleById(input.id)
     ),
-    create: publicProcedure
+    create: curatorProcedure
       .input(z.object({
         name: z.string(),
         description: z.string().optional(),
@@ -49,7 +77,7 @@ export const appRouter = router({
         bjcpLink: z.string().optional(),
       }))
       .mutation(({ input }) => db.createStyle(input)),
-    update: publicProcedure
+    update: curatorProcedure
       .input(z.object({
         id: z.number(),
         name: z.string().optional(),
@@ -61,7 +89,7 @@ export const appRouter = router({
         const { id, ...data } = input;
         return db.updateStyle(id, data);
       }),
-    delete: publicProcedure
+    delete: curatorProcedure
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => db.deleteStyle(input.id)),
   }),
@@ -71,13 +99,13 @@ export const appRouter = router({
     getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) =>
       db.getBreweryById(input.id)
     ),
-    create: publicProcedure
+    create: curatorProcedure
       .input(z.object({ name: z.string(), location: z.string().optional() }))
       .mutation(({ input }) => db.createBrewery(input)),
-    update: publicProcedure
+    update: curatorProcedure
       .input(z.object({ id: z.number(), name: z.string().optional(), location: z.string().optional() }))
       .mutation(({ input }) => db.updateBrewery(input.id, { name: input.name, location: input.location })),
-    delete: publicProcedure
+    delete: curatorProcedure
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => db.deleteBrewery(input.id)),
   }),
@@ -88,7 +116,7 @@ export const appRouter = router({
     getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) =>
       db.getBeerById(input.id)
     ),
-    create: publicProcedure
+    create: curatorProcedure
       .input(z.object({
         name: z.string(),
         description: z.string().optional(),
@@ -99,7 +127,7 @@ export const appRouter = router({
         status: z.enum(["on_tap", "bottle_can", "out"]).optional(),
       }))
       .mutation(({ input }) => db.createBeer(input)),
-    update: publicProcedure
+    update: curatorProcedure
       .input(z.object({
         id: z.number(),
         name: z.string().optional(),
@@ -114,7 +142,7 @@ export const appRouter = router({
         const { id, ...data } = input;
         return db.updateBeer(id, data);
       }),
-    delete: publicProcedure
+    delete: curatorProcedure
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => db.deleteBeer(input.id)),
   }),
@@ -124,13 +152,13 @@ export const appRouter = router({
     getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) =>
       db.getMenuCategoryById(input.id)
     ),
-    create: publicProcedure
+    create: curatorProcedure
       .input(z.object({ name: z.string(), description: z.string().optional() }))
       .mutation(({ input }) => db.createMenuCategory(input)),
-    update: publicProcedure
+    update: curatorProcedure
       .input(z.object({ id: z.number(), name: z.string().optional(), description: z.string().optional() }))
       .mutation(({ input }) => db.updateMenuCategory(input.id, { name: input.name, description: input.description })),
-    delete: publicProcedure
+    delete: curatorProcedure
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => db.deleteMenuCategory(input.id)),
   }),
@@ -139,10 +167,10 @@ export const appRouter = router({
     getBeersInCategory: publicProcedure
       .input(z.object({ menuCatId: z.number() }))
       .query(({ input }) => db.getBeersInMenuCategory(input.menuCatId)),
-    addBeerToCategory: publicProcedure
+    addBeerToCategory: curatorProcedure
       .input(z.object({ menuCatId: z.number(), beerId: z.number() }))
       .mutation(({ input }) => db.addBeerToMenuCategory(input)),
-    removeBeerFromCategory: publicProcedure
+    removeBeerFromCategory: curatorProcedure
       .input(z.object({ menuCatId: z.number(), beerId: z.number() }))
       .mutation(({ input }) => db.removeBeerFromMenuCategory(input.menuCatId, input.beerId)),
   }),
