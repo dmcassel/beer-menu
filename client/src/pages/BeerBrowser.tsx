@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Beer, Droplet, Flame } from "lucide-react";
+import { Link } from "wouter";
 
 export default function BeerBrowser() {
   const [selectedMenuCategory, setSelectedMenuCategory] = useState<string>("");
@@ -97,12 +98,14 @@ export default function BeerBrowser() {
       <div className="bg-white border-b border-amber-200 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Beer className="w-8 h-8 text-amber-700" />
-              <h1 className="text-3xl font-bold text-amber-900">
-                Beer Catalog
-              </h1>
-            </div>
+            <Link href="/">
+              <div className="flex items-center gap-3">
+                <Beer className="w-8 h-8 text-amber-700" />
+                <h1 className="text-3xl font-bold text-amber-900">
+                  Beer Catalog
+                </h1>
+              </div>
+            </Link>
             <a
               href="/dashboard"
               className="text-sm text-amber-700 hover:text-amber-900 underline"
