@@ -18,6 +18,7 @@ export default function BeerPage() {
     styleId: "",
     abv: "",
     ibu: "",
+    status: "out" as "on_tap" | "bottle_can" | "out",
   });
 
   const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery();
@@ -43,6 +44,7 @@ export default function BeerPage() {
           styleId,
           abv: formData.abv || undefined,
           ibu,
+          status: formData.status,
         });
         toast.success("Beer updated successfully");
       } else {
@@ -53,10 +55,11 @@ export default function BeerPage() {
           styleId,
           abv: formData.abv || undefined,
           ibu,
+          status: formData.status,
         });
         toast.success("Beer created successfully");
       }
-      setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "" });
+      setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "", status: "out" });
       setEditingId(null);
       setOpen(false);
       refetch();
@@ -73,6 +76,7 @@ export default function BeerPage() {
       styleId: beer.styleId?.toString() || "",
       abv: beer.abv || "",
       ibu: beer.ibu?.toString() || "",
+      status: beer.status || "out",
     });
     setEditingId(beer.beerId);
     setOpen(true);
@@ -94,7 +98,7 @@ export default function BeerPage() {
         <h2 className="text-xl font-bold">Beers</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "" }); }}>
+            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "", status: "out" }); }}>
               <Plus className="w-4 h-4 mr-2" />
               Add Beer
             </Button>
@@ -172,6 +176,18 @@ export default function BeerPage() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as "on_tap" | "bottle_can" | "out" })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="on_tap">On Tap</option>
+                  <option value="bottle_can">Bottle/Can</option>
+                  <option value="out">Out</option>
+                </select>
+              </div>
               <Button type="submit" className="w-full">
                 {editingId ? "Update" : "Create"} Beer
               </Button>
@@ -200,6 +216,9 @@ export default function BeerPage() {
                   )}
                   {beer.abv && <p>ABV: {beer.abv}%</p>}
                   {beer.ibu && <p>IBU: {beer.ibu}</p>}
+                  <p>Status: <span className="font-medium">
+                    {beer.status === "on_tap" ? "On Tap" : beer.status === "bottle_can" ? "Bottle/Can" : "Out"}
+                  </span></p>
                 </div>
                 <div className="flex gap-2">
                   <Button
