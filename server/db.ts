@@ -1,4 +1,4 @@
-import { eq, and, ne } from "drizzle-orm";
+import { asc, eq, and, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import {
   InsertUser,
@@ -109,11 +109,7 @@ export async function getUserByGoogleId(googleId: string) {
 export async function getUserById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, id))
-    .limit(1);
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
   return result[0];
 }
 
@@ -172,7 +168,7 @@ export async function deleteBJCPCategory(id: number) {
 export async function getAllStyles() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(style);
+  return db.select().from(style).orderBy(asc(style.name));
 }
 
 export async function getStyleById(id: number) {
@@ -208,7 +204,7 @@ export async function deleteStyle(id: number) {
 export async function getAllBreweries() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(brewery);
+  return db.select().from(brewery).orderBy(asc(brewery.name));
 }
 
 export async function getBreweryById(id: number) {
