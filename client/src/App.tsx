@@ -3,17 +3,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import Dashboard from "@/pages/Dashboard";
 import BeerBrowser from "@/pages/BeerBrowser";
-import { Route, Switch } from "wouter";
+import Login from "@/pages/Login";
+import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/beers" component={BeerBrowser} />
+      <Route path="/">
+        {() => <Redirect to="/browser" />}
+      </Route>
+      <Route path="/browser" component={BeerBrowser} />
+      <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
