@@ -19,6 +19,33 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Beer, Droplet, Flame } from "lucide-react";
 import { Link } from "wouter";
 
+function BrowserHeader() {
+  const { data: user } = trpc.auth.me.useQuery();
+  
+  if (user && (user.role === "curator" || user.role === "admin")) {
+    return (
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-gray-600">Welcome, {user.name || user.email}</span>
+        <a
+          href="/dashboard"
+          className="text-sm text-amber-700 hover:text-amber-900 underline"
+        >
+          Manage Catalog
+        </a>
+      </div>
+    );
+  }
+  
+  return (
+    <a
+      href="/login"
+      className="text-sm text-amber-700 hover:text-amber-900 underline"
+    >
+      Login
+    </a>
+  );
+}
+
 export default function BeerBrowser() {
   const [selectedMenuCategory, setSelectedMenuCategory] = useState<string>("");
   const [selectedStyle, setSelectedStyle] = useState<string>("");
@@ -106,12 +133,7 @@ export default function BeerBrowser() {
                 </h1>
               </div>
             </Link>
-            <a
-              href="/dashboard"
-              className="text-sm text-amber-700 hover:text-amber-900 underline"
-            >
-              Manage Catalog
-            </a>
+            <BrowserHeader />
           </div>
 
           {/* Filters */}
