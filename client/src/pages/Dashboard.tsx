@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("beers");
   const { data: user, isLoading } = trpc.auth.me.useQuery();
   const logoutMutation = trpc.auth.logout.useMutation();
+  const utils = trpc.useUtils();
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
+      await utils.auth.me.invalidate();
       toast.success("Logged out successfully");
       setLocation("/browser");
     } catch (error) {
