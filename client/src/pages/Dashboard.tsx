@@ -20,7 +20,10 @@ export default function Dashboard() {
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
-    if (!isLoading && (!user || (user.role !== "curator" && user.role !== "admin"))) {
+    if (
+      !isLoading &&
+      (!user || (user.role !== "curator" && user.role !== "admin"))
+    ) {
       toast.error("Access denied. Please log in with curator credentials.");
       setLocation("/login");
     }
@@ -30,7 +33,7 @@ export default function Dashboard() {
     try {
       await logoutMutation.mutateAsync();
       toast.success("Logged out successfully");
-      setLocation("/login");
+      setLocation("/browser");
     } catch (error) {
       toast.error("Logout failed");
     }
