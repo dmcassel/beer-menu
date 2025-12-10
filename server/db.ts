@@ -240,13 +240,17 @@ export async function deleteBrewery(id: number) {
 export async function getAllBeers() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(beer);
+  return db.select().from(beer).orderBy(asc(beer.name));
 }
 
 export async function getAllAvailableBeers() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(beer).where(ne(beer.status, "out"));
+  return db
+    .select()
+    .from(beer)
+    .where(ne(beer.status, "out"))
+    .orderBy(asc(beer.name));
 }
 
 export async function getBeerById(id: number) {
