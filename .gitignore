@@ -106,5 +106,6 @@ temp/
 *.sqlite
 *.sqlite3
 
-# Production environment file
+# Production environment files
 .env.prod
+.env.compose.prod
