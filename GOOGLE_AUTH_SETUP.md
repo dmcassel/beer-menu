@@ -43,11 +43,11 @@ The authentication system uses Google Sign-In to authenticate users. When a user
      - Your production domain (e.g., `https://yourdomain.com`)
    - Click **Create**
 
-5. Copy the **Client ID** that appears (you'll need this for your `.env.local` file)
+5. Copy the **Client ID** that appears (you'll need this for your `.env` file)
 
 ## Step 4: Configure Environment Variables
 
-Create or update your `.env.local` file in the project root with the following variables:
+Create or update your `.env` file in the project root with the following variables:
 
 ```env
 # Google OAuth Configuration
@@ -84,6 +84,7 @@ npm run db:push
 ```
 
 This will:
+
 - Add the "curator" role to the role enum
 - Update the users table to use Google ID instead of generic OAuth fields
 - Add fields for email, name, and profile picture
@@ -105,6 +106,7 @@ After a user signs in for the first time, their account is created with the "use
 ## Step 8: Test the Authentication
 
 1. Start your development server:
+
    ```powershell
    npm run dev
    ```
@@ -153,18 +155,22 @@ When deploying to production:
 ## Troubleshooting
 
 ### "Error: redirect_uri_mismatch"
+
 - Ensure your redirect URI in Google Cloud Console exactly matches your application URL
 - Check that you've added both `http://localhost:3000` for development
 
 ### "Error: invalid_client"
+
 - Verify your Client ID and Client Secret are correct
 - Check that they're properly set in both `.env.local` files
 
 ### "Access Denied" after login
+
 - Check the user's role in the database
 - Ensure the role is set to "curator" or "admin"
 
 ### Google Sign-In button not appearing
+
 - Check browser console for errors
 - Verify `VITE_GOOGLE_CLIENT_ID` is set correctly in `client/.env.local`
 - Ensure the Google Sign-In script is loading (check Network tab)
@@ -172,6 +178,7 @@ When deploying to production:
 ## Cost Information
 
 Google OAuth 2.0 is **completely free** to use. There are no costs associated with:
+
 - Creating a Google Cloud project
 - Enabling Google+ API
 - Creating OAuth credentials
