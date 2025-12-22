@@ -60,6 +60,9 @@ export const style = pgTable("style", {
     onDelete: "set null",
   }),
   bjcpLink: varchar("bjcp_link", { length: 255 }),
+  menuCategoryId: integer("menu_category_id").references(() => menuCategory.menuCatId, {
+    onDelete: "set null",
+  }),
 });
 
 export type Style = typeof style.$inferSelect;
@@ -133,6 +136,10 @@ export const styleRelations = relations(style, ({ one, many }) => ({
     fields: [style.bjcpId],
     references: [bjcpCategory.bjcpId],
   }),
+  menuCategory: one(menuCategory, {
+    fields: [style.menuCategoryId],
+    references: [menuCategory.menuCatId],
+  }),
   beers: many(beer),
 }));
 
@@ -154,6 +161,7 @@ export const beerRelations = relations(beer, ({ one, many }) => ({
 
 export const menuCategoryRelations = relations(menuCategory, ({ many }) => ({
   beers: many(menuCategoryBeer),
+  styles: many(style),
 }));
 
 export const menuCategoryBeerRelations = relations(

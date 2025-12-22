@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, curatorProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import { getAvailableMenuCategories, getBeersByMenuCategory } from "./db_additions";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -99,6 +100,7 @@ export const appRouter = router({
           description: z.string().optional(),
           bjcpId: z.number().optional(),
           bjcpLink: z.string().optional(),
+          menuCategoryId: z.number().optional(),
         })
       )
       .mutation(({ input }) => db.createStyle(input)),
@@ -110,6 +112,7 @@ export const appRouter = router({
           description: z.string().optional(),
           bjcpId: z.number().optional(),
           bjcpLink: z.string().optional(),
+          menuCategoryId: z.number().optional(),
         })
       )
       .mutation(({ input }) => {
@@ -191,9 +194,13 @@ export const appRouter = router({
 
   menuCategory: router({
     list: publicProcedure.query(() => db.getAllMenuCategories()),
+    listAvailable: publicProcedure.query(() => getAvailableMenuCategories()),
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => db.getMenuCategoryById(input.id)),
+    getBeersByCategory: publicProcedure
+      .input(z.object({ menuCatId: z.number() }))
+      .query(({ input }) => getBeersByMenuCategory(input.menuCatId)),
     create: curatorProcedure
       .input(z.object({ name: z.string(), description: z.string().optional() }))
       .mutation(({ input }) => db.createMenuCategory(input)),

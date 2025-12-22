@@ -8,6 +8,13 @@
       "when": 1764877987641,
       "tag": "0000_baseline",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734912000000,
+      "tag": "0001_add_menu_category_to_style",
+      "breakpoints": true
     }
   ]
 }

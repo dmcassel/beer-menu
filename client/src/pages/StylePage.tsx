@@ -11,10 +11,11 @@ import { toast } from "sonner";
 export default function StylePage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", bjcpId: "", bjcpLink: "" });
+  const [formData, setFormData] = useState({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" });
 
   const { data: styles, isLoading, refetch } = trpc.style.list.useQuery();
   const { data: bjcpCategories } = trpc.bjcpCategory.list.useQuery();
+  const { data: menuCategories } = trpc.menuCategory.list.useQuery();
   const createMutation = trpc.style.create.useMutation();
   const updateMutation = trpc.style.update.useMutation();
   const deleteMutation = trpc.style.delete.useMutation();
@@ -23,6 +24,7 @@ export default function StylePage() {
     e.preventDefault();
     try {
       const bjcpId = formData.bjcpId ? parseInt(formData.bjcpId) : undefined;
+      const menuCategoryId = formData.menuCategoryId ? parseInt(formData.menuCategoryId) : undefined;
       if (editingId) {
         await updateMutation.mutateAsync({
           id: editingId,
@@ -30,6 +32,7 @@ export default function StylePage() {
           description: formData.description || undefined,
           bjcpId,
           bjcpLink: formData.bjcpLink || undefined,
+          menuCategoryId,
         });
         toast.success("Style updated successfully");
       } else {
@@ -38,10 +41,11 @@ export default function StylePage() {
           description: formData.description || undefined,
           bjcpId,
           bjcpLink: formData.bjcpLink || undefined,
+          menuCategoryId,
         });
         toast.success("Style created successfully");
       }
-      setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "" });
+      setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" });
       setEditingId(null);
       setOpen(false);
       refetch();
@@ -56,6 +60,7 @@ export default function StylePage() {
       description: style.description || "",
       bjcpId: style.bjcpId?.toString() || "",
       bjcpLink: style.bjcpLink || "",
+      menuCategoryId: style.menuCategoryId?.toString() || "",
     });
     setEditingId(style.styleId);
     setOpen(true);
@@ -77,7 +82,7 @@ export default function StylePage() {
         <h2 className="text-xl font-bold">Beer Styles</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "" }); }}>
+            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" }); }}>
               <Plus className="w-4 h-4 mr-2" />
               Add Style
             </Button>
@@ -127,6 +132,21 @@ export default function StylePage() {
                   placeholder="https://..."
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Menu Category</label>
+                <select
+                  value={formData.menuCategoryId}
+                  onChange={(e) => setFormData({ ...formData, menuCategoryId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Unassigned</option>
+                  {menuCategories?.map((cat) => (
+                    <option key={cat.menuCatId} value={cat.menuCatId}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Button type="submit" className="w-full">
                 {editingId ? "Update" : "Create"} Style
               </Button>
@@ -146,9 +166,16 @@ export default function StylePage() {
               </CardHeader>
               <CardContent>
                 {style.description && <p className="text-sm text-gray-600 mb-2">{style.description}</p>}
-                <p className="text-xs text-gray-500 mb-4">
-                  {bjcpCategories?.find((c) => c.bjcpId === style.bjcpId)?.label}
-                </p>
+                <div className="space-y-1 mb-4">
+                  {bjcpCategories?.find((c) => c.bjcpId === style.bjcpId) && (
+                    <p className="text-xs text-gray-500">
+                      BJCP: {bjcpCategories.find((c) => c.bjcpId === style.bjcpId)?.label}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500">
+                    Menu Category: {menuCategories?.find((c) => c.menuCatId === style.menuCategoryId)?.name || "Unassigned"}
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"

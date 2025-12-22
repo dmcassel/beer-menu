@@ -21,11 +21,13 @@ import { Link } from "wouter";
 
 function BrowserHeader() {
   const { data: user } = trpc.auth.me.useQuery();
-  
+
   if (user && (user.role === "curator" || user.role === "admin")) {
     return (
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">Welcome, {user.name || user.email}</span>
+        <span className="text-sm text-gray-600">
+          Welcome, {user.name || user.email}
+        </span>
         <a
           href="/dashboard"
           className="text-sm text-amber-700 hover:text-amber-900 underline"
@@ -35,7 +37,7 @@ function BrowserHeader() {
       </div>
     );
   }
-  
+
   return (
     <a
       href="/login"
@@ -56,24 +58,28 @@ export default function BeerBrowser() {
     trpc.beer.listAvailable.useQuery();
   const { data: styles = [] } = trpc.style.list.useQuery();
   const { data: breweries = [] } = trpc.brewery.list.useQuery();
-  const { data: menuCategories = [] } = trpc.menuCategory.list.useQuery();
-  const { data: menuCategoryBeers = [] } =
-    trpc.menuCategoryBeer.getBeersInCategory.useQuery(
-      { menuCatId: selectedMenuCategory ? parseInt(selectedMenuCategory) : 0 },
-      { enabled: !!selectedMenuCategory }
+  const { data: menuCategories = [] } =
+    trpc.menuCategory.listAvailable.useQuery();
+  const { data: categoryBeers = [] } =
+    trpc.menuCategory.getBeersByCategory.useQuery(
+      {
+        menuCatId: selectedMenuCategory ? parseInt(selectedMenuCategory) : 0,
+      },
+      { enabled: !!selectedMenuCategory && selectedMenuCategory !== "all" }
     );
 
   // Filter beers based on selections
   const filteredBeers = useMemo(() => {
     let result = beers;
 
-    // Filter by menu category
+    // Filter by menu category (database-level filtering via beer styles)
     if (
       selectedMenuCategory &&
       selectedMenuCategory !== "all" &&
-      menuCategoryBeers
+      categoryBeers
     ) {
-      const beerIdsInCategory = menuCategoryBeers.map(mb => mb.beerId);
+      // Use the database-filtered results
+      const beerIdsInCategory = categoryBeers.map((b: any) => b.beer_id);
       result = result.filter(beer => beerIdsInCategory.includes(beer.beerId));
     }
 
@@ -95,7 +101,7 @@ export default function BeerBrowser() {
     selectedMenuCategory,
     selectedStyle,
     selectedBrewery,
-    menuCategoryBeers,
+    categoryBeers,
   ]);
 
   const getStyleName = (styleId: number | null | undefined) => {
@@ -153,8 +159,8 @@ export default function BeerBrowser() {
                   <SelectItem value="all">All Categories</SelectItem>
                   {menuCategories.map(cat => (
                     <SelectItem
-                      key={cat.menuCatId}
-                      value={cat.menuCatId.toString()}
+                      key={cat.menu_cat_id}
+                      value={cat.menu_cat_id.toString()}
                     >
                       {cat.name}
                     </SelectItem>
@@ -219,7 +225,7 @@ export default function BeerBrowser() {
                 <Badge variant="secondary">
                   {
                     menuCategories.find(
-                      c => c.menuCatId === parseInt(selectedMenuCategory)
+                      c => c.menu_cat_id === parseInt(selectedMenuCategory)
                     )?.name
                   }
                 </Badge>
