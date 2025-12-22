@@ -15,13 +15,13 @@ until node -e "
   sleep 2
 done
 
-# Check if migrations table exists and create if needed
-echo "📊 Checking migration status..."
+# Initialize migration tracking
+echo "📊 Initializing migration tracking..."
 node -e "
   const { Client } = require('pg');
   const client = new Client({ connectionString: process.env.DATABASE_URL });
   
-  async function checkMigrations() {
+  async function initMigrations() {
     await client.connect();
     
     // Create migrations tracking table if it doesn't exist
@@ -33,23 +33,39 @@ node -e "
       );
     \`);
     
-    // Check which migrations have been applied
-    const result = await client.query('SELECT migration_name FROM __drizzle_migrations');
-    const appliedMigrations = result.rows.map(r => r.migration_name);
+    // Check if baseline schema exists by looking for the 'role' enum
+    const enumCheck = await client.query(\`
+      SELECT 1 FROM pg_type WHERE typname = 'role'
+    \`);
     
+    const hasBaselineSchema = enumCheck.rows.length > 0;
+    
+    if (hasBaselineSchema) {
+      // Schema exists, mark baseline as applied if not already marked
+      await client.query(\`
+        INSERT INTO __drizzle_migrations (migration_name) 
+        VALUES ('0000_baseline') 
+        ON CONFLICT (migration_name) DO NOTHING
+      \`);
+      console.log('✅ Detected existing schema, marked baseline as applied');
+    }
+    
+    // Show applied migrations
+    const result = await client.query('SELECT migration_name FROM __drizzle_migrations ORDER BY id');
+    const appliedMigrations = result.rows.map(r => r.migration_name);
     console.log('Applied migrations:', appliedMigrations.join(', ') || 'none');
     
     await client.end();
   }
   
-  checkMigrations().catch(err => {
-    console.error('Error checking migrations:', err.message);
+  initMigrations().catch(err => {
+    console.error('❌ Error initializing migrations:', err.message);
     process.exit(1);
   });
 "
 
 # Run pending migrations
-echo "🔄 Applying pending migrations..."
+echo "🔄 Checking for pending migrations..."
 
 # Function to apply a migration if not already applied
 apply_migration() {
@@ -115,11 +131,11 @@ if [ -d "drizzle/migrations" ]; then
       apply_migration "$migration"
     fi
   done
+  echo "✅ All migrations processed"
 else
   echo "⚠️  No migrations directory found, skipping migrations"
 fi
 
-echo "✅ All migrations applied successfully"
 echo "🎉 Starting application..."
 
 # Start the application
