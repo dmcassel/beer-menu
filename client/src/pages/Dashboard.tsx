@@ -25,8 +25,7 @@ export default function Dashboard() {
       !isLoading &&
       (!user || (user.role !== "curator" && user.role !== "admin"))
     ) {
-      toast.error("Access denied. Please log in with curator credentials.");
-      setLocation("/login");
+      setLocation("/browser");
     }
   }, [user, isLoading, setLocation]);
 

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,22 +19,44 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Beer, Droplet, Flame } from "lucide-react";
 import { Link } from "wouter";
+import { toast } from "sonner";
 
 function BrowserHeader() {
+  const [, setLocation] = useLocation();
   const { data: user } = trpc.auth.me.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+  const utils = trpc.useUtils();
 
-  if (user && (user.role === "curator" || user.role === "admin")) {
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      await utils.auth.me.invalidate();
+      toast.success("Logged out successfully");
+      setLocation("/browser");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  if (user) {
     return (
       <div className="flex items-center gap-4">
         <span className="text-sm text-gray-600">
           Welcome, {user.name || user.email}
         </span>
-        <a
-          href="/dashboard"
-          className="text-sm text-amber-700 hover:text-amber-900 underline"
-        >
-          Manage Catalog
-        </a>
+        {(user.role === "curator" || user.role === "admin") && (
+          <a
+            href="/dashboard"
+            className="text-sm text-amber-700 hover:text-amber-900 underline"
+          >
+            Manage Catalog
+          </a>
+        )}
+        {!(user.role === "curator" || user.role === "admin") && (
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
       </div>
     );
   }
