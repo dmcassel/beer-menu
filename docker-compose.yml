@@ -60,7 +60,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "pnpm db:push && pnpm start"
+    command: sh /app/scripts/docker-entrypoint.sh
 
 volumes:
   postgres_data:
