@@ -29,7 +29,7 @@ cd beer-menu
 Copy the example environment file and customize if needed:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 The default configuration works out of the box with Docker Compose.
@@ -213,7 +213,7 @@ If you see "port is already allocated" errors:
    docker-compose logs postgres
    ```
 
-3. Verify the connection string in your `.env.local` file matches the Docker Compose configuration
+3. Verify the connection string in your `.env` file matches the Docker Compose configuration
 
 ### Application Won't Start
 
