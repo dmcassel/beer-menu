@@ -56,24 +56,25 @@ export default function BeerBrowser() {
     trpc.beer.listAvailable.useQuery();
   const { data: styles = [] } = trpc.style.list.useQuery();
   const { data: breweries = [] } = trpc.brewery.list.useQuery();
-  const { data: menuCategories = [] } = trpc.menuCategory.list.useQuery();
-  const { data: menuCategoryBeers = [] } =
-    trpc.menuCategoryBeer.getBeersInCategory.useQuery(
+  const { data: menuCategories = [] } = trpc.menuCategory.listAvailable.useQuery();
+  const { data: categoryBeers = [] } =
+    trpc.menuCategory.getBeersByCategory.useQuery(
       { menuCatId: selectedMenuCategory ? parseInt(selectedMenuCategory) : 0 },
-      { enabled: !!selectedMenuCategory }
+      { enabled: !!selectedMenuCategory && selectedMenuCategory !== "all" }
     );
 
   // Filter beers based on selections
   const filteredBeers = useMemo(() => {
     let result = beers;
 
-    // Filter by menu category
+    // Filter by menu category (database-level filtering via beer styles)
     if (
       selectedMenuCategory &&
       selectedMenuCategory !== "all" &&
-      menuCategoryBeers
+      categoryBeers
     ) {
-      const beerIdsInCategory = menuCategoryBeers.map(mb => mb.beerId);
+      // Use the database-filtered results
+      const beerIdsInCategory = categoryBeers.map((b: any) => b.beer_id);
       result = result.filter(beer => beerIdsInCategory.includes(beer.beerId));
     }
 
@@ -95,7 +96,7 @@ export default function BeerBrowser() {
     selectedMenuCategory,
     selectedStyle,
     selectedBrewery,
-    menuCategoryBeers,
+    categoryBeers,
   ]);
 
   const getStyleName = (styleId: number | null | undefined) => {
