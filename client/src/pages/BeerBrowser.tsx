@@ -16,8 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Beer, Droplet, Flame } from "lucide-react";
+import { Loader2, Beer, Droplet, Flame, Filter, X } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
@@ -75,6 +81,7 @@ export default function BeerBrowser() {
   const [selectedMenuCategory, setSelectedMenuCategory] = useState<string>("");
   const [selectedStyle, setSelectedStyle] = useState<string>("");
   const [selectedBrewery, setSelectedBrewery] = useState<string>("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Fetch all data
   const { data: beers = [], isLoading: beersLoading } =
@@ -148,6 +155,89 @@ export default function BeerBrowser() {
   const hasActiveFilters =
     selectedMenuCategory || selectedStyle || selectedBrewery;
 
+  const activeFilterCount = [
+    selectedMenuCategory,
+    selectedStyle,
+    selectedBrewery,
+  ].filter(Boolean).length;
+
+  // Filter controls component (reused in both desktop and mobile)
+  const FilterControls = () => (
+    <>
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">
+          Menu Category
+        </label>
+        <Select
+          value={selectedMenuCategory}
+          onValueChange={setSelectedMenuCategory}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {menuCategories.map(cat => (
+              <SelectItem
+                key={cat.menu_cat_id}
+                value={cat.menu_cat_id.toString()}
+              >
+                {cat.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">
+          Beer Style
+        </label>
+        <Select value={selectedStyle} onValueChange={setSelectedStyle}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="All Styles" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Styles</SelectItem>
+            {styles.map(style => (
+              <SelectItem
+                key={style.styleId}
+                value={style.styleId.toString()}
+              >
+                {style.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">
+          Brewery
+        </label>
+        <Select
+          value={selectedBrewery}
+          onValueChange={setSelectedBrewery}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="All Breweries" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Breweries</SelectItem>
+            {breweries.map(brewery => (
+              <SelectItem
+                key={brewery.breweryId}
+                value={brewery.breweryId.toString()}
+              >
+                {brewery.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
       {/* Header */}
@@ -162,112 +252,76 @@ export default function BeerBrowser() {
                 </h1>
               </div>
             </Link>
-            <BrowserHeader />
-          </div>
-
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Menu Category
-              </label>
-              <Select
-                value={selectedMenuCategory}
-                onValueChange={setSelectedMenuCategory}
+            <div className="flex items-center gap-3">
+              {/* Mobile Filter Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFilterOpen(true)}
+                className="md:hidden relative"
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {menuCategories.map(cat => (
-                    <SelectItem
-                      key={cat.menu_cat_id}
-                      value={cat.menu_cat_id.toString()}
-                    >
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Beer Style
-              </label>
-              <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Styles" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Styles</SelectItem>
-                  {styles.map(style => (
-                    <SelectItem
-                      key={style.styleId}
-                      value={style.styleId.toString()}
-                    >
-                      {style.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Brewery
-              </label>
-              <Select
-                value={selectedBrewery}
-                onValueChange={setSelectedBrewery}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Breweries" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Breweries</SelectItem>
-                  {breweries.map(brewery => (
-                    <SelectItem
-                      key={brewery.breweryId}
-                      value={brewery.breweryId.toString()}
-                    >
-                      {brewery.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Filter className="w-4 h-4" />
+                {activeFilterCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+              <BrowserHeader />
             </div>
           </div>
 
-          {/* Active Filters Display */}
+          {/* Desktop Filters - Hidden on Mobile */}
+          <div className="hidden md:grid md:grid-cols-3 gap-4">
+            <FilterControls />
+          </div>
+
+          {/* Active Filters Display - Desktop and Mobile */}
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-600">Active filters:</span>
+              <span className="text-sm text-gray-600 hidden md:inline">Active filters:</span>
               {selectedMenuCategory && (
-                <Badge variant="secondary">
+                <Badge
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => setSelectedMenuCategory("")}
+                >
                   {
                     menuCategories.find(
                       c => c.menu_cat_id === parseInt(selectedMenuCategory)
                     )?.name
                   }
+                  <X className="w-3 h-3 ml-1" />
                 </Badge>
               )}
               {selectedStyle && (
-                <Badge variant="secondary">
+                <Badge
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => setSelectedStyle("")}
+                >
                   {
                     styles.find(s => s.styleId === parseInt(selectedStyle))
                       ?.name
                   }
+                  <X className="w-3 h-3 ml-1" />
                 </Badge>
               )}
               {selectedBrewery && (
-                <Badge variant="secondary">
+                <Badge
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() => setSelectedBrewery("")}
+                >
                   {
                     breweries.find(
                       b => b.breweryId === parseInt(selectedBrewery)
                     )?.name
                   }
+                  <X className="w-3 h-3 ml-1" />
                 </Badge>
               )}
               <Button
@@ -282,6 +336,27 @@ export default function BeerBrowser() {
           )}
         </div>
       </div>
+
+      {/* Mobile Filter Drawer */}
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <SheetContent side="bottom" className="h-[85vh]">
+          <SheetHeader>
+            <SheetTitle>Filter Beers</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-4 mt-6">
+            <FilterControls />
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={handleClearFilters}
+                className="w-full"
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
