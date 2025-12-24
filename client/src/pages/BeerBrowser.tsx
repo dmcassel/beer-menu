@@ -10,13 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -26,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Beer, Droplet, Flame, Filter, X } from "lucide-react";
 import { Link } from "wouter";
 import { toast } from "sonner";
+import { FilterControls } from "@/components/FilterControls";
 
 function BrowserHeader() {
   const [, setLocation] = useLocation();
@@ -161,83 +155,6 @@ export default function BeerBrowser() {
     selectedBrewery,
   ].filter(Boolean).length;
 
-  // Filter controls component (reused in both desktop and mobile)
-  const FilterControls = () => (
-    <>
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Menu Category
-        </label>
-        <Select
-          value={selectedMenuCategory}
-          onValueChange={setSelectedMenuCategory}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {menuCategories.map(cat => (
-              <SelectItem
-                key={cat.menu_cat_id}
-                value={cat.menu_cat_id.toString()}
-              >
-                {cat.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Beer Style
-        </label>
-        <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Styles" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Styles</SelectItem>
-            {styles.map(style => (
-              <SelectItem
-                key={style.styleId}
-                value={style.styleId.toString()}
-              >
-                {style.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Brewery
-        </label>
-        <Select
-          value={selectedBrewery}
-          onValueChange={setSelectedBrewery}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Breweries" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Breweries</SelectItem>
-            {breweries.map(brewery => (
-              <SelectItem
-                key={brewery.breweryId}
-                value={brewery.breweryId.toString()}
-              >
-                {brewery.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </>
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
       {/* Header */}
@@ -276,7 +193,17 @@ export default function BeerBrowser() {
 
           {/* Desktop Filters - Hidden on Mobile */}
           <div className="hidden md:grid md:grid-cols-3 gap-4">
-            <FilterControls />
+            <FilterControls
+              selectedMenuCategory={selectedMenuCategory}
+              setSelectedMenuCategory={setSelectedMenuCategory}
+              selectedStyle={selectedStyle}
+              setSelectedStyle={setSelectedStyle}
+              selectedBrewery={selectedBrewery}
+              setSelectedBrewery={setSelectedBrewery}
+              menuCategories={menuCategories}
+              styles={styles}
+              breweries={breweries}
+            />
           </div>
 
           {/* Active Filters Display - Desktop and Mobile */}
@@ -344,7 +271,17 @@ export default function BeerBrowser() {
             <SheetTitle>Filter Beers</SheetTitle>
           </SheetHeader>
           <div className="space-y-4 mt-6">
-            <FilterControls />
+            <FilterControls
+              selectedMenuCategory={selectedMenuCategory}
+              setSelectedMenuCategory={setSelectedMenuCategory}
+              selectedStyle={selectedStyle}
+              setSelectedStyle={setSelectedStyle}
+              selectedBrewery={selectedBrewery}
+              setSelectedBrewery={setSelectedBrewery}
+              menuCategories={menuCategories}
+              styles={styles}
+              breweries={breweries}
+            />
             {hasActiveFilters && (
               <Button
                 variant="outline"
