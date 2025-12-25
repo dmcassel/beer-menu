@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
+import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 
 export default function BeerPage() {
   const [open, setOpen] = useState(false);
@@ -127,18 +128,19 @@ export default function BeerPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Brewery</label>
-                <select
+                <SearchableSelect
+                  options={
+                    breweries?.map((brewery) => ({
+                      label: brewery.name,
+                      value: brewery.breweryId.toString(),
+                    })) || []
+                  }
                   value={formData.breweryId}
-                  onChange={(e) => setFormData({ ...formData, breweryId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                >
-                  <option value="">Select a brewery</option>
-                  {breweries?.map((brewery) => (
-                    <option key={brewery.breweryId} value={brewery.breweryId}>
-                      {brewery.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => setFormData({ ...formData, breweryId: value })}
+                  placeholder="Select a brewery"
+                  emptyText="No breweries found"
+                  searchPlaceholder="Search breweries..."
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Style</label>
