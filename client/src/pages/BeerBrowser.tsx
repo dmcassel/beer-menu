@@ -207,39 +207,54 @@ export default function BeerBrowser() {
           {/* Active Filters Display - Desktop and Mobile */}
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              {selectedMenuCategories.length > 0 && (
-                <Badge variant="secondary" className="cursor-pointer">
-                  Categories: {selectedMenuCategories.map(id => 
-                    menuCategories.find(c => c.menu_cat_id === parseInt(id))?.name
-                  ).join(", ")}
-                  <X 
-                    className="w-3 h-3 ml-1" 
-                    onClick={() => setSelectedMenuCategories([])}
-                  />
-                </Badge>
-              )}
-              {selectedStyles.length > 0 && (
-                <Badge variant="secondary" className="cursor-pointer">
-                  Styles: {selectedStyles.map(id =>
-                    styles.find(s => s.styleId === parseInt(id))?.name
-                  ).join(", ")}
-                  <X 
-                    className="w-3 h-3 ml-1" 
-                    onClick={() => setSelectedStyles([])}
-                  />
-                </Badge>
-              )}
-              {selectedBreweries.length > 0 && (
-                <Badge variant="secondary" className="cursor-pointer">
-                  Breweries: {selectedBreweries.map(id =>
-                    breweries.find(b => b.breweryId === parseInt(id))?.name
-                  ).join(", ")}
-                  <X 
-                    className="w-3 h-3 ml-1" 
-                    onClick={() => setSelectedBreweries([])}
-                  />
-                </Badge>
-              )}
+              {selectedMenuCategories.map(id => {
+                const category = menuCategories.find(c => c.menu_cat_id === parseInt(id));
+                return category ? (
+                  <Badge
+                    key={`cat-${id}`}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => setSelectedMenuCategories(
+                      selectedMenuCategories.filter(catId => catId !== id)
+                    )}
+                  >
+                    {category.name}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ) : null;
+              })}
+              {selectedStyles.map(id => {
+                const style = styles.find(s => s.styleId === parseInt(id));
+                return style ? (
+                  <Badge
+                    key={`style-${id}`}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => setSelectedStyles(
+                      selectedStyles.filter(styleId => styleId !== id)
+                    )}
+                  >
+                    {style.name}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ) : null;
+              })}
+              {selectedBreweries.map(id => {
+                const brewery = breweries.find(b => b.breweryId === parseInt(id));
+                return brewery ? (
+                  <Badge
+                    key={`brewery-${id}`}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => setSelectedBreweries(
+                      selectedBreweries.filter(breweryId => breweryId !== id)
+                    )}
+                  >
+                    {brewery.name}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ) : null;
+              })}
               <Button
                 variant="ghost"
                 size="sm"
