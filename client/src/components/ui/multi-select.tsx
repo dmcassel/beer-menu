@@ -106,7 +106,7 @@ export function MultiSelect({
             </Button>
           </div>
           <Separator />
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-64 overflow-y-auto touch-auto overscroll-contain">
             {options.map(option => (
               <div
                 key={option.value}
