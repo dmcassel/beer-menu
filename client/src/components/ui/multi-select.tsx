@@ -62,7 +62,7 @@ export function MultiSelect({
   }, [selected, options, placeholder]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -85,7 +85,7 @@ export function MultiSelect({
           </svg>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="w-full p-0" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
         <div className="p-2 space-y-1">
           <div className="flex items-center justify-between px-2 pb-2">
             <Button
@@ -106,7 +106,7 @@ export function MultiSelect({
             </Button>
           </div>
           <Separator />
-          <div className="max-h-64 overflow-y-auto touch-auto overscroll-contain">
+          <div className="max-h-64 overflow-y-auto touch-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
             {options.map(option => (
               <div
                 key={option.value}
