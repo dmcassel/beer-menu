@@ -59,7 +59,7 @@ function BrowserHeader() {
         )}
       </div>
     );
-  };
+  }
 
   return (
     <a
@@ -72,7 +72,9 @@ function BrowserHeader() {
 }
 
 export default function BeerBrowser() {
-  const [selectedMenuCategories, setSelectedMenuCategories] = useState<string[]>([]);
+  const [selectedMenuCategories, setSelectedMenuCategories] = useState<
+    string[]
+  >([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedBreweries, setSelectedBreweries] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -80,10 +82,13 @@ export default function BeerBrowser() {
   // Fetch all data
   const { data: beers = [], isLoading: beersLoading } =
     trpc.beer.listAvailable.useQuery();
-  const { data: styles = [] } = trpc.style.list.useQuery();
+  const { data: styles = [] } = trpc.style.listAvailable.useQuery({
+    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
+    breweryIds: selectedBreweries.map(id => parseInt(id)),
+  });
   const { data: menuCategories = [] } =
     trpc.menuCategory.listAvailable.useQuery();
-  
+
   // Fetch available breweries based on selected filters
   const { data: breweries = [] } = trpc.brewery.listAvailable.useQuery({
     menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
@@ -99,25 +104,29 @@ export default function BeerBrowser() {
       result = result.filter(beer => {
         const beerStyleId = beer.styleId;
         if (!beerStyleId) return false;
-        
+
         const beerStyle = styles.find(s => s.styleId === beerStyleId);
         if (!beerStyle || !beerStyle.menuCategoryId) return false;
-        
-        return selectedMenuCategories.includes(beerStyle.menuCategoryId.toString());
+
+        return selectedMenuCategories.includes(
+          beerStyle.menuCategoryId.toString()
+        );
       });
     }
 
     // Filter by styles (OR logic within filter)
     if (selectedStyles.length > 0) {
-      result = result.filter(beer => 
-        beer.styleId && selectedStyles.includes(beer.styleId.toString())
+      result = result.filter(
+        beer => beer.styleId && selectedStyles.includes(beer.styleId.toString())
       );
     }
 
     // Filter by breweries (OR logic within filter)
     if (selectedBreweries.length > 0) {
-      result = result.filter(beer =>
-        beer.breweryId && selectedBreweries.includes(beer.breweryId.toString())
+      result = result.filter(
+        beer =>
+          beer.breweryId &&
+          selectedBreweries.includes(beer.breweryId.toString())
       );
     }
 
@@ -213,15 +222,19 @@ export default function BeerBrowser() {
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
               {selectedMenuCategories.map(id => {
-                const category = menuCategories.find(c => c.menu_cat_id === parseInt(id));
+                const category = menuCategories.find(
+                  c => c.menu_cat_id === parseInt(id)
+                );
                 return category ? (
                   <Badge
                     key={`cat-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() => setSelectedMenuCategories(
-                      selectedMenuCategories.filter(catId => catId !== id)
-                    )}
+                    onClick={() =>
+                      setSelectedMenuCategories(
+                        selectedMenuCategories.filter(catId => catId !== id)
+                      )
+                    }
                   >
                     {category.name}
                     <X className="w-3 h-3 ml-1" />
@@ -235,9 +248,11 @@ export default function BeerBrowser() {
                     key={`style-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() => setSelectedStyles(
-                      selectedStyles.filter(styleId => styleId !== id)
-                    )}
+                    onClick={() =>
+                      setSelectedStyles(
+                        selectedStyles.filter(styleId => styleId !== id)
+                      )
+                    }
                   >
                     {style.name}
                     <X className="w-3 h-3 ml-1" />
@@ -245,15 +260,19 @@ export default function BeerBrowser() {
                 ) : null;
               })}
               {selectedBreweries.map(id => {
-                const brewery = breweries.find(b => b.breweryId === parseInt(id));
+                const brewery = breweries.find(
+                  b => b.breweryId === parseInt(id)
+                );
                 return brewery ? (
                   <Badge
                     key={`brewery-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() => setSelectedBreweries(
-                      selectedBreweries.filter(breweryId => breweryId !== id)
-                    )}
+                    onClick={() =>
+                      setSelectedBreweries(
+                        selectedBreweries.filter(breweryId => breweryId !== id)
+                      )
+                    }
                   >
                     {brewery.name}
                     <X className="w-3 h-3 ml-1" />
