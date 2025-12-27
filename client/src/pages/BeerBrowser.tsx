@@ -81,9 +81,14 @@ export default function BeerBrowser() {
   const { data: beers = [], isLoading: beersLoading } =
     trpc.beer.listAvailable.useQuery();
   const { data: styles = [] } = trpc.style.list.useQuery();
-  const { data: breweries = [] } = trpc.brewery.list.useQuery();
   const { data: menuCategories = [] } =
     trpc.menuCategory.listAvailable.useQuery();
+  
+  // Fetch available breweries based on selected filters
+  const { data: breweries = [] } = trpc.brewery.listAvailable.useQuery({
+    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
+    styleIds: selectedStyles.map(id => parseInt(id)),
+  });
 
   // Filter beers based on selections
   const filteredBeers = useMemo(() => {
