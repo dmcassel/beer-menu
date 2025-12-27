@@ -88,3 +88,45 @@ export async function getAvailableBreweries(
   const result = await db.execute(query);
   return result.rows;
 }
+
+/**
+ * Get styles that have at least one available beer,
+ * optionally filtered by menu categories and/or breweries
+ */
+export async function getAvailableStyles(
+  menuCategoryIds?: number[],
+  breweryIds?: number[]
+) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let query = sql`
+    SELECT DISTINCT s.style_id as "styleId", s.name, s.menu_category_id as "menuCategoryId"
+    FROM style s
+    INNER JOIN beer b ON b.style_id = s.style_id
+  `;
+
+  // Start WHERE clause
+  query = sql`${query} WHERE b.status != 'out'`;
+
+  // Add menu category filter
+  if (menuCategoryIds && menuCategoryIds.length > 0) {
+    query = sql`${query} AND s.menu_category_id IN (${sql.join(
+      menuCategoryIds.map(id => sql`${id}`),
+      sql`, `
+    )})`;
+  }
+
+  // Add brewery filter
+  if (breweryIds && breweryIds.length > 0) {
+    query = sql`${query} AND b.brewery_id IN (${sql.join(
+      breweryIds.map(id => sql`${id}`),
+      sql`, `
+    )})`;
+  }
+
+  query = sql`${query} ORDER BY s.name`;
+
+  const result = await db.execute(query);
+  return result.rows;
+}
