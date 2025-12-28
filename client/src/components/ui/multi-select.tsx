@@ -56,13 +56,15 @@ export function MultiSelect({
       return "All selected";
     }
     if (selected.length === 1) {
-      return options.find(opt => opt.value === selected[0])?.label || placeholder;
+      return (
+        options.find(opt => opt.value === selected[0])?.label || placeholder
+      );
     }
     return `${selected.length} selected`;
   }, [selected, options, placeholder]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -106,7 +108,13 @@ export function MultiSelect({
             </Button>
           </div>
           <Separator />
-          <div className="max-h-64 overflow-y-auto">
+          <div
+            className="max-h-64 overflow-y-auto"
+            style={{
+              WebkitOverflowScrolling: "touch",
+              touchAction: "pan-y",
+            }}
+          >
             {options.map(option => (
               <div
                 key={option.value}
@@ -116,7 +124,7 @@ export function MultiSelect({
                 <Checkbox
                   checked={selected.includes(option.value)}
                   onCheckedChange={() => handleToggle(option.value)}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
                 />
                 <label
                   htmlFor={option.value}

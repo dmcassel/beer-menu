@@ -293,7 +293,7 @@ export default function BeerBrowser() {
       </div>
 
       {/* Mobile Filter Drawer */}
-      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen} modal={false}>
         <SheetContent side="bottom" className="h-[85vh]">
           <SheetHeader>
             <SheetTitle>Filter Beers</SheetTitle>
