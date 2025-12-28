@@ -7,10 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function StylePage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [styleToDelete, setStyleToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" });
 
   const { data: styles, isLoading, refetch } = trpc.style.list.useQuery();
@@ -66,13 +69,22 @@ export default function StylePage() {
     setOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number, name: string) => {
+    setStyleToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!styleToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: styleToDelete.id });
       toast.success("Style deleted successfully");
       refetch();
     } catch (error) {
       toast.error("Error deleting style");
+    } finally {
+      setDeleteDialogOpen(false);
+      setStyleToDelete(null);
     }
   };
 
@@ -187,7 +199,7 @@ export default function StylePage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(style.styleId)}
+                    onClick={() => handleDeleteClick(style.styleId, style.name)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -197,6 +209,13 @@ export default function StylePage() {
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={styleToDelete?.name}
+      />
     </div>
   );
 }

@@ -8,10 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function BeerPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [beerToDelete, setBeerToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -83,13 +86,22 @@ export default function BeerPage() {
     setOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number, name: string) => {
+    setBeerToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!beerToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: beerToDelete.id });
       toast.success("Beer deleted successfully");
       refetch();
     } catch (error) {
       toast.error("Error deleting beer");
+    } finally {
+      setDeleteDialogOpen(false);
+      setBeerToDelete(null);
     }
   };
 
@@ -233,7 +245,7 @@ export default function BeerPage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(beer.beerId)}
+                    onClick={() => handleDeleteClick(beer.beerId, beer.name)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -243,6 +255,13 @@ export default function BeerPage() {
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={beerToDelete?.name}
+      />
     </div>
   );
 }

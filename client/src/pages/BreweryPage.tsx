@@ -12,10 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function BreweryPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [breweryToDelete, setBreweryToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({ name: "", location: "" });
 
   const { data: breweries, isLoading, refetch } = trpc.brewery.list.useQuery();
@@ -49,13 +52,22 @@ export default function BreweryPage() {
     setOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number, name: string) => {
+    setBreweryToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!breweryToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: breweryToDelete.id });
       toast.success("Brewery deleted successfully");
       refetch();
     } catch (error) {
       toast.error("Error deleting brewery");
+    } finally {
+      setDeleteDialogOpen(false);
+      setBreweryToDelete(null);
     }
   };
 
@@ -137,7 +149,7 @@ export default function BreweryPage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(brewery.breweryId)}
+                    onClick={() => handleDeleteClick(brewery.breweryId, brewery.name)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -147,6 +159,13 @@ export default function BreweryPage() {
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={breweryToDelete?.name}
+      />
     </div>
   );
 }

@@ -6,10 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function BJCPCategoryPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({ label: "", name: "" });
 
   const { data: categories, isLoading, refetch } = trpc.bjcpCategory.list.useQuery();
@@ -42,13 +45,22 @@ export default function BJCPCategoryPage() {
     setOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number, label: string, name: string) => {
+    setCategoryToDelete({ id, name: `${label} - ${name}` });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!categoryToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: categoryToDelete.id });
       toast.success("Category deleted successfully");
       refetch();
     } catch (error) {
       toast.error("Error deleting category");
+    } finally {
+      setDeleteDialogOpen(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -116,7 +128,7 @@ export default function BJCPCategoryPage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleDelete(category.bjcpId)}
+                    onClick={() => handleDeleteClick(category.bjcpId, category.label, category.name)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -126,6 +138,13 @@ export default function BJCPCategoryPage() {
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={categoryToDelete?.name}
+      />
     </div>
   );
 }
