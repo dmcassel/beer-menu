@@ -31,6 +31,13 @@ interface SearchableSelectProps {
   className?: string;
 }
 
+// Normalize strings to remove diacritics
+const normalizeString = (str: string) =>
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
 export function SearchableSelect({
   options,
   value,
@@ -42,7 +49,16 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const selectedOption = options.find((option) => option.value === value);
+  // Pre-compute normalized labels for efficient filtering
+  const normalizedOptionsMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    options.forEach(option => {
+      map.set(option.value, normalizeString(option.label));
+    });
+    return map;
+  }, [options]);
+
+  const selectedOption = options.find(option => option.value === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,26 +78,25 @@ export function SearchableSelect({
       <PopoverContent className="w-full p-0" align="start">
         <Command
           filter={(value, search) => {
-            // Custom filter for case-insensitive substring matching
-            const option = options.find((opt) => opt.value === value);
-            if (!option) return 0;
-            
-            const label = option.label.toLowerCase();
-            const searchTerm = search.toLowerCase();
-            
+            // Custom filter for case-insensitive and diacritic-insensitive substring matching
+            const normalizedLabel = normalizedOptionsMap.get(value);
+            if (!normalizedLabel) return 0;
+
+            const normalizedSearch = normalizeString(search);
+
             // Match if search term appears anywhere in the label
-            return label.includes(searchTerm) ? 1 : 0;
+            return normalizedLabel.includes(normalizedSearch) ? 1 : 0;
           }}
         >
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
+              {options.map(option => (
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                  onSelect={(currentValue) => {
+                  onSelect={currentValue => {
                     onChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
