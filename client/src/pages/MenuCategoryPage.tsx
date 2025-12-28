@@ -7,10 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2, X } from "lucide-react";
 import { toast } from "sonner";
+import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 
 export default function MenuCategoryPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedBeerId, setSelectedBeerId] = useState<string>("");
@@ -53,13 +56,25 @@ export default function MenuCategoryPage() {
     setOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteClick = (id: number, name: string) => {
+    setCategoryToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!categoryToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id });
+      await deleteMutation.mutateAsync({ id: categoryToDelete.id });
       toast.success("Menu category deleted successfully");
+      if (selectedCategory === categoryToDelete.id) {
+        setSelectedCategory(null);
+      }
       refetch();
     } catch (error) {
       toast.error("Error deleting menu category");
+    } finally {
+      setDeleteDialogOpen(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -176,7 +191,7 @@ export default function MenuCategoryPage() {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(category.menuCatId);
+                          handleDeleteClick(category.menuCatId, category.name);
                         }}
                       >
                         <Trash2 className="w-3 h-3" />
@@ -234,6 +249,13 @@ export default function MenuCategoryPage() {
           )}
         </div>
       </div>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={categoryToDelete?.name}
+      />
     </div>
   );
 }
