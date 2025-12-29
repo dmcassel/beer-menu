@@ -59,6 +59,7 @@ For more control during development, you can manage the test database manually:
 **Start the test database:**
 ```bash
 pnpm test:db:start
+# This runs: docker-compose --env-file .env.test up -d postgres-test
 ```
 
 **Run migrations:**
@@ -79,11 +80,13 @@ pnpm test:watch
 **Stop the test database:**
 ```bash
 pnpm test:db:stop
+# This runs: docker-compose --env-file .env.test down postgres-test
 ```
 
 **Reset the test database:**
 ```bash
 pnpm test:db:reset
+# This stops and restarts the test database with a clean state
 ```
 
 ## Test Coverage
@@ -119,7 +122,7 @@ Each function is tested with:
 
 ### Environment Variables
 
-The `.env.test` file contains test database configuration:
+The `.env.test` file contains test database configuration. All test-related docker-compose commands use the `--env-file .env.test` flag to ensure the test database uses these settings instead of your development environment variables.
 
 ```bash
 POSTGRES_TEST_USER=test_user

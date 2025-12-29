@@ -11,9 +11,9 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:db:start": "docker-compose up -d postgres-test",
-    "test:db:stop": "docker-compose down postgres-test",
-    "test:db:reset": "docker-compose down postgres-test && docker-compose up -d postgres-test",
+    "test:db:start": "docker-compose --env-file .env.test up -d postgres-test",
+    "test:db:stop": "docker-compose --env-file .env.test down postgres-test",
+    "test:db:reset": "docker-compose --env-file .env.test down postgres-test && docker-compose --env-file .env.test up -d postgres-test",
     "test:db:migrate": "cross-env DATABASE_URL=postgresql://test_user:test_password@localhost:5433/beer_menu_test drizzle-kit migrate",
     "test:with-db": "pnpm test:db:start && pnpm test:db:migrate && pnpm test && pnpm test:db:stop",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
