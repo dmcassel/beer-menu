@@ -286,7 +286,7 @@ export async function deleteBeer(id: number) {
 export async function getAllMenuCategories() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(menuCategory);
+  return db.select().from(menuCategory).orderBy(asc(menuCategory.name));
 }
 
 export async function getMenuCategoryById(id: number) {
