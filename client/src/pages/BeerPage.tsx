@@ -43,7 +43,7 @@ export default function BeerPage() {
         await updateMutation.mutateAsync({
           id: editingId,
           name: formData.name || undefined,
-          description: formData.description || undefined,
+          description: formData.description === "" ? "" : (formData.description || undefined),
           breweryId,
           styleId,
           abv: formData.abv || undefined,
