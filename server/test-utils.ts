@@ -1,13 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { sql } from "drizzle-orm";
-import {
-  brewery,
-  style,
-  beer,
-  menuCategory,
-  bjcpCategory,
-  users,
-} from "../drizzle/schema";
+import { brewery, style, beer, menuCategory, bjcpCategory, users } from "../drizzle/schema";
 
 let testDb: ReturnType<typeof drizzle> | null = null;
 
@@ -38,11 +31,16 @@ export async function clearDatabase() {
   await db.execute(sql`TRUNCATE TABLE users CASCADE;`);
 }
 
+export interface User {
+  id: string;
+  email: string;
+}
+
 /**
  * Seed the database with test data
  * Returns IDs of created entities for use in tests
  */
-export async function seedDatabase() {
+export async function seedDatabase(user: User) {
   const db = await getTestDb();
   if (!db) throw new Error("Test database not available");
 
@@ -167,8 +165,8 @@ export async function seedDatabase() {
     .insert(users)
     .values([
       {
-        googleId: "test-google-id-123",
-        email: "test@example.com",
+        googleId: user.id,
+        email: user.email,
         name: "Test User",
         role: "user",
       },

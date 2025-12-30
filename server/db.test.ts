@@ -36,7 +36,10 @@ describe("Database Functions - CRUD Operations", () => {
   let seedData: Awaited<ReturnType<typeof seedDatabase>>;
 
   beforeAll(async () => {
-    seedData = await seedDatabase();
+    seedData = await seedDatabase({
+      id: "test-google-id-123",
+      email: "test-123@example.com",
+    });
   });
 
   afterAll(async () => {
@@ -47,7 +50,7 @@ describe("Database Functions - CRUD Operations", () => {
     it("should get user by Google ID", async () => {
       const user = await getUserByGoogleId("test-google-id-123");
       expect(user).toBeDefined();
-      expect(user?.email).toBe("test@example.com");
+      expect(user?.email).toBe("test-123@example.com");
       expect(user?.name).toBe("Test User");
     });
 
@@ -60,11 +63,11 @@ describe("Database Functions - CRUD Operations", () => {
       const testUser = seedData.users[0];
       const user = await getUserById(testUser.id);
       expect(user).toBeDefined();
-      expect(user?.email).toBe("test@example.com");
+      expect(user?.email).toBe("test-123@example.com");
     });
 
     it("should get user by email", async () => {
-      const user = await getUserByEmail("test@example.com");
+      const user = await getUserByEmail("test-123@example.com");
       expect(user).toBeDefined();
       expect(user?.googleId).toBe("test-google-id-123");
     });
@@ -85,7 +88,7 @@ describe("Database Functions - CRUD Operations", () => {
     it("should upsert user (update existing)", async () => {
       await upsertUser({
         googleId: "test-google-id-123",
-        email: "test@example.com",
+        email: "test-123@example.com",
         name: "Updated Test User",
       });
 
@@ -135,7 +138,7 @@ describe("Database Functions - CRUD Operations", () => {
 
       // Get the inserted ID (this depends on your Drizzle setup)
       const allCategories = await getAllBJCPCategories();
-      const testCat = allCategories.find((c) => c.label === "TEST");
+      const testCat = allCategories.find(c => c.label === "TEST");
       expect(testCat).toBeDefined();
 
       await deleteBJCPCategory(testCat!.bjcpId);
@@ -184,7 +187,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allStyles = await getAllStyles();
-      const tempStyle = allStyles.find((s) => s.name === "Temporary Style");
+      const tempStyle = allStyles.find(s => s.name === "Temporary Style");
       expect(tempStyle).toBeDefined();
 
       await deleteStyle(tempStyle!.styleId);
@@ -234,7 +237,7 @@ describe("Database Functions - CRUD Operations", () => {
 
       const allBreweries = await getAllBreweries();
       const tempBrewery = allBreweries.find(
-        (b) => b.name === "Temporary Brewery"
+        b => b.name === "Temporary Brewery"
       );
       expect(tempBrewery).toBeDefined();
 
@@ -297,7 +300,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allBeers = await getAllBeers();
-      const tempBeer = allBeers.find((b) => b.name === "Temporary Beer");
+      const tempBeer = allBeers.find(b => b.name === "Temporary Beer");
       expect(tempBeer).toBeDefined();
 
       await deleteBeer(tempBeer!.beerId);
@@ -347,7 +350,7 @@ describe("Database Functions - CRUD Operations", () => {
 
       const allCategories = await getAllMenuCategories();
       const tempCategory = allCategories.find(
-        (c) => c.name === "Temporary Category"
+        c => c.name === "Temporary Category"
       );
       expect(tempCategory).toBeDefined();
 

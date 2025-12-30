@@ -12,7 +12,10 @@ describe("Database Additions - Complex Queries", () => {
 
   beforeAll(async () => {
     // Set up the test database and seed it with data
-    seedData = await seedDatabase();
+    seedData = await seedDatabase({
+      id: "test-google-id-456",
+      email: "test-456@example.com",
+    });
   });
 
   afterAll(async () => {
@@ -56,9 +59,7 @@ describe("Database Additions - Complex Queries", () => {
   describe("getBeersByMenuCategory", () => {
     it("should return beers for a specific menu category", async () => {
       // Use the "Hoppy" category (menuCategories[1])
-      const hoppyCategory = seedData.menuCategories.find(
-        (c) => c.name === "Hoppy"
-      );
+      const hoppyCategory = seedData.menuCategories.find((c) => c.name === "Hoppy");
       expect(hoppyCategory).toBeDefined();
 
       const beers = await getBeersByMenuCategory(hoppyCategory!.menuCatId);
@@ -114,9 +115,7 @@ describe("Database Additions - Complex Queries", () => {
     });
 
     it("should filter breweries by menu category", async () => {
-      const hoppyCategory = seedData.menuCategories.find(
-        (c) => c.name === "Hoppy"
-      );
+      const hoppyCategory = seedData.menuCategories.find((c) => c.name === "Hoppy");
       expect(hoppyCategory).toBeDefined();
 
       const breweries = await getAvailableBreweries([hoppyCategory!.menuCatId]);
@@ -133,24 +132,17 @@ describe("Database Additions - Complex Queries", () => {
       const ipaStyle = seedData.styles.find((s) => s.name === "IPA");
       expect(ipaStyle).toBeDefined();
 
-      const breweries = await getAvailableBreweries(undefined, [
-        ipaStyle!.styleId,
-      ]);
+      const breweries = await getAvailableBreweries(undefined, [ipaStyle!.styleId]);
 
       expect(Array.isArray(breweries)).toBe(true);
       expect(breweries.length).toBeGreaterThan(0);
     });
 
     it("should filter by both menu category and style", async () => {
-      const hoppyCategory = seedData.menuCategories.find(
-        (c) => c.name === "Hoppy"
-      );
+      const hoppyCategory = seedData.menuCategories.find((c) => c.name === "Hoppy");
       const ipaStyle = seedData.styles.find((s) => s.name === "IPA");
 
-      const breweries = await getAvailableBreweries(
-        [hoppyCategory!.menuCatId],
-        [ipaStyle!.styleId]
-      );
+      const breweries = await getAvailableBreweries([hoppyCategory!.menuCatId], [ipaStyle!.styleId]);
 
       expect(Array.isArray(breweries)).toBe(true);
       expect(breweries.length).toBeGreaterThan(0);
@@ -185,9 +177,7 @@ describe("Database Additions - Complex Queries", () => {
     });
 
     it("should filter styles by menu category", async () => {
-      const hoppyCategory = seedData.menuCategories.find(
-        (c) => c.name === "Hoppy"
-      );
+      const hoppyCategory = seedData.menuCategories.find((c) => c.name === "Hoppy");
       expect(hoppyCategory).toBeDefined();
 
       const styles = await getAvailableStyles([hoppyCategory!.menuCatId]);
@@ -202,31 +192,20 @@ describe("Database Additions - Complex Queries", () => {
     });
 
     it("should filter styles by brewery", async () => {
-      const breweryA = seedData.breweries.find(
-        (b) => b.name === "Test Brewery A"
-      );
+      const breweryA = seedData.breweries.find((b) => b.name === "Test Brewery A");
       expect(breweryA).toBeDefined();
 
-      const styles = await getAvailableStyles(undefined, [
-        breweryA!.breweryId,
-      ]);
+      const styles = await getAvailableStyles(undefined, [breweryA!.breweryId]);
 
       expect(Array.isArray(styles)).toBe(true);
       expect(styles.length).toBeGreaterThan(0);
     });
 
     it("should filter by both menu category and brewery", async () => {
-      const hoppyCategory = seedData.menuCategories.find(
-        (c) => c.name === "Hoppy"
-      );
-      const breweryA = seedData.breweries.find(
-        (b) => b.name === "Test Brewery A"
-      );
+      const hoppyCategory = seedData.menuCategories.find((c) => c.name === "Hoppy");
+      const breweryA = seedData.breweries.find((b) => b.name === "Test Brewery A");
 
-      const styles = await getAvailableStyles(
-        [hoppyCategory!.menuCatId],
-        [breweryA!.breweryId]
-      );
+      const styles = await getAvailableStyles([hoppyCategory!.menuCatId], [breweryA!.breweryId]);
 
       expect(Array.isArray(styles)).toBe(true);
       expect(styles.length).toBeGreaterThan(0);
