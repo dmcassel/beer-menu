@@ -9,7 +9,13 @@
     "start": "cross-env NODE_ENV=production node --env-file=.env dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
-    "test": "vitest run",
+    "test": "cross-env NODE_ENV=test vitest run",
+    "test:watch": "cross-env NODE_ENV=test vitest",
+    "test:db:start": "docker-compose --env-file .env.test up -d postgres-test",
+    "test:db:stop": "docker-compose --env-file .env.test down postgres-test",
+    "test:db:reset": "docker-compose --env-file .env.test down postgres-test && docker-compose --env-file .env.test up -d postgres-test",
+    "test:db:migrate": "cross-env DATABASE_URL=postgresql://test_user:test_password@localhost:5433/beer_menu_test drizzle-kit migrate",
+    "test:with-db": "pnpm test:db:start && pnpm test:db:migrate && pnpm test && pnpm test:db:stop",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {
