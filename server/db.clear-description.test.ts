@@ -7,12 +7,15 @@ describe("Beer Description - Clear to Empty String", () => {
   let testBeerId: number;
 
   beforeAll(async () => {
-    seedData = await seedDatabase();
-    
+    seedData = await seedDatabase({
+      id: "test-google-id-123",
+      email: "test-123@example.com",
+    });
+
     // Create a test beer with a description
     const testBrewery = seedData.breweries[0];
     const testStyle = seedData.styles[0];
-    
+
     const result = await createBeer({
       name: "Test Beer for Description Clear",
       description: "This is a test description that will be cleared",
@@ -22,11 +25,11 @@ describe("Beer Description - Clear to Empty String", () => {
       ibu: 40,
       status: "on_tap",
     });
-    
+
     // Get the created beer ID
     const beers = await getBeerById(seedData.beers[0].beerId);
     const allBeers = [beers, ...seedData.beers];
-    const createdBeer = allBeers.find(b => b?.name === "Test Beer for Description Clear");
+    const createdBeer = allBeers.find((b) => b?.name === "Test Beer for Description Clear");
     if (!createdBeer) throw new Error("Failed to create test beer");
     testBeerId = createdBeer.beerId;
   });
