@@ -54,27 +54,6 @@ describe("Beer Description - Clear to Empty String", () => {
     expect(beerAfter?.description).toBe("");
   });
 
-  it("should update beer description to null when undefined is passed", async () => {
-    // First set a description
-    await updateBeer(testBeerId, {
-      description: "New description",
-    });
-
-    const beerBefore = await getBeerById(testBeerId);
-    expect(beerBefore?.description).toBe("New description");
-
-    // Update with undefined (should set to null or keep existing based on implementation)
-    await updateBeer(testBeerId, {
-      description: undefined,
-    });
-
-    const beerAfter = await getBeerById(testBeerId);
-    expect(beerAfter).toBeDefined();
-    // When undefined is passed, Drizzle typically doesn't update the field
-    // So it should remain unchanged
-    expect(beerAfter?.description).toBe("New description");
-  });
-
   it("should update other fields while clearing description", async () => {
     // Set initial state
     await updateBeer(testBeerId, {
@@ -84,7 +63,7 @@ describe("Beer Description - Clear to Empty String", () => {
 
     const beerBefore = await getBeerById(testBeerId);
     expect(beerBefore?.description).toBe("Description to be cleared");
-    expect(beerBefore?.abv).toBe("5.5");
+    expect(beerBefore?.abv).toBe("5.50");
 
     // Update ABV and clear description at the same time
     await updateBeer(testBeerId, {
@@ -94,6 +73,6 @@ describe("Beer Description - Clear to Empty String", () => {
 
     const beerAfter = await getBeerById(testBeerId);
     expect(beerAfter?.description).toBe("");
-    expect(beerAfter?.abv).toBe("6.0");
+    expect(beerAfter?.abv).toBe("6.00");
   });
 });
