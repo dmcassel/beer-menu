@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { getBeerById, createBeer, updateBeer } from "./db";
+import { getBeerById, createBeer, updateBeer, getAllBeers } from "./db";
 import { seedDatabase, clearDatabase } from "./test-utils";
 
 describe("Beer Description - Clear to Empty String", () => {
@@ -26,10 +26,9 @@ describe("Beer Description - Clear to Empty String", () => {
       status: "on_tap",
     });
 
-    // Get the created beer ID
-    const beers = await getBeerById(seedData.beers[0].beerId);
-    const allBeers = [beers, ...seedData.beers];
-    const createdBeer = allBeers.find((b) => b?.name === "Test Beer for Description Clear");
+    // Get the created beer ID by querying all beers
+    const allBeers = await getAllBeers();
+    const createdBeer = allBeers.find((b) => b.name === "Test Beer for Description Clear");
     if (!createdBeer) throw new Error("Failed to create test beer");
     testBeerId = createdBeer.beerId;
   });
