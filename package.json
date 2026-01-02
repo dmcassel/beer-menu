@@ -16,6 +16,7 @@
     "test:db:reset": "docker-compose --env-file .env.test down postgres-test && docker-compose --env-file .env.test up -d postgres-test",
     "test:db:migrate": "cross-env DATABASE_URL=postgresql://test_user:test_password@localhost:5433/beer_menu_test drizzle-kit migrate",
     "test:with-db": "pnpm test:db:start && pnpm test:db:migrate && pnpm test && pnpm test:db:stop",
+    "db:migrate": "node scripts/migrate-local.js",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {
