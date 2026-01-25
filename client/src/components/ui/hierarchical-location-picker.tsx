@@ -53,27 +53,9 @@ export function HierarchicalLocationPicker({
     return false;
   });
 
-  // Initialize from value
-  useEffect(() => {
-    if (value) {
-      // Fetch the location and its parents to populate the hierarchy
-      trpc.location.getById.useQuery({ id: value }).then((location) => {
-        if (location) {
-          // This is a simplified version - in production, you'd need to traverse up the tree
-          // For now, we'll just set the value
-          if (location.type === "country") {
-            setSelectedCountry(location.locationId);
-          } else if (location.type === "state") {
-            setSelectedState(location.locationId);
-          } else if (location.type === "area") {
-            setSelectedArea(location.locationId);
-          } else if (location.type === "vineyard") {
-            setSelectedVineyard(location.locationId);
-          }
-        }
-      });
-    }
-  }, [value]);
+  // Note: Initialization from value would require fetching the location hierarchy
+  // For now, the component starts fresh each time
+  // TODO: Add proper initialization by fetching location and its parents
 
   const handleCountryChange = (countryId: string) => {
     const id = parseInt(countryId);
