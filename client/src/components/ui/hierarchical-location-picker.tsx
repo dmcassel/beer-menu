@@ -30,14 +30,28 @@ export function HierarchicalLocationPicker({
     { parentId: selectedCountry },
     { enabled: selectedCountry !== null }
   );
+  // Areas can have state OR area parents
   const { data: areas = [] } = trpc.location.getByParentId.useQuery(
-    { parentId: selectedState },
-    { enabled: selectedState !== null }
+    { parentId: selectedState || selectedArea },
+    { enabled: selectedState !== null || selectedArea !== null }
   );
+  // Vineyards always have area parents
   const { data: vineyards = [] } = trpc.location.getByParentId.useQuery(
     { parentId: selectedArea },
     { enabled: selectedArea !== null }
   );
+
+  // Filter areas to show only those with the correct parent type
+  const filteredAreas = areas.filter((area: any) => {
+    if (selectedState && !selectedArea) {
+      // First level areas - parent should be state
+      return area.parentId === selectedState;
+    } else if (selectedArea) {
+      // Sub-areas - parent should be the selected area
+      return area.parentId === selectedArea && area.type === "area";
+    }
+    return false;
+  });
 
   // Initialize from value
   useEffect(() => {
@@ -135,7 +149,7 @@ export function HierarchicalLocationPicker({
         </div>
       )}
 
-      {selectedState && areas.length > 0 && (
+      {selectedState && filteredAreas.length > 0 && (
         <div className="space-y-2">
           <Label>Area/Region</Label>
           <Select
@@ -147,7 +161,7 @@ export function HierarchicalLocationPicker({
               <SelectValue placeholder="Select area/region" />
             </SelectTrigger>
             <SelectContent>
-              {areas.map((area) => (
+              {filteredAreas.map((area: any) => (
                 <SelectItem key={area.locationId} value={area.locationId.toString()}>
                   {area.name}
                 </SelectItem>

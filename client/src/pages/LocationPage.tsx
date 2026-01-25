@@ -36,10 +36,18 @@ export default function LocationPage() {
   const potentialParents = locations?.filter((loc: any) => {
     if (formData.type === "country") return false;
     if (formData.type === "state") return loc.type === "country";
-    if (formData.type === "area") return loc.type === "state";
+    if (formData.type === "area") return loc.type === "state" || loc.type === "area";
     if (formData.type === "vineyard") return loc.type === "area";
     return false;
   });
+
+  // Group locations by type
+  const locationsByType = {
+    country: locations?.filter((l: any) => l.type === "country") || [],
+    state: locations?.filter((l: any) => l.type === "state") || [],
+    area: locations?.filter((l: any) => l.type === "area") || [],
+    vineyard: locations?.filter((l: any) => l.type === "vineyard") || [],
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,36 +193,138 @@ export default function LocationPage() {
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
       ) : (
-        <div className="grid gap-4">
-          {locations?.map((location: any) => (
-            <Card key={location.locationId}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteClick(location.locationId, location.name)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Type:</span> {location.type}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-8">
+          {/* Countries */}
+          {locationsByType.country.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Countries</h3>
+              <div className="grid gap-4">
+                {locationsByType.country.map((location: any) => (
+                  <Card key={location.locationId}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(location.locationId, location.name)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* States/Provinces */}
+          {locationsByType.state.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">States/Provinces</h3>
+              <div className="grid gap-4">
+                {locationsByType.state.map((location: any) => (
+                  <Card key={location.locationId}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(location.locationId, location.name)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Areas/Regions */}
+          {locationsByType.area.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Areas/Regions</h3>
+              <div className="grid gap-4">
+                {locationsByType.area.map((location: any) => (
+                  <Card key={location.locationId}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(location.locationId, location.name)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Vineyards */}
+          {locationsByType.vineyard.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Vineyards</h3>
+              <div className="grid gap-4">
+                {locationsByType.vineyard.map((location: any) => (
+                  <Card key={location.locationId}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(location.locationId, location.name)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
