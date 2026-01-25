@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, curatorProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import * as dbWine from "./db_wine";
 import {
   getAvailableMenuCategories,
   getBeersByMenuCategory,
@@ -261,6 +262,129 @@ export const appRouter = router({
       .mutation(({ input }) =>
         db.removeBeerFromMenuCategory(input.menuCatId, input.beerId)
       ),
+  }),
+
+  // Wine management routes
+  winery: router({
+    list: publicProcedure.query(() => dbWine.getAllWineries()),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(({ input }) => dbWine.getWineryById(input.id)),
+    create: curatorProcedure
+      .input(
+        z.object({
+          name: z.string(),
+          location: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.createWinery(input)),
+    update: curatorProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          location: z.string().optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.updateWinery(input.id, input)),
+    delete: curatorProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(({ input }) => dbWine.deleteWinery(input.id)),
+  }),
+
+  varietal: router({
+    list: publicProcedure.query(() => dbWine.getAllVarietals()),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(({ input }) => dbWine.getVarietalById(input.id)),
+    create: curatorProcedure
+      .input(z.object({ name: z.string() }))
+      .mutation(({ input }) => dbWine.createVarietal(input)),
+    update: curatorProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+        })
+      )
+      .mutation(({ input }) => dbWine.updateVarietal(input.id, { name: input.name })),
+    delete: curatorProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(({ input }) => dbWine.deleteVarietal(input.id)),
+  }),
+
+  location: router({
+    list: publicProcedure.query(() => dbWine.getAllLocations()),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(({ input }) => dbWine.getLocationById(input.id)),
+    getByParentId: publicProcedure
+      .input(z.object({ parentId: z.number().nullable() }))
+      .query(({ input }) => dbWine.getLocationsByParentId(input.parentId)),
+    getByType: publicProcedure
+      .input(z.object({ type: z.enum(["country", "state", "area", "vineyard"]) }))
+      .query(({ input }) => dbWine.getLocationsByType(input.type)),
+    create: curatorProcedure
+      .input(
+        z.object({
+          name: z.string(),
+          type: z.enum(["country", "state", "area", "vineyard"]),
+          parentId: z.number().optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.createLocation(input)),
+    update: curatorProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          type: z.enum(["country", "state", "area", "vineyard"]).optional(),
+          parentId: z.number().optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.updateLocation(input.id, input)),
+    delete: curatorProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(({ input }) => dbWine.deleteLocation(input.id)),
+  }),
+
+  wine: router({
+    list: publicProcedure.query(() => dbWine.getAllWines()),
+    getById: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(({ input }) => dbWine.getWineById(input.id)),
+    create: curatorProcedure
+      .input(
+        z.object({
+          label: z.string(),
+          wineryId: z.number().optional(),
+          vintage: z.number().optional(),
+          locationId: z.number().optional(),
+          refrigerated: z.number().optional(),
+          cellared: z.number().optional(),
+          description: z.string().optional(),
+          varietalIds: z.array(z.number()).optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.createWine(input)),
+    update: curatorProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          label: z.string().optional(),
+          wineryId: z.number().optional(),
+          vintage: z.number().optional(),
+          locationId: z.number().optional(),
+          refrigerated: z.number().optional(),
+          cellared: z.number().optional(),
+          description: z.string().optional(),
+          varietalIds: z.array(z.number()).optional(),
+        })
+      )
+      .mutation(({ input }) => dbWine.updateWine(input.id, input)),
+    delete: curatorProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(({ input }) => dbWine.deleteWine(input.id)),
   }),
 });
 

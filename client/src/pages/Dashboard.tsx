@@ -3,13 +3,17 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Beer, Layers, MapPin, Menu, Tag } from "lucide-react";
+import { Beer, Layers, MapPin, Menu, Tag, Wine, GrapeIcon, MapPinned, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import BJCPCategoryPage from "./BJCPCategoryPage";
 import StylePage from "./StylePage";
 import BreweryPage from "./BreweryPage";
 import BeerPage from "./BeerPage";
 import MenuCategoryPage from "./MenuCategoryPage";
+import ManageWinePage from "./ManageWinePage";
+import WineryPage from "./WineryPage";
+import VarietalPage from "./VarietalPage";
+import LocationPage from "./LocationPage";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -84,7 +88,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-9 mb-8">
             <TabsTrigger value="beers" className="flex items-center gap-2">
               <Beer className="w-4 h-4" />
               <span className="hidden sm:inline">Beers</span>
@@ -104,6 +108,22 @@ export default function Dashboard() {
             <TabsTrigger value="menus" className="flex items-center gap-2">
               <Menu className="w-4 h-4" />
               <span className="hidden sm:inline">Menus</span>
+            </TabsTrigger>
+            <TabsTrigger value="wines" className="flex items-center gap-2">
+              <Wine className="w-4 h-4" />
+              <span className="hidden sm:inline">Wines</span>
+            </TabsTrigger>
+            <TabsTrigger value="wineries" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Wineries</span>
+            </TabsTrigger>
+            <TabsTrigger value="varietals" className="flex items-center gap-2">
+              <GrapeIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Varietals</span>
+            </TabsTrigger>
+            <TabsTrigger value="locations" className="flex items-center gap-2">
+              <MapPinned className="w-4 h-4" />
+              <span className="hidden sm:inline">Locations</span>
             </TabsTrigger>
           </TabsList>
 
@@ -125,6 +145,22 @@ export default function Dashboard() {
 
           <TabsContent value="menus" className="space-y-4">
             <MenuCategoryPage />
+          </TabsContent>
+
+          <TabsContent value="wines" className="space-y-4">
+            <ManageWinePage />
+          </TabsContent>
+
+          <TabsContent value="wineries" className="space-y-4">
+            <WineryPage />
+          </TabsContent>
+
+          <TabsContent value="varietals" className="space-y-4">
+            <VarietalPage />
+          </TabsContent>
+
+          <TabsContent value="locations" className="space-y-4">
+            <LocationPage />
           </TabsContent>
         </Tabs>
       </main>
