@@ -36,11 +36,9 @@ function WineHeader() {
             Manage Catalog
           </a>
         )}
-        {!(user.role === "curator" || user.role === "admin") && (
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            Logout
-          </Button>
-        )}
+        <Button variant="outline" size="sm" onClick={handleLogout}>
+          Logout
+        </Button>
       </div>
     );
   }
