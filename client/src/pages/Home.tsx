@@ -47,7 +47,7 @@ function HomeHeader() {
 
   return (
     <a
-      href="/login"
+      href="/login?returnUrl=/"
       className="text-sm text-amber-700 hover:text-amber-900 underline"
     >
       Login

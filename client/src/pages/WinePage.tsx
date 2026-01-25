@@ -47,7 +47,7 @@ function WineHeader() {
 
   return (
     <a
-      href="/login"
+      href="/login?returnUrl=/wine"
       className="text-sm text-purple-700 hover:text-purple-900 underline"
     >
       Login

@@ -12,8 +12,12 @@ declare global {
 }
 
 export default function Login() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const googleCallbackMutation = trpc.auth.googleCallback.useMutation();
+  
+  // Get return URL from query parameter, default to /dashboard
+  const searchParams = new URLSearchParams(window.location.search);
+  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
 
   useEffect(() => {
     // Load Google Sign-In script
@@ -55,7 +59,7 @@ export default function Login() {
 
       if (result.success) {
         toast.success("Login successful!");
-        setLocation("/dashboard");
+        setLocation(returnUrl);
       }
     } catch (error: any) {
       toast.error(error.message || "Login failed. Please try again.");
