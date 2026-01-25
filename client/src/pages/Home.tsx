@@ -1,6 +1,59 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Beer, Wine } from "lucide-react";
 import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+function HomeHeader() {
+  const [, setLocation] = useLocation();
+  const { data: user } = trpc.auth.me.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      await utils.auth.me.invalidate();
+      toast.success("Logged out successfully");
+      setLocation("/");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  if (user) {
+    return (
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-gray-600">
+          Welcome, {user.name || user.email}
+        </span>
+        {(user.role === "curator" || user.role === "admin") && (
+          <a
+            href="/dashboard"
+            className="text-sm text-amber-700 hover:text-amber-900 underline"
+          >
+            Manage Catalog
+          </a>
+        )}
+        {!(user.role === "curator" || user.role === "admin") && (
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href="/login?returnUrl=/"
+      className="text-sm text-amber-700 hover:text-amber-900 underline"
+    >
+      Login
+    </a>
+  );
+}
 
 export default function Home() {
   const [, navigate] = useLocation();
@@ -10,9 +63,12 @@ export default function Home() {
       {/* Header */}
       <header className="bg-white border-b border-amber-200 shadow-sm">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <Beer className="w-8 h-8 text-amber-700" />
-            <h1 className="text-3xl font-bold text-amber-900">Beer Catalog</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Beer className="w-8 h-8 text-amber-700" />
+              <h1 className="text-3xl font-bold text-amber-900">Beer Catalog</h1>
+            </div>
+            <HomeHeader />
           </div>
         </div>
       </header>

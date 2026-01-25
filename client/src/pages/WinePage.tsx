@@ -1,7 +1,59 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wine, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
+
+function WineHeader() {
+  const [, setLocation] = useLocation();
+  const { data: user } = trpc.auth.me.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      await utils.auth.me.invalidate();
+      toast.success("Logged out successfully");
+      setLocation("/wine");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  if (user) {
+    return (
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-gray-600">
+          Welcome, {user.name || user.email}
+        </span>
+        {(user.role === "curator" || user.role === "admin") && (
+          <a
+            href="/dashboard"
+            className="text-sm text-purple-700 hover:text-purple-900 underline"
+          >
+            Manage Catalog
+          </a>
+        )}
+        {!(user.role === "curator" || user.role === "admin") && (
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href="/login?returnUrl=/wine"
+      className="text-sm text-purple-700 hover:text-purple-900 underline"
+    >
+      Login
+    </a>
+  );
+}
 
 export default function WinePage() {
   return (
@@ -9,12 +61,15 @@ export default function WinePage() {
       {/* Header */}
       <header className="bg-white border-b border-purple-200 shadow-sm">
         <div className="container mx-auto px-4 py-6">
-          <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <Wine className="w-8 h-8 text-purple-700" />
-              <h1 className="text-3xl font-bold text-purple-900">Wine Catalog</h1>
-            </div>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/">
+              <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+                <Wine className="w-8 h-8 text-purple-700" />
+                <h1 className="text-3xl font-bold text-purple-900">Wine Catalog</h1>
+              </div>
+            </Link>
+            <WineHeader />
+          </div>
         </div>
       </header>
 

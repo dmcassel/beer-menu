@@ -63,7 +63,7 @@ function BrowserHeader() {
 
   return (
     <a
-      href="/login"
+      href="/login?returnUrl=/browser"
       className="text-sm text-amber-700 hover:text-amber-900 underline"
     >
       Login
