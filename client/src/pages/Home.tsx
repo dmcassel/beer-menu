@@ -1,133 +1,83 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Beer, Settings, Wine } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Beer, Wine } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Home() {
   const [, navigate] = useLocation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b border-amber-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-3">
             <Beer className="w-8 h-8 text-amber-700" />
-            <h1 className="text-2xl font-bold text-amber-900">Beer Catalog</h1>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/dashboard")}
-              className="text-amber-700 border-amber-200 hover:bg-amber-50"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Manage
-            </Button>
+            <h1 className="text-3xl font-bold text-amber-900">Beer Catalog</h1>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-12">
+      <main className="flex-1 container mx-auto px-4 py-12 flex flex-col items-center justify-center">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-amber-900 mb-4">
-            Welcome to Beer Catalog
+          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
+            Welcome
           </h2>
-          <p className="text-xl text-amber-800 mb-8">
-            Explore our selection of beers, breweries, and styles
+          <p className="text-xl text-amber-800">
+            Choose what you'd like to explore
           </p>
-          <Button
-            size="lg"
-            onClick={() => navigate("/beers")}
-            className="bg-amber-700 hover:bg-amber-800 text-white"
-          >
-            <Beer className="w-5 h-5 mr-2" />
-            Browse Beers
-          </Button>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Selection Cards */}
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Beer Card */}
           <Card
-            className="border-amber-200 hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => navigate("/beers")}
+            className="border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl transition-all cursor-pointer group"
+            onClick={() => navigate("/browser")}
           >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <Beer className="w-5 h-5 text-amber-700" />
-                Browse Beers
-              </CardTitle>
+            <CardHeader className="text-center pb-4">
+              <div className="flex justify-center mb-4">
+                <div className="p-6 bg-amber-100 rounded-full group-hover:bg-amber-200 transition-colors">
+                  <Beer className="w-16 h-16 text-amber-700" />
+                </div>
+              </div>
+              <CardTitle className="text-3xl text-amber-900">Beer</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-amber-800">
-                Explore our full selection of beers with detailed information
-                including ABV, IBU, brewery, and style.
-              </p>
+            <CardContent className="text-center">
+              <CardDescription className="text-lg text-amber-800">
+                Explore our selection of craft beers, breweries, and styles
+              </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-200 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <Wine className="w-5 h-5 text-amber-700" />
-                Filter & Search
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-amber-800">
-                Find beers by menu category, style, or brewery. Narrow down your
-                search to discover your next favorite.
-              </p>
-            </CardContent>
-          </Card>
-
+          {/* Wine Card */}
           <Card
-            className="border-amber-200 hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => navigate("/dashboard")}
+            className="border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all cursor-pointer group"
+            onClick={() => navigate("/wine")}
           >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <Settings className="w-5 h-5 text-amber-700" />
-                Manage Catalog
-              </CardTitle>
+            <CardHeader className="text-center pb-4">
+              <div className="flex justify-center mb-4">
+                <div className="p-6 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
+                  <Wine className="w-16 h-16 text-purple-700" />
+                </div>
+              </div>
+              <CardTitle className="text-3xl text-purple-900">Wine</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-amber-800">
-                Add, edit, and organize beers, breweries, styles, and menu
-                categories (admin access).
-              </p>
+            <CardContent className="text-center">
+              <CardDescription className="text-lg text-purple-800">
+                Discover our wine collection and vineyards
+              </CardDescription>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="mt-16 bg-white rounded-lg border border-amber-200 p-8">
-          <h3 className="text-2xl font-bold text-amber-900 mb-6 text-center">
-            Quick Start
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-amber-700 mb-2">1</div>
-              <p className="text-amber-800">
-                Click "Browse Beers" to explore our catalog
-              </p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-amber-700 mb-2">2</div>
-              <p className="text-amber-800">
-                Use filters to find beers by style, brewery, or menu
-              </p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-amber-700 mb-2">3</div>
-              <p className="text-amber-800">
-                Visit the Manage section to add or update beers
-              </p>
-            </div>
-          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-amber-200 py-6">
+        <div className="container mx-auto px-4 text-center text-sm text-amber-700">
+          <p>Select an option above to get started</p>
+        </div>
+      </footer>
     </div>
   );
 }
