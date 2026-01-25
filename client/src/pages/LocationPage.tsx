@@ -34,6 +34,9 @@ export default function LocationPage() {
 
   // Filter potential parent locations based on type
   const potentialParents = locations?.filter((loc: any) => {
+    // Prevent a location from being its own parent
+    if (editingId && loc.locationId === editingId) return false;
+    
     if (formData.type === "country") return false;
     if (formData.type === "state") return loc.type === "country";
     if (formData.type === "area") return loc.type === "state" || loc.type === "area";
