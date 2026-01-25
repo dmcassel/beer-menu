@@ -317,3 +317,42 @@ export async function deleteWine(id: number) {
   // Delete wine
   await db.delete(wine).where(eq(wine.wineId, id));
 }
+
+// Helper function to build location hierarchy path
+async function buildLocationPath(db: any, locationId: number): Promise<string> {
+  const locations: string[] = [];
+  let currentId: number | null = locationId;
+  
+  while (currentId !== null) {
+    const results = await db
+      .select()
+      .from(location)
+      .where(eq(location.locationId, currentId));
+    
+    if (results.length === 0) break;
+    
+    const loc = results[0];
+    locations.unshift(loc.name); // Add to beginning of array
+    currentId = loc.parentId;
+  }
+  
+  return locations.join(" → ");
+}
+
+export async function getAllLocationsWithPaths() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const allLocations = await db.select().from(location).orderBy(location.name);
+  
+  // Build full path for each location
+  const locationsWithPaths = await Promise.all(
+    allLocations.map(async (loc) => ({
+      ...loc,
+      fullPath: await buildLocationPath(db, loc.locationId),
+    }))
+  );
+  
+  // Sort by full path for better UX
+  return locationsWithPaths.sort((a, b) => a.fullPath.localeCompare(b.fullPath));
+}

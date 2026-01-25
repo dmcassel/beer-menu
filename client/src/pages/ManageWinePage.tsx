@@ -11,7 +11,7 @@ import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { Label } from "@/components/ui/label";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
-import { HierarchicalLocationPicker } from "@/components/ui/hierarchical-location-picker";
+
 
 export default function ManageWinePage() {
   const [open, setOpen] = useState(false);
@@ -32,6 +32,7 @@ export default function ManageWinePage() {
   const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery();
   const { data: wineries } = trpc.winery.list.useQuery();
   const { data: varietals } = trpc.varietal.list.useQuery();
+  const { data: locations } = trpc.location.listWithPaths.useQuery();
   const createMutation = trpc.wine.create.useMutation();
   const updateMutation = trpc.wine.update.useMutation();
   const deleteMutation = trpc.wine.delete.useMutation();
@@ -46,6 +47,12 @@ export default function ManageWinePage() {
     varietals?.map((v: any) => ({
       label: v.name,
       value: v.varietalId.toString(),
+    })) || [];
+
+  const locationOptions: SearchableSelectOption[] =
+    locations?.map((l: any) => ({
+      label: l.fullPath,
+      value: l.locationId.toString(),
     })) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,9 +191,11 @@ export default function ManageWinePage() {
 
               <div className="space-y-2">
                 <Label>Location</Label>
-                <HierarchicalLocationPicker
-                  value={formData.locationId}
-                  onChange={(locationId) => setFormData({ ...formData, locationId })}
+                <SearchableSelect
+                  options={locationOptions}
+                  value={formData.locationId?.toString() || ""}
+                  onChange={(value) => setFormData({ ...formData, locationId: value ? parseInt(value) : null })}
+                  placeholder="Search and select location..."
                 />
               </div>
 

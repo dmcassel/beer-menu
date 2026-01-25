@@ -315,6 +315,7 @@ export const appRouter = router({
 
   location: router({
     list: publicProcedure.query(() => dbWine.getAllLocations()),
+    listWithPaths: publicProcedure.query(() => dbWine.getAllLocationsWithPaths()),
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => dbWine.getLocationById(input.id)),
