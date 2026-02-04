@@ -275,6 +275,7 @@ export const appRouter = router({
         z.object({
           name: z.string(),
           location: z.string().optional(),
+          locationId: z.number().optional(),
         })
       )
       .mutation(({ input }) => dbWine.createWinery(input)),
@@ -284,6 +285,7 @@ export const appRouter = router({
           id: z.number(),
           name: z.string().optional(),
           location: z.string().optional(),
+          locationId: z.number().optional(),
         })
       )
       .mutation(({ input }) => dbWine.updateWinery(input.id, input)),

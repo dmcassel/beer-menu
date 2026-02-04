@@ -8,30 +8,46 @@ import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { Label } from "@/components/ui/label";
+import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 
 export default function WineryPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [wineryToDelete, setWineryToDelete] = useState<{ id: number; name: string } | null>(null);
-  const [formData, setFormData] = useState({ name: "", location: "" });
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    locationId: null as number | null 
+  });
 
   const { data: wineries, isLoading, refetch } = trpc.winery.list.useQuery();
+  const { data: locations } = trpc.location.listWithPaths.useQuery();
   const createMutation = trpc.winery.create.useMutation();
   const updateMutation = trpc.winery.update.useMutation();
   const deleteMutation = trpc.winery.delete.useMutation();
 
+  const locationOptions: SearchableSelectOption[] =
+    locations?.map((l: any) => ({
+      label: l.fullPath,
+      value: l.locationId.toString(),
+    })) || [];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const data = {
+        name: formData.name,
+        locationId: formData.locationId || undefined,
+      };
+
       if (editingId) {
-        await updateMutation.mutateAsync({ id: editingId, ...formData });
+        await updateMutation.mutateAsync({ id: editingId, ...data });
         toast.success("Winery updated successfully");
       } else {
-        await createMutation.mutateAsync(formData);
+        await createMutation.mutateAsync(data);
         toast.success("Winery created successfully");
       }
-      setFormData({ name: "", location: "" });
+      setFormData({ name: "", locationId: null });
       setEditingId(null);
       setOpen(false);
       refetch();
@@ -41,7 +57,10 @@ export default function WineryPage() {
   };
 
   const handleEdit = (winery: any) => {
-    setFormData({ name: winery.name, location: winery.location || "" });
+    setFormData({ 
+      name: winery.name, 
+      locationId: winery.locationId || null 
+    });
     setEditingId(winery.wineryId);
     setOpen(true);
   };
@@ -65,13 +84,23 @@ export default function WineryPage() {
     }
   };
 
+  // Helper function to get location full path
+  const getLocationPath = (locationId: number | null) => {
+    if (!locationId || !locations) return null;
+    const location = locations.find((l: any) => l.locationId === locationId);
+    return location?.fullPath || null;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Wineries</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", location: "" }); }}>
+            <Button onClick={() => { 
+              setEditingId(null); 
+              setFormData({ name: "", locationId: null }); 
+            }}>
               <Plus className="w-4 h-4 mr-2" />
               Add Winery
             </Button>
@@ -91,12 +120,12 @@ export default function WineryPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g., Napa Valley, California"
+                <Label>Location</Label>
+                <SearchableSelect
+                  options={locationOptions}
+                  value={formData.locationId?.toString() || ""}
+                  onChange={(value) => setFormData({ ...formData, locationId: value ? parseInt(value) : null })}
+                  placeholder="Search and select location..."
                 />
               </div>
               <Button type="submit" className="w-full">
@@ -128,9 +157,11 @@ export default function WineryPage() {
                   </Button>
                 </div>
               </CardHeader>
-              {winery.location && (
+              {(winery.location || winery.locationId) && (
                 <CardContent>
-                  <p className="text-sm text-gray-600">{winery.location}</p>
+                  <p className="text-sm text-gray-600">
+                    {getLocationPath(winery.locationId) || winery.location}
+                  </p>
                 </CardContent>
               )}
             </Card>

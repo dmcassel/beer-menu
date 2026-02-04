@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 export interface MultiSelectOption {
   label: string;
@@ -31,6 +32,7 @@ export function MultiSelect({
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const handleSelectAll = () => {
     onChange(options.map(option => option.value));
@@ -47,6 +49,13 @@ export function MultiSelect({
       onChange([...selected, value]);
     }
   };
+
+  const filteredOptions = React.useMemo(() => {
+    if (!searchQuery) return options;
+    return options.filter(option =>
+      option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [options, searchQuery]);
 
   const displayText = React.useMemo(() => {
     if (selected.length === 0) {
@@ -89,6 +98,17 @@ export function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <div className="p-2 space-y-1">
+          <div className="px-2 pb-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
+          </div>
           <div className="flex items-center justify-between px-2 pb-2">
             <Button
               variant="ghost"
@@ -115,7 +135,12 @@ export function MultiSelect({
               touchAction: "pan-y",
             }}
           >
-            {options.map(option => (
+            {filteredOptions.length === 0 ? (
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                No results found
+              </div>
+            ) : (
+              filteredOptions.map(option => (
               <div
                 key={option.value}
                 className="flex items-center space-x-2 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm"
@@ -133,7 +158,8 @@ export function MultiSelect({
                   {option.label}
                 </label>
               </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </PopoverContent>
