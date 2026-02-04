@@ -130,7 +130,7 @@ export async function getLocationsByParentId(parentId: number | null) {
     .orderBy(location.name);
 }
 
-export async function getLocationsByType(type: "country" | "state" | "area" | "vineyard") {
+export async function getLocationsByType(type: "country" | "area" | "vineyard") {
   const db = await getDb();
   if (!db) return [];
   return db

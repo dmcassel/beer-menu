@@ -23,7 +23,7 @@ export default function LocationPage() {
   const [locationToDelete, setLocationToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    type: "country" as "country" | "state" | "area" | "vineyard",
+    type: "country" as "country" | "area" | "vineyard",
     parentId: "" as string,
   });
 
@@ -38,8 +38,7 @@ export default function LocationPage() {
     if (editingId && loc.locationId === editingId) return false;
     
     if (formData.type === "country") return false;
-    if (formData.type === "state") return loc.type === "country";
-    if (formData.type === "area") return loc.type === "state" || loc.type === "area";
+    if (formData.type === "area") return loc.type === "country" || loc.type === "area";
     if (formData.type === "vineyard") return loc.type === "area";
     return false;
   });
@@ -47,7 +46,6 @@ export default function LocationPage() {
   // Group locations by type
   const locationsByType = {
     country: locations?.filter((l: any) => l.type === "country") || [],
-    state: locations?.filter((l: any) => l.type === "state") || [],
     area: locations?.filter((l: any) => l.type === "area") || [],
     vineyard: locations?.filter((l: any) => l.type === "vineyard") || [],
   };
@@ -159,8 +157,7 @@ export default function LocationPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="country">Country</SelectItem>
-                    <SelectItem value="state">State/Province</SelectItem>
-                    <SelectItem value="area">Area/Region</SelectItem>
+                    <SelectItem value="area">Region/Area</SelectItem>
                     <SelectItem value="vineyard">Vineyard</SelectItem>
                   </SelectContent>
                 </Select>
@@ -203,39 +200,6 @@ export default function LocationPage() {
               <h3 className="text-lg font-semibold mb-3">Countries</h3>
               <div className="grid gap-4">
                 {locationsByType.country.map((location: any) => (
-                  <Card key={location.locationId}>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-lg font-medium">{location.name}</CardTitle>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => handleEdit(location)}>
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteClick(location.locationId, location.name)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Full Path:</span> {getLocationHierarchy(location)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* States/Provinces */}
-          {locationsByType.state.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold mb-3">States/Provinces</h3>
-              <div className="grid gap-4">
-                {locationsByType.state.map((location: any) => (
                   <Card key={location.locationId}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-lg font-medium">{location.name}</CardTitle>

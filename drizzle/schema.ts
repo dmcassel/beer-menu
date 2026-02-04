@@ -185,7 +185,6 @@ export const menuCategoryBeerRelations = relations(
 // Location Type Enum
 export const locationTypeEnum = pgEnum("location_type", [
   "country",
-  "state",
   "area",
   "vineyard",
 ]);

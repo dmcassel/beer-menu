@@ -21,31 +21,28 @@ export function HierarchicalLocationPicker({
   disabled = false,
 }: HierarchicalLocationPickerProps) {
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
-  const [selectedState, setSelectedState] = useState<number | null>(null);
   const [selectedArea, setSelectedArea] = useState<number | null>(null);
   const [selectedVineyard, setSelectedVineyard] = useState<number | null>(null);
 
   const { data: countries = [] } = trpc.location.getByType.useQuery({ type: "country" });
-  const { data: states = [] } = trpc.location.getByParentId.useQuery(
-    { parentId: selectedCountry },
-    { enabled: selectedCountry !== null }
-  );
-  // Areas can have state OR area parents
+  
+  // Areas can have country OR area parents
   const { data: areas = [] } = trpc.location.getByParentId.useQuery(
-    { parentId: selectedState || selectedArea },
-    { enabled: selectedState !== null || selectedArea !== null }
+    { parentId: selectedCountry || selectedArea },
+    { enabled: selectedCountry !== null || selectedArea !== null }
   );
+  
   // Vineyards always have area parents
   const { data: vineyards = [] } = trpc.location.getByParentId.useQuery(
     { parentId: selectedArea },
     { enabled: selectedArea !== null }
   );
 
-  // Filter areas to show only those with the correct parent type
+  // Filter areas to show only those with the correct parent
   const filteredAreas = areas.filter((area: any) => {
-    if (selectedState && !selectedArea) {
-      // First level areas - parent should be state
-      return area.parentId === selectedState;
+    if (selectedCountry && !selectedArea) {
+      // First level areas - parent should be country
+      return area.parentId === selectedCountry && area.type === "area";
     } else if (selectedArea) {
       // Sub-areas - parent should be the selected area
       return area.parentId === selectedArea && area.type === "area";
@@ -60,15 +57,6 @@ export function HierarchicalLocationPicker({
   const handleCountryChange = (countryId: string) => {
     const id = parseInt(countryId);
     setSelectedCountry(id);
-    setSelectedState(null);
-    setSelectedArea(null);
-    setSelectedVineyard(null);
-    onChange(id);
-  };
-
-  const handleStateChange = (stateId: string) => {
-    const id = parseInt(stateId);
-    setSelectedState(id);
     setSelectedArea(null);
     setSelectedVineyard(null);
     onChange(id);
@@ -109,38 +97,16 @@ export function HierarchicalLocationPicker({
         </Select>
       </div>
 
-      {selectedCountry && states.length > 0 && (
+      {selectedCountry && filteredAreas.length > 0 && (
         <div className="space-y-2">
-          <Label>State/Province</Label>
-          <Select
-            value={selectedState?.toString() || ""}
-            onValueChange={handleStateChange}
-            disabled={disabled}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select state/province" />
-            </SelectTrigger>
-            <SelectContent>
-              {states.map((state) => (
-                <SelectItem key={state.locationId} value={state.locationId.toString()}>
-                  {state.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
-      {selectedState && filteredAreas.length > 0 && (
-        <div className="space-y-2">
-          <Label>Area/Region</Label>
+          <Label>Region/Area</Label>
           <Select
             value={selectedArea?.toString() || ""}
             onValueChange={handleAreaChange}
             disabled={disabled}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select area/region" />
+              <SelectValue placeholder="Select region or area" />
             </SelectTrigger>
             <SelectContent>
               {filteredAreas.map((area: any) => (

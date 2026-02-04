@@ -323,13 +323,13 @@ export const appRouter = router({
       .input(z.object({ parentId: z.number().nullable() }))
       .query(({ input }) => dbWine.getLocationsByParentId(input.parentId)),
     getByType: publicProcedure
-      .input(z.object({ type: z.enum(["country", "state", "area", "vineyard"]) }))
+      .input(z.object({ type: z.enum(["country", "area", "vineyard"]) }))
       .query(({ input }) => dbWine.getLocationsByType(input.type)),
     create: curatorProcedure
       .input(
         z.object({
           name: z.string(),
-          type: z.enum(["country", "state", "area", "vineyard"]),
+          type: z.enum(["country", "area", "vineyard"]),
           parentId: z.number().optional(),
         })
       )
@@ -339,7 +339,7 @@ export const appRouter = router({
         z.object({
           id: z.number(),
           name: z.string().optional(),
-          type: z.enum(["country", "state", "area", "vineyard"]).optional(),
+          type: z.enum(["country", "area", "vineyard"]).optional(),
           parentId: z.number().optional(),
         })
       )
