@@ -54,12 +54,7 @@ function WineHeader() {
 }
 
 export default function WinePage() {
-  const { data: wines, isLoading } = trpc.wine.list.useQuery();
-
-  // Filter wines to only show those with bottles (refrigerated > 0 OR cellared > 0)
-  const availableWines = wines?.filter(
-    (wine) => (wine.refrigerated || 0) > 0 || (wine.cellared || 0) > 0
-  );
+  const { data: availableWines, isLoading } = trpc.wine.listAvailable.useQuery();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
