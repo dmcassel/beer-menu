@@ -296,7 +296,7 @@ export default function ManageWinePage() {
                     {wine.cellared} cellared
                   </p>
                   {wine.description && (
-                    <p className="text-sm text-gray-600 mt-2">{wine.description}</p>
+                    <p className="text-sm text-gray-600 mt-2 whitespace-pre-line">{wine.description}</p>
                   )}
                 </div>
               </CardContent>
