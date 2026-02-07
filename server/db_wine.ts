@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, or, gt } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   winery,
@@ -189,6 +189,52 @@ export async function getAllWines() {
     .from(wine)
     .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
     .leftJoin(location, eq(wine.locationId, location.locationId))
+    .orderBy(wine.label);
+  
+  // Get varietals for each wine
+  const winesWithVarietals = await Promise.all(
+    wines.map(async (w) => {
+      const varietals = await db
+        .select({
+          varietalId: varietal.varietalId,
+          name: varietal.name,
+        })
+        .from(wineVarietal)
+        .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
+        .where(eq(wineVarietal.wineId, w.wineId));
+      
+      return {
+        ...w,
+        varietals,
+      };
+    })
+  );
+  
+  return winesWithVarietals;
+}
+
+export async function getAvailableWines() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get wines with at least one bottle (refrigerated > 0 OR cellared > 0)
+  const wines = await db
+    .select({
+      wineId: wine.wineId,
+      label: wine.label,
+      vintage: wine.vintage,
+      refrigerated: wine.refrigerated,
+      cellared: wine.cellared,
+      description: wine.description,
+      wineryId: wine.wineryId,
+      locationId: wine.locationId,
+      wineryName: winery.name,
+      locationName: location.name,
+    })
+    .from(wine)
+    .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
+    .leftJoin(location, eq(wine.locationId, location.locationId))
+    .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)))
     .orderBy(wine.label);
   
   // Get varietals for each wine
