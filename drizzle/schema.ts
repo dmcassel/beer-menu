@@ -185,7 +185,6 @@ export const menuCategoryBeerRelations = relations(
 // Location Type Enum
 export const locationTypeEnum = pgEnum("location_type", [
   "country",
-  "state",
   "area",
   "vineyard",
 ]);
@@ -208,6 +207,9 @@ export const winery = pgTable("winery", {
   wineryId: serial("winery_id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   location: varchar("location", { length: 255 }),
+  locationId: integer("location_id").references(() => location.locationId, {
+    onDelete: "set null",
+  }),
 });
 
 export type Winery = typeof winery.$inferSelect;

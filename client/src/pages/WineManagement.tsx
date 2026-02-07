@@ -3,13 +3,17 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Beer, Wine } from "lucide-react";
+import { Wine, GrapeIcon, MapPinned, Building2 } from "lucide-react";
 import { toast } from "sonner";
-
+import ManageWinePage from "./ManageWinePage";
+import WineryPage from "./WineryPage";
+import VarietalPage from "./VarietalPage";
+import LocationPage from "./LocationPage";
 import { Link } from "wouter";
 
-export default function Dashboard() {
+export default function WineManagement() {
   const [, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState("wines");
   const { data: user, isLoading } = trpc.auth.me.useQuery();
   const logoutMutation = trpc.auth.logout.useMutation();
   const utils = trpc.useUtils();
@@ -39,7 +43,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Beer className="w-12 h-12 text-amber-600 mx-auto mb-4 animate-pulse" />
+          <Wine className="w-12 h-12 text-purple-600 mx-auto mb-4 animate-pulse" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -57,11 +61,16 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/">
             <div className="flex items-center gap-3">
-              <Beer className="w-8 h-8 text-amber-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Beer Catalog</h1>
+              <Wine className="w-8 h-8 text-purple-600" />
+              <h1 className="text-2xl font-bold text-gray-900">Wine Management</h1>
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm">
+                Back to Dashboard
+              </Button>
+            </Link>
             {user && (
               <>
                 <span className="text-sm text-gray-600">
@@ -78,33 +87,42 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Beer Management Card */}
-          <Link href="/beer-management">
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer p-8 border-2 border-transparent hover:border-amber-500">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Beer className="w-16 h-16 text-amber-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Beer Management</h2>
-                <p className="text-gray-600">
-                  Manage beers, breweries, styles, BJCP categories, and menus
-                </p>
-              </div>
-            </div>
-          </Link>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="wines" className="flex items-center gap-2">
+              <Wine className="w-4 h-4" />
+              <span className="hidden sm:inline">Wines</span>
+            </TabsTrigger>
+            <TabsTrigger value="wineries" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Wineries</span>
+            </TabsTrigger>
+            <TabsTrigger value="varietals" className="flex items-center gap-2">
+              <GrapeIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Varietals</span>
+            </TabsTrigger>
+            <TabsTrigger value="locations" className="flex items-center gap-2">
+              <MapPinned className="w-4 h-4" />
+              <span className="hidden sm:inline">Locations</span>
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Wine Management Card */}
-          <Link href="/wine-management">
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer p-8 border-2 border-transparent hover:border-purple-500">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Wine className="w-16 h-16 text-purple-600" />
-                <h2 className="text-2xl font-bold text-gray-900">Wine Management</h2>
-                <p className="text-gray-600">
-                  Manage wines, wineries, varietals, and locations
-                </p>
-              </div>
-            </div>
-          </Link>
-        </div>
+          <TabsContent value="wines" className="space-y-4">
+            <ManageWinePage />
+          </TabsContent>
+
+          <TabsContent value="wineries" className="space-y-4">
+            <WineryPage />
+          </TabsContent>
+
+          <TabsContent value="varietals" className="space-y-4">
+            <VarietalPage />
+          </TabsContent>
+
+          <TabsContent value="locations" className="space-y-4">
+            <LocationPage />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
