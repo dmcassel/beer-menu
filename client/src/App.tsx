@@ -5,7 +5,7 @@ import Dashboard from "@/pages/Dashboard";
 import BeerBrowser from "@/pages/BeerBrowser";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
-import WinePage from "@/pages/WinePage";
+import WineBrowser from "@/pages/WineBrowser";
 import BeerManagement from "@/pages/BeerManagement";
 import WineManagement from "@/pages/WineManagement";
 import { Route, Switch, Redirect } from "wouter";
@@ -18,7 +18,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/browser" component={BeerBrowser} />
-      <Route path="/wine" component={WinePage} />
+      <Route path="/wine" component={WineBrowser} />
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/beer-management" component={BeerManagement} />
