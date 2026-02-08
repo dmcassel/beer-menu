@@ -92,7 +92,7 @@ export default function WinePage() {
             <Loader2 className="w-8 h-8 text-purple-700 animate-spin" />
           </div>
         ) : availableWines && availableWines.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {availableWines.map((wine) => (
               <Card key={wine.wineId} className="border-purple-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
