@@ -140,7 +140,7 @@ export default function WinePage() {
                     </div>
                     
                     {wine.description && (
-                      <p className="text-sm text-gray-600 pt-2 border-t border-gray-200 mt-3">
+                      <p className="text-sm text-gray-600 pt-2 border-t border-gray-200 mt-3 whitespace-pre-line">
                         {wine.description}
                       </p>
                     )}
