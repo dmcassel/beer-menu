@@ -354,6 +354,14 @@ export const appRouter = router({
   wine: router({
     list: publicProcedure.query(() => dbWine.getAllWines()),
     listAvailable: publicProcedure.query(() => dbWine.getAvailableWines()),
+    listAvailableWithFilters: publicProcedure
+      .input(
+        z.object({
+          locationIds: z.array(z.number()).optional(),
+          varietalIds: z.array(z.number()).optional(),
+        })
+      )
+      .query(({ input }) => dbWine.getAvailableWinesWithFilters(input)),
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => dbWine.getWineById(input.id)),

@@ -1,4 +1,4 @@
-import { eq, sql, or, gt } from "drizzle-orm";
+import { eq, sql, or, gt, inArray } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   winery,
@@ -259,6 +259,80 @@ export async function getAvailableWines() {
   return winesWithVarietals;
 }
 
+export async function getAvailableWinesWithFilters(filters: {
+  locationIds?: number[];
+  varietalIds?: number[];
+}) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Build location filter with descendants
+  let expandedLocationIds: number[] = [];
+  if (filters.locationIds && filters.locationIds.length > 0) {
+    for (const locationId of filters.locationIds) {
+      const descendants = await getDescendantLocationIds(db, locationId);
+      expandedLocationIds.push(...descendants);
+    }
+    // Remove duplicates
+    expandedLocationIds = [...new Set(expandedLocationIds)];
+  }
+  
+  // Build WHERE conditions
+  const conditions = [or(gt(wine.refrigerated, 0), gt(wine.cellared, 0))];
+  
+  if (expandedLocationIds.length > 0) {
+    conditions.push(inArray(wine.locationId, expandedLocationIds));
+  }
+  
+  // Get wines with filters
+  const wines = await db
+    .select({
+      wineId: wine.wineId,
+      label: wine.label,
+      vintage: wine.vintage,
+      refrigerated: wine.refrigerated,
+      cellared: wine.cellared,
+      description: wine.description,
+      wineryId: wine.wineryId,
+      locationId: wine.locationId,
+      wineryName: winery.name,
+      locationName: location.name,
+    })
+    .from(wine)
+    .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
+    .leftJoin(location, eq(wine.locationId, location.locationId))
+    .where(sql`${conditions.map(c => sql`(${c})`).reduce((a, b) => sql`${a} AND ${b}`)}`)
+    .orderBy(wine.label);
+  
+  // Get varietals for each wine and filter by varietal if needed
+  const winesWithVarietals = await Promise.all(
+    wines.map(async (w) => {
+      const varietals = await db
+        .select({
+          varietalId: varietal.varietalId,
+          name: varietal.name,
+        })
+        .from(wineVarietal)
+        .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
+        .where(eq(wineVarietal.wineId, w.wineId));
+      
+      return {
+        ...w,
+        varietals,
+      };
+    })
+  );
+  
+  // Filter by varietal if specified
+  if (filters.varietalIds && filters.varietalIds.length > 0) {
+    return winesWithVarietals.filter(wine => 
+      wine.varietals.some(v => filters.varietalIds!.includes(v.varietalId))
+    );
+  }
+  
+  return winesWithVarietals;
+}
+
 export async function getWineById(id: number) {
   const db = await getDb();
   if (!db) return null;
@@ -362,6 +436,25 @@ export async function deleteWine(id: number) {
   
   // Delete wine
   await db.delete(wine).where(eq(wine.wineId, id));
+}
+
+// Helper function to get all descendant location IDs (including the location itself)
+async function getDescendantLocationIds(db: any, locationId: number): Promise<number[]> {
+  const descendants: number[] = [locationId];
+  
+  // Get direct children
+  const children = await db
+    .select()
+    .from(location)
+    .where(eq(location.parentId, locationId));
+  
+  // Recursively get descendants of each child
+  for (const child of children) {
+    const childDescendants = await getDescendantLocationIds(db, child.locationId);
+    descendants.push(...childDescendants);
+  }
+  
+  return descendants;
 }
 
 // Helper function to build location hierarchy path
