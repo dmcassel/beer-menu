@@ -198,7 +198,7 @@ export default function LocationPage() {
           {locationsByType.country.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Countries</h3>
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {locationsByType.country.map((location: any) => (
                   <Card key={location.locationId}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -231,7 +231,7 @@ export default function LocationPage() {
           {locationsByType.area.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Areas/Regions</h3>
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {locationsByType.area.map((location: any) => (
                   <Card key={location.locationId}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -264,7 +264,7 @@ export default function LocationPage() {
           {locationsByType.vineyard.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Vineyards</h3>
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {locationsByType.vineyard.map((location: any) => (
                   <Card key={location.locationId}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
