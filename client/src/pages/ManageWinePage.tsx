@@ -253,7 +253,7 @@ export default function ManageWinePage() {
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {wines?.map((wine: any) => (
             <Card key={wine.wineId}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
