@@ -1,9 +1,18 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wine, ArrowLeft, Loader2 } from "lucide-react";
+import { Wine, ArrowLeft, Loader2, Filter, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { WineFilterControls } from "@/components/WineFilterControls";
 
 function WineHeader() {
   const [, setLocation] = useLocation();
@@ -54,28 +63,134 @@ function WineHeader() {
 }
 
 export default function WinePage() {
-  const { data: availableWines, isLoading } = trpc.wine.listAvailable.useQuery();
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Fetch available wines, filtered at the database level by selected location IDs
+  const { data: availableWines = [], isLoading } =
+    trpc.wine.listAvailable.useQuery({
+      locationIds: selectedLocations.map(id => parseInt(id)),
+    });
+
+  // Fetch only locations that have available wines (for filter options)
+  const { data: locations = [] } = trpc.location.listAvailable.useQuery();
+
+  const handleClearFilters = () => {
+    setSelectedLocations([]);
+  };
+
+  const hasActiveFilters = selectedLocations.length > 0;
+  const activeFilterCount = selectedLocations.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-      {/* Header */}
-      <header className="bg-white border-b border-purple-200 shadow-sm">
+      {/* Sticky Header */}
+      <div className="bg-white border-b border-purple-200 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                 <Wine className="w-8 h-8 text-purple-700" />
-                <h1 className="text-3xl font-bold text-purple-900">Wine Catalog</h1>
+                <h1 className="text-3xl font-bold text-purple-900">
+                  Wine Catalog
+                </h1>
               </div>
             </Link>
-            <WineHeader />
+            <div className="flex items-center gap-3">
+              {/* Mobile Filter Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFilterOpen(true)}
+                className="md:hidden relative border-purple-300 text-purple-700 hover:bg-purple-50"
+              >
+                <Filter className="w-4 h-4" />
+                {activeFilterCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+              <WineHeader />
+            </div>
           </div>
+
+          {/* Desktop Filters */}
+          <div className="hidden md:grid md:grid-cols-3 gap-4">
+            <WineFilterControls
+              selectedLocations={selectedLocations}
+              setSelectedLocations={setSelectedLocations}
+              locations={locations}
+            />
+          </div>
+
+          {/* Active Filter Badges */}
+          {hasActiveFilters && (
+            <div className="mt-4 flex items-center gap-2 flex-wrap">
+              {selectedLocations.map(id => {
+                const loc = locations.find(
+                  l => l.locationId === parseInt(id)
+                );
+                return loc ? (
+                  <Badge
+                    key={`loc-${id}`}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() =>
+                      setSelectedLocations(
+                        selectedLocations.filter(locId => locId !== id)
+                      )
+                    }
+                  >
+                    {loc.fullPath}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ) : null;
+              })}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearFilters}
+                className="text-purple-700 hover:text-purple-900"
+              >
+                Clear All
+              </Button>
+            </div>
+          )}
         </div>
-      </header>
+      </div>
+
+      {/* Mobile Filter Drawer */}
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen} modal={false}>
+        <SheetContent side="bottom" className="h-[85vh]">
+          <SheetHeader>
+            <SheetTitle>Filter Wines</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-4 mt-6">
+            <WineFilterControls
+              selectedLocations={selectedLocations}
+              setSelectedLocations={setSelectedLocations}
+              locations={locations}
+            />
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={handleClearFilters}
+                className="w-full"
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="mb-8">
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-6">
           <Link href="/">
             <Button
               variant="outline"
@@ -91,76 +206,94 @@ export default function WinePage() {
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-8 h-8 text-purple-700 animate-spin" />
           </div>
-        ) : availableWines && availableWines.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {availableWines.map((wine) => (
-              <Card key={wine.wineId} className="border-purple-200 hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg text-purple-900">
-                    {wine.label}
-                    {wine.vintage && (
-                      <span className="text-purple-600 font-normal ml-2">
-                        {wine.vintage}
-                      </span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {wine.wineryName && (
-                      <p className="text-sm text-gray-700">
-                        <span className="font-medium">Winery:</span> {wine.wineryName}
-                      </p>
-                    )}
-                    
-                    {wine.varietals && wine.varietals.length > 0 && (
-                      <p className="text-sm text-gray-700">
-                        <span className="font-medium">Varietal{wine.varietals.length > 1 ? 's' : ''}:</span>{' '}
-                        {wine.varietals.map((v) => v.name).join(', ')}
-                      </p>
-                    )}
-                    
-                    {wine.locationName && (
-                      <p className="text-sm text-gray-700">
-                        <span className="font-medium">Location:</span> {wine.locationName}
-                      </p>
-                    )}
-                    
-                    <div className="flex gap-4 text-sm text-gray-700 pt-2">
-                      {wine.refrigerated > 0 && (
-                        <span className="font-medium">
-                          🧊 Refrigerated: {wine.refrigerated}
-                        </span>
-                      )}
-                      {wine.cellared > 0 && (
-                        <span className="font-medium">
-                          🍷 Cellared: {wine.cellared}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {wine.description && (
-                      <p className="text-sm text-gray-600 pt-2 border-t border-gray-200 mt-3 whitespace-pre-line">
-                        {wine.description}
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
+        ) : availableWines.length === 0 ? (
           <Card className="max-w-2xl mx-auto border-2 border-purple-200">
             <CardContent className="text-center py-12">
               <Wine className="w-16 h-16 text-purple-300 mx-auto mb-4" />
               <p className="text-xl font-semibold text-purple-800 mb-2">
-                No wines available
+                {hasActiveFilters
+                  ? "No wines match your filters."
+                  : "No wines available"}
               </p>
               <p className="text-gray-600">
-                There are currently no wines with bottles in stock.
+                {hasActiveFilters
+                  ? "Try adjusting or clearing your location filter."
+                  : "There are currently no wines with bottles in stock."}
               </p>
             </CardContent>
           </Card>
+        ) : (
+          <>
+            <p className="text-sm text-gray-600 mb-6">
+              Showing {availableWines.length} wine
+              {availableWines.length !== 1 ? "s" : ""}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableWines.map(wine => (
+                <Card
+                  key={wine.wineId}
+                  className="border-purple-200 hover:shadow-lg transition-shadow"
+                >
+                  <CardHeader>
+                    <CardTitle className="text-lg text-purple-900">
+                      {wine.label}
+                      {wine.vintage && (
+                        <span className="text-purple-600 font-normal ml-2">
+                          {wine.vintage}
+                        </span>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {wine.wineryName && (
+                        <p className="text-sm text-gray-700">
+                          <span className="font-medium">Winery:</span>{" "}
+                          {wine.wineryName}
+                        </p>
+                      )}
+
+                      {wine.varietals && wine.varietals.length > 0 && (
+                        <p className="text-sm text-gray-700">
+                          <span className="font-medium">
+                            Varietal
+                            {wine.varietals.length > 1 ? "s" : ""}:
+                          </span>{" "}
+                          {wine.varietals.map(v => v.name).join(", ")}
+                        </p>
+                      )}
+
+                      {wine.locationName && (
+                        <p className="text-sm text-gray-700">
+                          <span className="font-medium">Location:</span>{" "}
+                          {wine.locationName}
+                        </p>
+                      )}
+
+                      <div className="flex gap-4 text-sm text-gray-700 pt-2">
+                        {wine.refrigerated > 0 && (
+                          <span className="font-medium">
+                            🧊 Refrigerated: {wine.refrigerated}
+                          </span>
+                        )}
+                        {wine.cellared > 0 && (
+                          <span className="font-medium">
+                            🍷 Cellared: {wine.cellared}
+                          </span>
+                        )}
+                      </div>
+
+                      {wine.description && (
+                        <p className="text-sm text-gray-600 pt-2 border-t border-gray-200 mt-3 whitespace-pre-line">
+                          {wine.description}
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
         )}
       </main>
     </div>

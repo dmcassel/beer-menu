@@ -1,4 +1,4 @@
-import { eq, sql, or, gt } from "drizzle-orm";
+import { eq, sql, or, gt, inArray } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   winery,
@@ -370,14 +370,14 @@ async function buildLocationPath(db: any, locationId: number): Promise<string> {
   let currentId: number | null = locationId;
   
   while (currentId !== null) {
-    const results = await db
+    const results: Array<{ locationId: number; name: string; type: string; parentId: number | null }> = await db
       .select()
       .from(location)
       .where(eq(location.locationId, currentId));
     
     if (results.length === 0) break;
     
-    const loc = results[0];
+    const loc: { locationId: number; name: string; type: string; parentId: number | null } = results[0];
     locations.unshift(loc.name); // Add to beginning of array
     currentId = loc.parentId;
   }
@@ -401,4 +401,157 @@ export async function getAllLocationsWithPaths() {
   
   // Sort by full path for better UX
   return locationsWithPaths.sort((a, b) => a.fullPath.localeCompare(b.fullPath));
+}
+
+/**
+ * Get locations that have at least one available wine (refrigerated > 0 OR cellared > 0),
+ * including their full hierarchical path for display.
+ * Also includes ancestor locations so users can filter at any level of specificity.
+ */
+export async function getAvailableLocations() {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Find all location IDs directly assigned to available wines
+  const result = await db.execute(sql`
+    WITH RECURSIVE ancestor_tree AS (
+      -- Start with locations directly assigned to available wines
+      SELECT DISTINCT l.location_id
+      FROM location l
+      INNER JOIN wine w ON w.location_id = l.location_id
+      WHERE (w.refrigerated > 0 OR w.cellared > 0)
+
+      UNION
+
+      -- Walk up to all ancestors
+      SELECT l2.location_id
+      FROM location l2
+      INNER JOIN ancestor_tree at ON l2.location_id = (
+        SELECT parent_id FROM location WHERE location_id = at.location_id
+      )
+      WHERE l2.location_id IS NOT NULL
+    )
+    SELECT DISTINCT l.location_id as "locationId", l.name, l.type, l.parent_id as "parentId"
+    FROM location l
+    INNER JOIN ancestor_tree at ON l.location_id = at.location_id
+    ORDER BY l.name
+  `);
+
+  const locations = result.rows as Array<{
+    locationId: number;
+    name: string;
+    type: string;
+    parentId: number | null;
+  }>;
+
+  // Build full path for each location
+  const locationsWithPaths = await Promise.all(
+    locations.map(async (loc) => ({
+      ...loc,
+      fullPath: await buildLocationPath(db, loc.locationId),
+    }))
+  );
+
+  return locationsWithPaths.sort((a, b) => a.fullPath.localeCompare(b.fullPath));
+}
+
+/**
+ * Get available wines (with stock), optionally filtered by location IDs.
+ * When location IDs are provided, uses a recursive CTE to include wines assigned
+ * to any descendant of the selected locations, so selecting "France" returns
+ * wines from all French regions and vineyards.
+ * Filtering is performed entirely at the database level.
+ */
+export async function getAvailableWinesFiltered(locationIds?: number[]) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let wines;
+
+  if (locationIds && locationIds.length > 0) {
+    // Use a recursive CTE to expand selected location IDs to include all descendants
+    const locationIdList = locationIds.join(", ");
+    const result = await db.execute(sql`
+      WITH RECURSIVE location_tree AS (
+        -- Start with the selected location IDs
+        SELECT location_id
+        FROM location
+        WHERE location_id IN (${sql.raw(locationIdList)})
+
+        UNION ALL
+
+        -- Recursively add all children
+        SELECT l.location_id
+        FROM location l
+        INNER JOIN location_tree lt ON l.parent_id = lt.location_id
+      )
+      SELECT
+        w.wine_id       AS "wineId",
+        w.label,
+        w.vintage,
+        w.refrigerated,
+        w.cellared,
+        w.description,
+        w.winery_id     AS "wineryId",
+        w.location_id   AS "locationId",
+        wr.name         AS "wineryName",
+        l.name          AS "locationName"
+      FROM wine w
+      LEFT JOIN winery wr ON w.winery_id = wr.winery_id
+      LEFT JOIN location l  ON w.location_id = l.location_id
+      WHERE (w.refrigerated > 0 OR w.cellared > 0)
+        AND w.location_id IN (SELECT location_id FROM location_tree)
+      ORDER BY w.label
+    `);
+    wines = result.rows as Array<{
+      wineId: number;
+      label: string;
+      vintage: number | null;
+      refrigerated: number;
+      cellared: number;
+      description: string | null;
+      wineryId: number | null;
+      locationId: number | null;
+      wineryName: string | null;
+      locationName: string | null;
+    }>;
+  } else {
+    // No location filter — return all available wines
+    const rows = await db
+      .select({
+        wineId: wine.wineId,
+        label: wine.label,
+        vintage: wine.vintage,
+        refrigerated: wine.refrigerated,
+        cellared: wine.cellared,
+        description: wine.description,
+        wineryId: wine.wineryId,
+        locationId: wine.locationId,
+        wineryName: winery.name,
+        locationName: location.name,
+      })
+      .from(wine)
+      .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
+      .leftJoin(location, eq(wine.locationId, location.locationId))
+      .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)))
+      .orderBy(wine.label);
+    wines = rows;
+  }
+
+  // Attach varietals for each wine
+  const winesWithVarietals = await Promise.all(
+    wines.map(async (w) => {
+      const varietals = await db
+        .select({
+          varietalId: varietal.varietalId,
+          name: varietal.name,
+        })
+        .from(wineVarietal)
+        .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
+        .where(eq(wineVarietal.wineId, w.wineId));
+      return { ...w, varietals };
+    })
+  );
+
+  return winesWithVarietals;
 }
