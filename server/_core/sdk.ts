@@ -1,6 +1,5 @@
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { COOKIE_NAME, FETCH_TIMEOUT_MS, ONE_YEAR_MS } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
-import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
 import type { Request } from "express";
 import { SignJWT, jwtVerify } from "jose";
@@ -28,8 +27,44 @@ const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
 const GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
 
+interface OAuthHttpClient {
+  post<T>(path: string, body: unknown): Promise<T>;
+}
+
+function createOAuthHttpClient(baseURL: string, timeoutMs: number): OAuthHttpClient {
+  return {
+    async post<T>(path: string, body: unknown): Promise<T> {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const url = new URL(path, baseURL).toString();
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          const errorBody = await response.text();
+          throw new Error(
+            `HTTP error ${response.status}: ${response.statusText} — ${errorBody}`
+          );
+        }
+        return (await response.json()) as T;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error(`OAuth request timed out after ${timeoutMs}ms`);
+        }
+        throw err;
+      } finally {
+        clearTimeout(timer);
+      }
+    },
+  };
+}
+
 class OAuthService {
-  constructor(private client: ReturnType<typeof axios.create>) {
+  constructor(private client: OAuthHttpClient) {
     console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     if (!ENV.oAuthServerUrl) {
       console.error(
@@ -54,39 +89,28 @@ class OAuthService {
       redirectUri: this.decodeState(state),
     };
 
-    const { data } = await this.client.post<ExchangeTokenResponse>(
-      EXCHANGE_TOKEN_PATH,
-      payload
-    );
-
-    return data;
+    return this.client.post<ExchangeTokenResponse>(EXCHANGE_TOKEN_PATH, payload);
   }
 
   async getUserInfoByToken(
     token: ExchangeTokenResponse
   ): Promise<GetUserInfoResponse> {
-    const { data } = await this.client.post<GetUserInfoResponse>(
-      GET_USER_INFO_PATH,
-      {
-        accessToken: token.accessToken,
-      }
-    );
-
-    return data;
+    return this.client.post<GetUserInfoResponse>(GET_USER_INFO_PATH, {
+      accessToken: token.accessToken,
+    });
   }
 }
 
-const createOAuthHttpClient = (): AxiosInstance =>
-  axios.create({
-    baseURL: ENV.oAuthServerUrl,
-    timeout: AXIOS_TIMEOUT_MS,
-  });
-
 class SDKServer {
-  private readonly client: AxiosInstance;
+  private readonly client: OAuthHttpClient;
   private readonly oauthService: OAuthService;
 
-  constructor(client: AxiosInstance = createOAuthHttpClient()) {
+  constructor(
+    client: OAuthHttpClient = createOAuthHttpClient(
+      ENV.oAuthServerUrl,
+      FETCH_TIMEOUT_MS
+    )
+  ) {
     this.client = client;
     this.oauthService = new OAuthService(this.client);
   }
@@ -240,7 +264,7 @@ class SDKServer {
       projectId: ENV.appId,
     };
 
-    const { data } = await this.client.post<GetUserInfoWithJwtResponse>(
+    const data = await this.client.post<GetUserInfoWithJwtResponse>(
       GET_USER_INFO_WITH_JWT_PATH,
       payload
     );
