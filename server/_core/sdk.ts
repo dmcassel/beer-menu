@@ -37,16 +37,25 @@ function createOAuthHttpClient(baseURL: string, timeoutMs: number): OAuthHttpCli
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
-        const response = await fetch(`${baseURL}${path}`, {
+        const url = new URL(path, baseURL).toString();
+        const response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
           signal: controller.signal,
         });
         if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+          const errorBody = await response.text();
+          throw new Error(
+            `HTTP error ${response.status}: ${response.statusText} — ${errorBody}`
+          );
         }
-        return response.json() as Promise<T>;
+        return (await response.json()) as T;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          throw new Error(`OAuth request timed out after ${timeoutMs}ms`);
+        }
+        throw err;
       } finally {
         clearTimeout(timer);
       }
