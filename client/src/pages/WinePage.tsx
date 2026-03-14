@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wine, ArrowLeft, Loader2, Filter, X } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Wine, Loader2, Filter, X } from "lucide-react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -88,14 +88,14 @@ export default function WinePage() {
       <div className="bg-white border-b border-purple-200 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
-            <Link href="/">
+            <a href="/">
               <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                 <Wine className="w-8 h-8 text-purple-700" />
                 <h1 className="text-3xl font-bold text-purple-900">
                   Wine Catalog
                 </h1>
               </div>
-            </Link>
+            </a>
             <div className="flex items-center gap-3">
               {/* Mobile Filter Button */}
               <Button
@@ -190,18 +190,6 @@ export default function WinePage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <Link href="/">
-            <Button
-              variant="outline"
-              className="border-purple-300 text-purple-700 hover:bg-purple-50"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
-
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-8 h-8 text-purple-700 animate-spin" />
