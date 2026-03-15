@@ -117,7 +117,7 @@ docker-compose up -d --build app
 Migrations run automatically on startup, but you can run them manually:
 
 ```bash
-docker-compose exec app pnpm db:push
+docker-compose exec app npm run db:push
 ```
 
 ### Access Application Shell
@@ -226,7 +226,7 @@ If you see "port is already allocated" errors:
 2. Ensure all dependencies are installed:
 
    ```bash
-   docker-compose exec app pnpm install
+   docker-compose exec app npm install
    ```
 
 3. Rebuild the container:

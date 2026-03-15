@@ -74,7 +74,7 @@ Instead of migrations, you can use Drizzle's push mode to sync the schema:
 
 ```bash
 # This compares schema.ts with the database and applies changes
-pnpm drizzle-kit push
+npx drizzle-kit push
 ```
 
 ⚠️ **Warning**: This bypasses migrations and directly modifies the database. Only use in development.
@@ -202,7 +202,7 @@ This means the migration was partially applied or run multiple times.
 # 1. Make schema changes in drizzle/schema.ts
 
 # 2. Generate migration (this creates files in drizzle/ root)
-pnpm drizzle-kit generate
+npx drizzle-kit generate
 
 # 3. Move to migrations folder and rename
 mv drizzle/0002_*.sql drizzle/migrations/0002_descriptive_name.sql
@@ -226,7 +226,7 @@ For visual database management:
 
 ```bash
 # Start Drizzle Studio
-pnpm drizzle-kit studio
+npx drizzle-kit studio
 
 # Opens a web interface at http://localhost:4983
 ```
