@@ -139,4 +139,4 @@ fi
 echo "🎉 Starting application..."
 
 # Start the application
-exec pnpm start
+exec npm start

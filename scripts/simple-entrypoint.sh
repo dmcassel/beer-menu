@@ -9,4 +9,4 @@ sleep 5
 
 # Just start the app without running migrations
 echo "🎉 Starting application..."
-exec pnpm start
+exec npm start

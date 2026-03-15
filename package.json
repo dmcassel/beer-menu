@@ -15,7 +15,7 @@
     "test:db:stop": "docker-compose --env-file .env.test down postgres-test",
     "test:db:reset": "docker-compose --env-file .env.test down postgres-test && docker-compose --env-file .env.test up -d postgres-test",
     "test:db:migrate": "cross-env DATABASE_URL=postgresql://test_user:test_password@localhost:5433/beer_menu_test drizzle-kit migrate",
-    "test:with-db": "pnpm test:db:start && pnpm test:db:migrate && pnpm test && pnpm test:db:stop",
+    "test:with-db": "npm run test:db:start && npm run test:db:migrate && npm test && npm run test:db:stop",
     "db:migrate": "node scripts/migrate-local.js",
     "db:push": "drizzle-kit generate && drizzle-kit migrate"
   },
@@ -83,6 +83,10 @@
     "wouter": "^3.3.5",
     "zod": "^3.25.0"
   },
+  "engines": {
+    "node": ">=24.12.0",
+    "npm": ">=10"
+  },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
     "@tailwindcss/vite": "^4.1.3",
@@ -98,7 +102,6 @@
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.4",
     "esbuild": "^0.27.3",
-    "pnpm": "^10.29.3",
     "postcss": "^8.4.47",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.14",

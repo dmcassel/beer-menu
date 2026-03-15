@@ -43,7 +43,7 @@ The `seedDatabase()` function in `test-utils.ts` creates a consistent set of tes
 Run all tests with automatic database setup and teardown:
 
 ```bash
-pnpm test:with-db
+npm run test:with-db
 ```
 
 This command will:
@@ -58,34 +58,34 @@ For more control during development, you can manage the test database manually:
 
 **Start the test database:**
 ```bash
-pnpm test:db:start
+npm run test:db:start
 # This runs: docker-compose --env-file .env.test up -d postgres-test
 ```
 
 **Run migrations:**
 ```bash
-pnpm test:db:migrate
+npm run test:db:migrate
 ```
 
 **Run tests:**
 ```bash
-pnpm test
+npm test
 ```
 
 **Watch mode (for development):**
 ```bash
-pnpm test:watch
+npm run test:watch
 ```
 
 **Stop the test database:**
 ```bash
-pnpm test:db:stop
+npm run test:db:stop
 # This runs: docker-compose --env-file .env.test down postgres-test
 ```
 
 **Reset the test database:**
 ```bash
-pnpm test:db:reset
+npm run test:db:reset
 # This stops and restarts the test database with a clean state
 ```
 
@@ -170,7 +170,7 @@ Example GitHub Actions workflow:
 
 ```yaml
 - name: Run database tests
-  run: pnpm test:with-db
+  run: npm run test:with-db
 ```
 
 ## Troubleshooting
@@ -195,8 +195,8 @@ docker exec beer_menu_test_db pg_isready -U test_user -d beer_menu_test
 
 Reset the test database to clear any corrupted state:
 ```bash
-pnpm test:db:reset
-pnpm test:db:migrate
+npm run test:db:reset
+npm run test:db:migrate
 ```
 
 ## Best Practices
