@@ -23,19 +23,19 @@ If GitHub issue numbers are provided:
 
 ### Step 1: Analyze the Codebase
 
-1. Study the app routes (`src/app/`) — pages, layouts, loading/error boundaries
-2. Study the feature components (`src/features/polls/components/`)
-3. Study the shared UI primitives (`src/components/ui/`)
-4. Check `package.json` for frontend dependencies
+1. Study the pages (`client/src/pages/`) — one file per route, covers beers, wines, styles, breweries, admin, auth
+2. Study the feature components (`client/src/components/`) — shared domain components (FilterControls, AIChatBox, Map, etc.)
+3. Study the shared UI primitives (`client/src/components/ui/`) — Radix UI / shadcn-style wrappers
+4. Check `package.json` for frontend dependencies (React 19, Wouter, tRPC, React Hook Form, Zod, Tailwind)
 
 ## Output
 
 Produce a scannable summary of what you learned:
 
 - **Purpose**: What the UI does
-- **Tech Stack**: Next.js App Router, shadcn/ui, Tailwind 4
-- **Components**: Key components and their responsibilities
-- **Data Flow**: Server Components fetch data directly; Client Components use Server Actions for mutations
-- **Patterns**: Server vs Client component split, how forms use Server Actions with `useActionState`
+- **Tech Stack**: React 19, Wouter (routing), tRPC client, Radix UI / shadcn, Tailwind
+- **Components**: Key pages and shared components and their responsibilities
+- **Data Flow**: tRPC query hooks for reads, tRPC mutation hooks for writes; React Hook Form + Zod for form validation
+- **Patterns**: How pages are structured, how mutations trigger cache invalidation, how auth state is accessed
 
 Use bullet points. Keep it concise.

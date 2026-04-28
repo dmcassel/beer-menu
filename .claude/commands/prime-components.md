@@ -23,21 +23,21 @@ If GitHub issue numbers are provided:
 
 ### Step 1: Analyze the Codebase
 
-1. Study the UI primitives in `src/components/ui/` (shadcn/ui components)
-2. Study `src/lib/utils.ts` for the `cn()` utility
+1. Study the UI primitives in `client/src/components/ui/` (Radix UI / shadcn-style components)
+2. Study `client/src/lib/utils.ts` for the `cn()` utility
 3. Study feature components as examples:
-   - `src/features/polls/components/create-poll-form.tsx` — Client Component using Server Action with `useActionState`
-   - `src/features/polls/components/vote-form.tsx` — radio form with pending state via `useFormStatus`
-   - `src/components/theme-toggle.tsx` — minimal Client Component example
+   - `client/src/pages/BeerBrowser.tsx` — filterable list using tRPC queries and cascading filters
+   - `client/src/pages/BeerPage.tsx` — CRUD admin page with create/edit/delete dialogs and tRPC mutations
+   - `client/src/components/FilterControls.tsx` — reusable multi-select filter component
 
 ## Output
 
 Produce a scannable summary of what you learned:
 
-- **UI Library**: Available shadcn/ui components and how they're composed
-- **Styling**: How Tailwind 4 and `cn()` are used for conditional classes
+- **UI Library**: Available shadcn/Radix UI components and how they're composed
+- **Styling**: How Tailwind and `cn()` are used for conditional classes
 - **Props Pattern**: How props interfaces are defined (inline types vs exported interfaces)
-- **Server vs Client**: Which components are Server Components (default) vs Client Components (`"use client"`)
-- **Forms**: How Server Actions + `useActionState` + `useFormStatus` work together for form state
+- **Data Fetching**: How tRPC query hooks (`trpc.*.list.useQuery`) are used for reads
+- **Forms**: How tRPC mutation hooks (`trpc.*.create.useMutation`) + React Hook Form + Zod handle form state and validation
 
 Use bullet points. Keep it concise.

@@ -23,19 +23,20 @@ If GitHub issue numbers are provided:
 
 ### Step 1: Analyze the Codebase
 
-1. Study the vertical feature slice (`src/features/polls/`) — models, schemas, repository, service, actions
-2. Study the database setup (`src/core/database/`) — schema, client, migrations
-3. Study the shared utilities (`src/shared/`)
-4. Check `package.json` for backend dependencies (Drizzle, better-sqlite3, Zod, Pino)
+1. Study the tRPC router assembly (`server/routers.ts`) — all procedures for every resource
+2. Study the database schema (`drizzle/schema.ts`) — tables, columns, and relations
+3. Study a data-access module (`server/db.ts`) — Drizzle query functions for the beer catalog
+4. Study the tRPC + Express setup (`server/_core/trpc.ts`, `server/_core/index.ts`, `server/_core/context.ts`)
+5. Check `package.json` for backend dependencies (tRPC, Drizzle, PostgreSQL, Zod, jose)
 
 ## Output
 
 Produce a scannable summary of what you learned:
 
 - **Purpose**: What the data layer does
-- **Tech Stack**: Next.js Server Actions, Drizzle ORM, SQLite (better-sqlite3), Zod, Pino
-- **Data Model**: Core tables (polls, poll_options, votes) and their relationships
-- **Patterns**: Vertical slice (models → schemas → repository → service → actions), error classes with HTTP status codes
-- **Server Actions**: How mutations flow from UI → action → service → repository
+- **Tech Stack**: Express, tRPC, Drizzle ORM, PostgreSQL, Zod, jose (JWT), Google OAuth
+- **Data Model**: Core tables (beer, style, brewery, menuCategory, wine, winery, varietal, location, user) and their relationships
+- **Patterns**: Flat resource-based routers in `routers.ts`; query functions in `db.ts` / `db_wine.ts`; procedure types (publicProcedure, protectedProcedure, curatorProcedure, adminProcedure)
+- **Mutations**: How writes flow from tRPC mutation → db function → Drizzle → PostgreSQL
 
 Use bullet points. Keep it concise.

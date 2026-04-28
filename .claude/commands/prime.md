@@ -23,10 +23,11 @@ If GitHub issue numbers are provided:
 
 ### Step 1: Analyze the Codebase
 
-1. Read `CLAUDE.md` and `CODEBASE-GUIDE.md` for project conventions
-2. Study the feature slice (`src/features/polls/`)
-3. Study the app routes (`src/app/`)
-4. Check recent commits with `git log --oneline -5`
+1. Read `CLAUDE.md` if it exists for project conventions
+2. Study the database schema (`drizzle/schema.ts`) — tables and relationships
+3. Study the tRPC router (`server/routers.ts`) — available procedures and auth requirements
+4. Study the pages (`client/src/pages/`) — what routes exist and what they do
+5. Check recent commits with `git log --oneline -5`
 
 ## Output
 
@@ -34,10 +35,10 @@ Produce a scannable summary of what you learned:
 
 - **Project Purpose**: One sentence
 - **Tech Stack**
-  - Frontend: framework, UI library, state management
-  - Backend: framework, database, validation
-- **Data Model**: Core entities
-- **Key Patterns**: Database, API, state management patterns
+  - Frontend: React 19, Wouter, tRPC client, Radix UI / shadcn, Tailwind
+  - Backend: Express, tRPC, Drizzle ORM, PostgreSQL, Google OAuth, jose JWT
+- **Data Model**: Core entities (beer, style, brewery, menuCategory, wine, winery, varietal, location, user)
+- **Key Patterns**: tRPC procedures with Zod validation, db query functions in `server/db.ts`, tRPC hooks in client pages
 - **Current State**: Recent commits, current branch
 
 Use bullet points. Keep it concise.
