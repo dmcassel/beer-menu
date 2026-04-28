@@ -1,11 +1,11 @@
 ﻿---
-description: Generate Jira user stories from a PRD
-argument-hint: <path-to-prd> [--project PROJECT_KEY] [--epic EPIC_KEY]
+description: Generate GitHub issues (user stories) from a PRD
+argument-hint: <path-to-prd> [--milestone MILESTONE] [--label LABEL]
 ---
 
-# Create Jira Stories from PRD
+# Create GitHub Issues from PRD
 
-Generate structured user stories from a Product Requirements Document. When Jira MCP is configured, automatically creates the stories in Jira.
+Generate structured user stories from a Product Requirements Document. When the `gh` CLI is available, automatically creates the issues on GitHub.
 
 **Input**: $ARGUMENTS
 
@@ -25,8 +25,8 @@ Extract:
 - Technical constraints and dependencies
 
 Parse optional flags from arguments:
-- `--project` or `-p`: Jira project key (e.g., `RH`, `PROJ`)
-- `--epic` or `-e`: Existing epic key to link stories to (e.g., `RH-42`)
+- `--milestone` or `-m`: GitHub milestone title to assign issues to (e.g., `v1.0`)
+- `--label` or `-l`: Additional label(s) to apply to all created issues (e.g., `backend`)
 
 ---
 
@@ -56,11 +56,11 @@ For each feature or requirement in the PRD:
 ### Story Categories
 
 Group stories by type:
-- **Feature**: New functionality (Jira type: Story)
-- **Enhancement**: Improvement to existing functionality (Jira type: Story)
-- **Bug**: Fix for known issues (Jira type: Bug)
-- **Technical**: Infrastructure, refactoring, tooling (Jira type: Task)
-- **Spike**: Research or investigation needed (Jira type: Task)
+- **Feature**: New functionality (label: `feature`)
+- **Enhancement**: Improvement to existing functionality (label: `enhancement`)
+- **Bug**: Fix for known issues (label: `bug`)
+- **Technical**: Infrastructure, refactoring, tooling (label: `technical`)
+- **Spike**: Research or investigation needed (label: `spike`)
 
 ---
 
@@ -72,7 +72,7 @@ Group stories by type:
 ## [STORY-ID] Story Title
 
 **Type**: Feature | Enhancement | Technical | Spike
-**Jira Type**: Story | Task | Bug
+**Labels**: feature | enhancement | bug | technical | spike
 **Priority**: High | Medium | Low
 **Complexity**: Small | Medium | Large
 **Phase**: (from PRD implementation phases)
@@ -125,75 +125,49 @@ Save the stories to `.agents/stories/` directory as a markdown file.
 
 ---
 
-## Phase 6: JIRA INTEGRATION (when MCP is available)
+## Phase 6: GITHUB INTEGRATION (when gh CLI is available)
 
-**Check if the Atlassian MCP server is available.** Look for tools prefixed with `mcp__atlassian__` (e.g., `mcp__atlassian__createJiraIssue`, `mcp__atlassian__searchJiraIssuesUsingJql`). If available, offer to push stories directly to Jira.
+**Check if the `gh` CLI is available** by running `gh auth status`. If authenticated, offer to create the issues on GitHub.
 
-### If Atlassian MCP IS available:
+### If gh CLI IS available:
 
-1. **Resolve the Cloud ID** by calling `mcp__atlassian__getAccessibleAtlassianResources` to get the site's `cloudId`. You will need this for every subsequent Jira API call.
-
-2. **Validate the project and epic** before creating issues:
-   - Call `mcp__atlassian__getJiraIssue` with the epic key (e.g., `RH-1`) to confirm it exists and is an Epic type
-   - Call `mcp__atlassian__getJiraProjectIssueTypesMetadata` with the project key to confirm available issue types (typically: Story, Task, Bug, Subtask)
-
-3. **Ask the user** before creating issues:
+1. **Ask the user** before creating issues:
    ```
-   I've generated {count} stories. Would you like me to create these in Jira?
-   - Project: {PROJECT_KEY} (or ask if not provided via --project)
-   - Epic: {EPIC_KEY} (or ask if not provided via --epic)
+   I've generated {count} issues. Would you like me to create these on GitHub?
+   - Milestone: {MILESTONE} (or "none" if not provided via --milestone)
+   - Extra label: {LABEL} (or "none" if not provided via --label)
    ```
 
-4. **If user confirms**, create issues in Jira using `mcp__atlassian__createJiraIssue` for each story with these parameters:
-   - `cloudId`: The Cloud ID from step 1
-   - `projectKey`: The project key (e.g., `RH`)
-   - `issueTypeName`: Map from story category — use exactly `"Story"`, `"Task"`, or `"Bug"` (these are the available types at hierarchy level 0)
-   - `summary`: Story title
-   - `description`: Full description + acceptance criteria
-   - `contentFormat`: `"markdown"` (so the description can use markdown formatting)
-   - `parent`: The epic key (e.g., `"RH-1"`) — this links the issue under the epic as a child. In team-managed Jira projects, epics are parents of stories/tasks/bugs.
-   - `additional_fields`: Use this for priority and labels, e.g.:
-     ```json
-     {
-       "priority": { "name": "High" },
-       "labels": ["frontend", "api"]
-     }
-     ```
+2. **If user confirms**, create each issue with:
+   ```bash
+   gh issue create \
+     --title "{story title}" \
+     --body "{description + acceptance criteria in markdown}" \
+     --label "{type-label}" \
+     --label "{priority-label}" \
+     [--milestone "{milestone}"] \
+     [--label "{extra-label}"]
+   ```
+   Capture the returned issue URL for the report.
 
-5. **Add technical notes** as a comment on each created issue using `mcp__atlassian__addCommentToJiraIssue`:
-   - `cloudId`: The Cloud ID
-   - `issueIdOrKey`: The key of the newly created issue (e.g., `RH-5`)
-   - `commentBody`: The technical notes content
-   - `contentFormat`: `"markdown"`
-
-6. **Create dependency links** between stories using `mcp__atlassian__createIssueLink`:
-   - `cloudId`: The Cloud ID
-   - `type`: `"Blocks"` (use `mcp__atlassian__getIssueLinkTypes` to confirm available link types)
-   - `inwardIssue`: The blocking issue key
-   - `outwardIssue`: The blocked issue key
-
-7. **Report created issues**:
+3. **Report created issues**:
    ```markdown
-   ## Jira Issues Created
+   ## GitHub Issues Created
 
-   | Key | Title | Type | Priority |
-   |-----|-------|------|----------|
-   | RH-2 | Story title | Story | High |
-   | RH-3 | Story title | Task | Medium |
+   | # | Title | Labels |
+   |---|-------|--------|
+   | #42 | Story title | feature, high |
+   | #43 | Story title | technical, medium |
    ...
-
-   **Epic**: RH-1
-   **Project**: RH
-   **Board URL**: https://{site}.atlassian.net/jira/software/projects/{PROJECT_KEY}/board
    ```
 
-### If Atlassian MCP is NOT available:
+### If gh CLI is NOT available:
 
 Output the stories as markdown only and note:
 ```
-Atlassian MCP is not configured. To push stories to Jira automatically:
-1. Get an API token from https://id.atlassian.com/manage/api-tokens
-2. Configure .mcp.json with Atlassian MCP server credentials
+gh CLI is not installed or not authenticated. To push issues to GitHub automatically:
+1. Install gh: https://cli.github.com
+2. Authenticate: gh auth login
 3. Re-run this command
 ```
 
@@ -206,4 +180,4 @@ Atlassian MCP is not configured. To push stories to Jira automatically:
 - Technical stories need acceptance criteria too (build passes, tests pass, etc.)
 - Include a "definition of done" story if the team doesn't have one
 - Reference the PRD section for each story so reviewers can trace back
-- Use `contentFormat: "markdown"` on all create/comment calls so descriptions render properly in Jira
+- GitHub renders markdown in issue bodies natively — no special formatting flags needed

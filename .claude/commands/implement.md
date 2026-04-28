@@ -28,7 +28,7 @@ Load the plan file and extract:
 - **Files to Change** - CREATE/UPDATE list
 - **Tasks** - Implementation order
 - **Validation Commands** - How to verify
-- **Jira Issue** - Check the plan's Metadata table for a Jira Issue key (e.g., `RH-5`). If present, this issue will be updated after implementation is complete.
+- **GitHub Issue** - Check the plan's Metadata table for a GitHub Issue number (e.g., `42`). If present, this issue will be updated after implementation is complete.
 
 **If plan not found:**
 ```
@@ -211,43 +211,43 @@ mv $ARGUMENTS .agents/plans/completed/
 
 ---
 
-## Phase 6: UPDATE JIRA (if issue specified in plan)
+## Phase 6: UPDATE GITHUB ISSUE (if issue specified in plan)
 
-**This phase is mandatory if the plan's Metadata table contains a Jira Issue key.** Skip only if the Jira Issue field is "N/A" or absent.
+**This phase is mandatory if the plan's Metadata table contains a GitHub Issue number.** Skip only if the GitHub Issue field is "N/A" or absent.
 
-### 6.1 Resolve Cloud ID
+### 6.1 Add Implementation Comment
 
-Call `mcp__atlassian__getAccessibleAtlassianResources` to get the `cloudId`.
+```bash
+gh issue comment {number} --body "## Implementation Complete
 
-### 6.2 Transition the Issue
+**Branch**: {branch-name}
+**Report**: \`.agents/reports/{plan-name}-report.md\`
 
-1. Call `mcp__atlassian__getTransitionsForJiraIssue` with `cloudId` and `issueIdOrKey` to get available transitions — each transition has a numeric `id` and a `name`
-2. Find the most appropriate transition (prefer "In Review" or "In Progress"; fall back to "Done" if no review state exists)
-3. Call `mcp__atlassian__transitionJiraIssue` with:
-   - `cloudId`: The Cloud ID
-   - `issueIdOrKey`: The issue key
-   - `transition`: `{ "id": "{transition_id}" }` — use the numeric ID from step 1, NOT the status name
+### What was implemented
+{Brief description}
 
-### 6.3 Add Implementation Comment
+### Files changed
+- {N} files created, {M} files updated, {K} tests written
 
-Call `mcp__atlassian__addCommentToJiraIssue` with:
-- `issueIdOrKey`: The Jira issue key from the plan
-- `contentFormat`: `"markdown"`
-- `commentBody`: A summary including:
-  - What was implemented
-  - Branch name
-  - Files created/updated (count)
-  - Tests written (count)
-  - Any deviations from the plan
-  - Link to the implementation report file path
+### Deviations
+{List deviations or 'None'}
+"
+```
 
-### 6.4 Update Issue Description (if needed)
+### 6.2 Apply Labels (if applicable)
 
-If the implementation resulted in meaningful deviations from the original issue description, call `mcp__atlassian__editJiraIssue` with:
-- `cloudId`: The Cloud ID
-- `issueIdOrKey`: The issue key
-- `contentFormat`: `"markdown"`
-- `fields`: An object with the fields to update, e.g. `{ "description": "updated description..." }`
+```bash
+# Mark as ready for review
+gh issue edit {number} --add-label "ready-for-review"
+```
+
+### 6.3 Close the Issue (if fully implemented)
+
+If the implementation completes the issue's stated goal:
+
+```bash
+gh issue close {number} --comment "Implemented in branch {branch-name}. See .agents/reports/{plan-name}-report.md for details."
+```
 
 ---
 
@@ -283,9 +283,9 @@ If the implementation resulted in meaningful deviations from the original issue 
 - Report: `.agents/reports/{name}-report.md`
 - Plan archived: `.agents/plans/completed/`
 
-### Jira
+### GitHub Issue
 
-{If issue was updated: "Updated {ISSUE_KEY}: transitioned to {status}, added implementation comment." Otherwise: "No Jira issue linked."}
+{If issue was updated: "Commented on #{number} and closed/labeled." Otherwise: "No GitHub issue linked."}
 
 ### Next Steps
 
