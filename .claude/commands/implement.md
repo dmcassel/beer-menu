@@ -290,8 +290,15 @@ gh issue close {number} --comment "Implemented in branch {branch-name}. See .age
 ### Next Steps
 
 1. Review the report
-2. Create PR: `gh pr create`
-3. Merge when approved
+2. **Check PR size** before creating:
+   ```bash
+   git diff main --stat
+   ```
+   If the diff exceeds 400 meaningful lines or 15 files, identify a logical
+   split point, push what's done as a draft PR, and create a new plan for
+   the remainder. Do not create an oversized PR.
+3. Create PR: `gh pr create`
+4. Merge when approved
 ```
 
 ---

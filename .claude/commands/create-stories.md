@@ -175,6 +175,9 @@ gh CLI is not installed or not authenticated. To push issues to GitHub automatic
 
 ## Tips
 
+- Each story should map to exactly one PR. If implementing a story would produce
+  a PR too large to review in one sitting (>400 lines or >10 files), break the
+  story into smaller pieces before writing any code.
 - Keep stories small enough to complete in 1-2 days
 - Acceptance criteria should be verifiable without asking the author
 - Technical stories need acceptance criteria too (build passes, tests pass, etc.)

@@ -32,6 +32,19 @@ Perform a thorough code review:
 | Folder path | `server/src/` | Review all files in folder |
 | Blank | (none) | Review unstaged git changes |
 
+### Check PR Size (for PRs only)
+
+Before reviewing, run:
+```bash
+gh pr diff {NUMBER} --stat
+```
+
+If the diff exceeds 400 meaningful lines or 15 files (excluding lockfiles and
+generated files), stop and flag it immediately:
+
+> **This PR is too large to review effectively.** Request the author split it
+> into smaller, focused PRs before proceeding with a detailed review.
+
 ### Get Review Target
 
 **For PR:**

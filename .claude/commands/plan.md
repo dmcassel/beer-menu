@@ -69,6 +69,20 @@ Use the Explore agent to find:
 - What files need to be modified?
 - What's the dependency order?
 
+### PR Size Check
+
+Before generating the plan, count the files to change. If the plan requires
+more than 10 file changes OR touches more than one independent concern, STOP
+and split it into multiple sequential plans, each targeting its own PR.
+
+A concern is independent if it could be reviewed and merged without the other.
+Examples that must be split:
+- Schema migration + feature using that schema → two plans
+- Backend tRPC router + frontend UI → one plan only if both are trivially small
+- Refactor + new feature → always two plans
+
+Each plan should be completable as a PR reviewable in under 30 minutes.
+
 ### Identify Risks
 
 | Risk | Mitigation |
