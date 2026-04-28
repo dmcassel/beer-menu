@@ -65,7 +65,7 @@ Explore the codebase to understand organization:
 
 From package.json and config files, identify:
 
-- Runtime/Language (Node, Bun, Deno, browser)
+- Runtime/Language (Node, Deno, browser)
 - Framework(s)
 - Database (if any)
 - Testing tools

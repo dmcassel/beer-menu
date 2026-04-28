@@ -10,17 +10,17 @@ Run all validation checks and report results.
 
 ## Checks to Run
 
-All commands run from the project root (single package.json, Bun monolith):
+All commands run from the project root (single package.json):
 
 ```bash
-# Lint (Biome)
-bun run lint
+# Lint
+npm run format
 
 # Type check
-bunx tsc --noEmit
+npm run check
 
-# Tests with coverage
-bun test
+# Tests
+npm test
 ```
 
 ---
