@@ -112,13 +112,13 @@ Run automated checks:
 
 ```bash
 # Type check
-pnpm run build
+npm run build
 
 # Lint
-pnpm run lint
+npm run lint
 
 # Tests
-pnpm test
+npm test
 ```
 
 ---

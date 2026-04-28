@@ -166,7 +166,7 @@ Execute in order. Each task is atomic and verifiable.
 - **Action**: CREATE / UPDATE
 - **Implement**: {what to do}
 - **Mirror**: `path/to/example.ts:lines` - follow this pattern
-- **Validate**: `pnpm run build`
+- **Validate**: `npm run build`
 
 ### Task 2: {Description}
 
@@ -174,7 +174,7 @@ Execute in order. Each task is atomic and verifiable.
 - **Action**: CREATE / UPDATE
 - **Implement**: {what to do}
 - **Mirror**: `path/to/example.ts:lines`
-- **Validate**: `pnpm run build`
+- **Validate**: `npm run build`
 
 {Continue for each task...}
 
@@ -184,13 +184,13 @@ Execute in order. Each task is atomic and verifiable.
 
 ```bash
 # Type check
-pnpm run build
+npm run build
 
 # Lint
-pnpm run lint
+npm run lint
 
 # Tests
-pnpm test
+npm test
 ```
 
 ---

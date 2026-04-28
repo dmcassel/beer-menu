@@ -79,7 +79,7 @@ Before writing any code for a task:
 **After EVERY task:**
 
 ```bash
-pnpm run build
+npm run build
 ```
 
 **If it fails:**
@@ -105,13 +105,13 @@ Task 2: UPDATE src/y.ts ✅
 
 ```bash
 # Type check
-pnpm run build
+npm run build
 
 # Lint
-pnpm run lint
+npm run lint
 
 # Tests
-pnpm test
+npm test
 ```
 
 **All must pass with zero errors.**
@@ -309,5 +309,5 @@ gh issue close {number} --comment "Implemented in branch {branch-name}. See .age
 |---------|--------|
 | Type check fails | Read error, fix issue, re-run |
 | Tests fail | Fix implementation or test, re-run |
-| Lint fails | Run `pnpm run lint --fix`, then manual fixes |
+| Lint fails | Run `npm run lint --fix`, then manual fixes |
 | Build fails | Check error output, fix and re-run |
