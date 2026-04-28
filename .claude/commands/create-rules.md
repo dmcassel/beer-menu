@@ -11,6 +11,7 @@ Generate a CLAUDE.md file by analyzing the codebase and extracting patterns.
 ## Objective
 
 Create project-specific global rules that give Claude context about:
+
 - What this project is
 - Technologies used
 - How the code is organized
@@ -25,15 +26,15 @@ Create project-specific global rules that give Claude context about:
 
 First, determine what kind of project this is:
 
-| Type | Indicators |
-|------|------------|
-| Web App (Full-stack) | Separate client/server dirs, API routes |
-| Web App (Frontend) | React/Vue/Svelte, no server code |
-| API/Backend | Express/Fastify/etc, no frontend |
-| Library/Package | `main`/`exports` in package.json, publishable |
-| CLI Tool | `bin` in package.json, command-line interface |
-| Monorepo | Multiple packages, workspaces config |
-| Script/Automation | Standalone scripts, task-focused |
+| Type                 | Indicators                                    |
+| -------------------- | --------------------------------------------- |
+| Web App (Full-stack) | Separate client/server dirs, API routes       |
+| Web App (Frontend)   | React/Vue/Svelte, no server code              |
+| API/Backend          | Express/Fastify/etc, no frontend              |
+| Library/Package      | `main`/`exports` in package.json, publishable |
+| CLI Tool             | `bin` in package.json, command-line interface |
+| Monorepo             | Multiple packages, workspaces config          |
+| Script/Automation    | Standalone scripts, task-focused              |
 
 ### Analyze Configuration
 
@@ -44,11 +45,13 @@ package.json       → dependencies, scripts, type
 tsconfig.json      → TypeScript settings
 vite.config.*      → Build tool
 *.config.js/ts     → Various tool configs
+build.gradle       → Gradle configuration
 ```
 
 ### Map Directory Structure
 
 Explore the codebase to understand organization:
+
 - Where does source code live?
 - Where are tests?
 - Any shared code?
@@ -61,6 +64,7 @@ Explore the codebase to understand organization:
 ### Extract Tech Stack
 
 From package.json and config files, identify:
+
 - Runtime/Language (Node, Bun, Deno, browser)
 - Framework(s)
 - Database (if any)
@@ -71,6 +75,7 @@ From package.json and config files, identify:
 ### Identify Patterns
 
 Study existing code for:
+
 - **Naming**: How are files, functions, classes named?
 - **Structure**: How is code organized within files?
 - **Errors**: How are errors created and handled?
@@ -80,6 +85,7 @@ Study existing code for:
 ### Find Key Files
 
 Identify files that are important to understand:
+
 - Entry points
 - Configuration
 - Core business logic
@@ -97,6 +103,7 @@ Use the template at `.claude/CLAUDE-template.md` as a starting point.
 **Output path**: `CLAUDE.md` (project root)
 
 **Adapt to the project:**
+
 - Remove sections that don't apply
 - Add sections specific to this project type
 - Keep it concise - focus on what's useful
@@ -111,6 +118,7 @@ Use the template at `.claude/CLAUDE-template.md` as a starting point.
 6. **Key Files** - What files are important to know?
 
 **Optional sections (add if relevant):**
+
 - Architecture (for complex apps)
 - API endpoints (for backends)
 - Component patterns (for frontends)
