@@ -49,7 +49,7 @@ git status
 
 | State | Action |
 |-------|--------|
-| On main, clean | Create branch: `git checkout -b feature/{plan-name}` |
+| On main, clean | Create branch: `git checkout -b {issue-number}/{plan-name}` (issue number from plan metadata) |
 | On main, dirty | STOP: "Stash or commit changes first" |
 | On feature branch | Use it |
 
