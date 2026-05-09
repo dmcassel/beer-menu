@@ -179,7 +179,16 @@ export const appRouter = router({
   }),
 
   beer: router({
-    list: publicProcedure.query(() => db.getAllBeers()),
+    list: publicProcedure
+      .input(
+        z.object({
+          search: z.string().optional(),
+          menuCategoryIds: z.array(z.number()).optional(),
+          styleIds: z.array(z.number()).optional(),
+          breweryIds: z.array(z.number()).optional(),
+        })
+      )
+      .query(({ input }) => db.getAllBeers(input)),
     listAvailable: publicProcedure.query(() => db.getAllAvailableBeers()),
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
