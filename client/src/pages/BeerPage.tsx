@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit2, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { FilterControls } from "@/components/FilterControls";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 
 export default function BeerPage() {
@@ -31,6 +32,8 @@ export default function BeerPage() {
   const [selectedMenuCategories, setSelectedMenuCategories] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedBreweries, setSelectedBreweries] = useState<string[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const activeFilterCount = selectedMenuCategories.length + selectedStyles.length + selectedBreweries.length;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
@@ -242,12 +245,31 @@ export default function BeerPage() {
       </div>
 
       <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
-        <Input
-          placeholder="Search beers..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search beers..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="flex-1"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsFilterOpen(true)}
+            className="md:hidden relative shrink-0"
+          >
+            <Filter className="w-4 h-4" />
+            {activeFilterCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              >
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+        </div>
+        <div className="hidden md:grid md:grid-cols-3 gap-4">
           <FilterControls
             selectedMenuCategories={selectedMenuCategories}
             setSelectedMenuCategories={setSelectedMenuCategories}
@@ -380,6 +402,40 @@ export default function BeerPage() {
         onConfirm={handleDeleteConfirm}
         itemName={beerToDelete?.name}
       />
+
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen} modal={false}>
+        <SheetContent side="bottom" className="h-[85vh]">
+          <SheetHeader>
+            <SheetTitle>Filter Beers</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-4 mt-6">
+            <FilterControls
+              selectedMenuCategories={selectedMenuCategories}
+              setSelectedMenuCategories={setSelectedMenuCategories}
+              selectedStyles={selectedStyles}
+              setSelectedStyles={setSelectedStyles}
+              selectedBreweries={selectedBreweries}
+              setSelectedBreweries={setSelectedBreweries}
+              menuCategories={menuCategories}
+              styles={styles ?? []}
+              breweries={breweries ?? []}
+            />
+            {activeFilterCount > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedMenuCategories([]);
+                  setSelectedStyles([]);
+                  setSelectedBreweries([]);
+                }}
+                className="w-full"
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
