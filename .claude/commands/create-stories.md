@@ -145,19 +145,40 @@ Save the stories to `.agents/stories/` directory as a markdown file.
      --body "{description + acceptance criteria in markdown}" \
      --label "{type-label}" \
      --label "{priority-label}" \
+     --label "Claude" \
      [--milestone "{milestone}"] \
      [--label "{extra-label}"]
    ```
    Capture the returned issue URL for the report.
 
-3. **Report created issues**:
+3. **Add each issue to the GitHub project** with status **"Todo"**:
+   ```bash
+   gh project item-add 1 --owner dmcassel --url <issue-url>
+   ```
+   Then update the item's Status field to "Todo" using the project's field/option IDs
+   (look up with `gh project field-list 1 --owner dmcassel --format json`).
+
+4. **If more than one issue was created**, also create an **Epic** issue:
+   - Title: `EPIC: {feature/PRD name}`
+   - Body: a list of links to all sub-issues (e.g. `- #42 Story title`)
+   ```bash
+   gh issue create \
+     --title "EPIC: {feature name}" \
+     --body "{list of sub-issue links}" \
+     --label "epic" \
+     --label "Claude"
+   ```
+   Add the Epic to the project with status **"Todo"** as well.
+
+5. **Report created issues**:
    ```markdown
    ## GitHub Issues Created
 
-   | # | Title | Labels |
-   |---|-------|--------|
-   | #42 | Story title | feature, high |
-   | #43 | Story title | technical, medium |
+   | # | Title | Labels | Project |
+   |---|-------|--------|---------|
+   | #42 | Story title | feature, high | Todo |
+   | #43 | Story title | technical, medium | Todo |
+   | #44 | EPIC: Feature name | epic | Todo |
    ...
    ```
 

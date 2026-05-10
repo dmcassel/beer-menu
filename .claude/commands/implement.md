@@ -211,16 +211,38 @@ mv $ARGUMENTS .agents/plans/completed/
 
 ---
 
-## Phase 6: UPDATE GITHUB ISSUE (if issue specified in plan)
+## Phase 6: CREATE PULL REQUEST AND UPDATE GITHUB ISSUE
 
-**This phase is mandatory if the plan's Metadata table contains a GitHub Issue number.** Skip only if the GitHub Issue field is "N/A" or absent.
+### 6.1 Create Pull Request
 
-### 6.1 Add Implementation Comment
+Always create a PR after implementation is complete:
+
+```bash
+gh pr create \
+  --title "{concise title}" \
+  --label "Claude" \
+  --body "## Summary
+{1-3 bullet points describing what was implemented}
+
+## Test plan
+{Bulleted checklist of how to verify the change}
+
+Closes #{issue-number}
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+```
+
+> **Do NOT close the issue.** The `Closes #N` keyword in the PR body will close it automatically when the PR is merged. Leave the issue open until then.
+
+### 6.2 Add Implementation Comment to Issue (if issue specified in plan)
+
+**This step is mandatory if the plan's Metadata table contains a GitHub Issue number.** Skip only if the GitHub Issue field is "N/A" or absent.
 
 ```bash
 gh issue comment {number} --body "## Implementation Complete
 
 **Branch**: {branch-name}
+**PR**: {pr-url}
 **Report**: \`.agents/reports/{plan-name}-report.md\`
 
 ### What was implemented
@@ -232,21 +254,6 @@ gh issue comment {number} --body "## Implementation Complete
 ### Deviations
 {List deviations or 'None'}
 "
-```
-
-### 6.2 Apply Labels (if applicable)
-
-```bash
-# Mark as ready for review
-gh issue edit {number} --add-label "ready-for-review"
-```
-
-### 6.3 Close the Issue (if fully implemented)
-
-If the implementation completes the issue's stated goal:
-
-```bash
-gh issue close {number} --comment "Implemented in branch {branch-name}. See .agents/reports/{plan-name}-report.md for details."
 ```
 
 ---
@@ -283,22 +290,18 @@ gh issue close {number} --comment "Implemented in branch {branch-name}. See .age
 - Report: `.agents/reports/{name}-report.md`
 - Plan archived: `.agents/plans/completed/`
 
+### Pull Request
+
+{PR URL, e.g. https://github.com/dmcassel/beer-menu/pull/42}
+
 ### GitHub Issue
 
-{If issue was updated: "Commented on #{number} and closed/labeled." Otherwise: "No GitHub issue linked."}
+{If issue was updated: "Commented on #{number}. Issue will auto-close when PR is merged." Otherwise: "No GitHub issue linked."}
 
 ### Next Steps
 
 1. Review the report
-2. **Check PR size** before creating:
-   ```bash
-   git diff main --stat
-   ```
-   If the diff exceeds 400 meaningful lines or 15 files, identify a logical
-   split point, push what's done as a draft PR, and create a new plan for
-   the remainder. Do not create an oversized PR.
-3. Create PR: `gh pr create`
-4. Merge when approved
+2. Review and merge the PR — the linked issue will close automatically on merge
 ```
 
 ---
