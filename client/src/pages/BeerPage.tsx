@@ -38,9 +38,9 @@ export default function BeerPage() {
 
   const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({
     search: debouncedSearch || undefined,
-    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
-    styleIds: selectedStyles.map(id => parseInt(id)),
-    breweryIds: selectedBreweries.map(id => parseInt(id)),
+    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id, 10)),
+    styleIds: selectedStyles.map(id => parseInt(id, 10)),
+    breweryIds: selectedBreweries.map(id => parseInt(id, 10)),
   });
   const { data: breweries } = trpc.brewery.list.useQuery();
   const { data: styles } = trpc.style.list.useQuery();
@@ -250,6 +250,12 @@ export default function BeerPage() {
 
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
+      ) : beers?.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          {search || selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0
+            ? "No beers match your filters."
+            : "No beers found."}
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {beers?.map((beer) => (
