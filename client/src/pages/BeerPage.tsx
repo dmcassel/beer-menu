@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
+import { FilterControls } from "@/components/FilterControls";
 
 export default function BeerPage() {
   const [open, setOpen] = useState(false);
@@ -24,10 +25,26 @@ export default function BeerPage() {
     ibu: "",
     status: "out" as "on_tap" | "bottle_can" | "out",
   });
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedMenuCategories, setSelectedMenuCategories] = useState<string[]>([]);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [selectedBreweries, setSelectedBreweries] = useState<string[]>([]);
 
-  const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({});
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({
+    search: debouncedSearch || undefined,
+    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id, 10)),
+    styleIds: selectedStyles.map(id => parseInt(id, 10)),
+    breweryIds: selectedBreweries.map(id => parseInt(id, 10)),
+  });
   const { data: breweries } = trpc.brewery.list.useQuery();
   const { data: styles } = trpc.style.list.useQuery();
+  const { data: menuCategories = [] } = trpc.menuCategory.listAvailable.useQuery();
   const createMutation = trpc.beer.create.useMutation();
   const updateMutation = trpc.beer.update.useMutation();
   const deleteMutation = trpc.beer.delete.useMutation();
@@ -210,8 +227,35 @@ export default function BeerPage() {
         </Dialog>
       </div>
 
+      <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
+        <Input
+          placeholder="Search beers..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        <div className="grid grid-cols-3 gap-4">
+          <FilterControls
+            selectedMenuCategories={selectedMenuCategories}
+            setSelectedMenuCategories={setSelectedMenuCategories}
+            selectedStyles={selectedStyles}
+            setSelectedStyles={setSelectedStyles}
+            selectedBreweries={selectedBreweries}
+            setSelectedBreweries={setSelectedBreweries}
+            menuCategories={menuCategories}
+            styles={styles ?? []}
+            breweries={breweries ?? []}
+          />
+        </div>
+      </div>
+
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
+      ) : beers?.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          {search || selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0
+            ? "No beers match your filters."
+            : "No beers found."}
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {beers?.map((beer) => (
