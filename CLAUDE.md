@@ -185,3 +185,46 @@ npm test        # Run tests (needs test DB)
 - The test DB runs on port 5433; production DB on 5432
 - Beer status values: `on_tap`, `bottle_can`, `out`; only `on_tap` and `bottle_can` beers appear on the public menu
 - User roles: `user` (read-only), `curator` (can create/edit/delete catalog items), `admin` (full access)
+
+---
+
+## GitHub Project Workflow
+
+GitHub project: https://github.com/users/dmcassel/projects/1/views/1
+
+### Worktrees
+
+Use the user's existing worktree via `EnterWorktree`. Do not create a new worktree with `isolation: "worktree"`.
+
+### Creating Stories (`/create-stories`)
+
+After creating GitHub issues:
+1. Add each issue to the GitHub project with status **"Todo"**
+2. If more than one issue is created, also create an **Epic** issue:
+   - Title prefix: `EPIC: `
+   - Body includes links to all sub-issues
+   - Add the Epic to the project with status **"Todo"**
+
+### Planning (`/plan`)
+
+After creating the plan file, move the GitHub issue to **"In Progress"** in the project.
+If the issue belongs to an Epic, also move the Epic to **"In Progress"** (when the first sub-issue moves).
+
+### After Implementing (`/implement`)
+
+After implementation is complete:
+1. Create a PR with `gh pr create`
+2. Do **not** close the issue — leave it open until the PR is merged/closed
+
+### Epic Completion
+
+When the last sub-issue in an Epic is closed, close the Epic issue.
+
+### GitHub Project CLI
+
+Add an issue to the project:
+```bash
+gh project item-add 1 --owner dmcassel --url <issue-url>
+```
+
+Update an item's status (requires project ID, item ID, field ID, and option ID — look these up with `gh project field-list 1 --owner dmcassel` and `gh project item-list 1 --owner dmcassel --format json`).

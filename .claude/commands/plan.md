@@ -205,7 +205,23 @@ npm test
 
 ---
 
-## Phase 5: OUTPUT
+## Phase 5: GITHUB PROJECT UPDATE
+
+If the plan has a GitHub Issue number in its Metadata table:
+
+1. Move the issue to **"In Progress"** in the GitHub project:
+   ```bash
+   # Add item if not already in project
+   gh project item-add 1 --owner dmcassel --url <issue-url>
+   # Update Status field to "In Progress"
+   # (look up field/option IDs with: gh project field-list 1 --owner dmcassel --format json)
+   ```
+
+2. If the issue belongs to an Epic (check for issues that link to it, or ask the user), also move the Epic to **"In Progress"** if this is the first sub-issue being planned.
+
+---
+
+## Phase 6: OUTPUT
 
 ```markdown
 ## Plan Created
@@ -222,6 +238,8 @@ npm test
 **Key Patterns**:
 - {Pattern 1 with file:line}
 - {Pattern 2 with file:line}
+
+**GitHub Issue**: {#number moved to "In Progress", or "N/A"}
 
 **Next Step**: Review the plan, then implement tasks in order.
 ```
