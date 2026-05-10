@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Edit2, X } from "lucide-react";
 import { toast } from "sonner";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { FilterControls } from "@/components/FilterControls";
+import { Badge } from "@/components/ui/badge";
 
 export default function BeerPage() {
   const [open, setOpen] = useState(false);
@@ -35,6 +36,19 @@ export default function BeerPage() {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
   }, [search]);
+
+  const hasActiveFilters =
+    search.length > 0 ||
+    selectedMenuCategories.length > 0 ||
+    selectedStyles.length > 0 ||
+    selectedBreweries.length > 0;
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setSelectedMenuCategories([]);
+    setSelectedStyles([]);
+    setSelectedBreweries([]);
+  };
 
   const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({
     search: debouncedSearch || undefined,
@@ -246,6 +260,66 @@ export default function BeerPage() {
             breweries={breweries ?? []}
           />
         </div>
+        {hasActiveFilters && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {selectedMenuCategories.map(id => {
+              const category = menuCategories.find((c: { menu_cat_id: number; name: string }) => c.menu_cat_id === parseInt(id, 10));
+              return category ? (
+                <Badge
+                  key={`cat-${id}`}
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setSelectedMenuCategories(selectedMenuCategories.filter(catId => catId !== id))
+                  }
+                >
+                  {category.name}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ) : null;
+            })}
+            {selectedStyles.map(id => {
+              const style = styles?.find(s => s.styleId === parseInt(id, 10));
+              return style ? (
+                <Badge
+                  key={`style-${id}`}
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setSelectedStyles(selectedStyles.filter(styleId => styleId !== id))
+                  }
+                >
+                  {style.name}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ) : null;
+            })}
+            {selectedBreweries.map(id => {
+              const brewery = breweries?.find(b => b.breweryId === parseInt(id, 10));
+              return brewery ? (
+                <Badge
+                  key={`brewery-${id}`}
+                  variant="secondary"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    setSelectedBreweries(selectedBreweries.filter(breweryId => breweryId !== id))
+                  }
+                >
+                  {brewery.name}
+                  <X className="w-3 h-3 ml-1" />
+                </Badge>
+              ) : null;
+            })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="text-amber-700 hover:text-amber-900"
+            >
+              Clear All
+            </Button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
