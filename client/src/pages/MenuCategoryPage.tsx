@@ -19,7 +19,7 @@ export default function MenuCategoryPage() {
   const [selectedBeerId, setSelectedBeerId] = useState<string>("");
 
   const { data: menuCategories, isLoading, refetch } = trpc.menuCategory.list.useQuery();
-  const { data: beers } = trpc.beer.list.useQuery();
+  const { data: beers } = trpc.beer.list.useQuery({});
   const { data: categoryBeers } = trpc.menuCategoryBeer.getBeersInCategory.useQuery(
     { menuCatId: selectedCategory || 0 },
     { enabled: !!selectedCategory }
