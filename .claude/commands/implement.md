@@ -220,6 +220,7 @@ Always create a PR after implementation is complete:
 ```bash
 gh pr create \
   --title "{concise title}" \
+  --label "Claude" \
   --body "## Summary
 {1-3 bullet points describing what was implemented}
 

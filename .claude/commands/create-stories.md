@@ -145,6 +145,7 @@ Save the stories to `.agents/stories/` directory as a markdown file.
      --body "{description + acceptance criteria in markdown}" \
      --label "{type-label}" \
      --label "{priority-label}" \
+     --label "Claude" \
      [--milestone "{milestone}"] \
      [--label "{extra-label}"]
    ```
@@ -164,7 +165,8 @@ Save the stories to `.agents/stories/` directory as a markdown file.
    gh issue create \
      --title "EPIC: {feature name}" \
      --body "{list of sub-issue links}" \
-     --label "epic"
+     --label "epic" \
+     --label "Claude"
    ```
    Add the Epic to the project with status **"Todo"** as well.
 

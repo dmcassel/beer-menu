@@ -220,6 +220,10 @@ After implementation is complete:
 
 When the last sub-issue in an Epic is closed, close the Epic issue.
 
+### Labels
+
+Always add the `Claude` label to any issue or PR you create.
+
 ### GitHub Project CLI
 
 Add an issue to the project:
