@@ -467,11 +467,12 @@ export async function getAvailableLocations() {
 }
 
 /**
- * Get available wines (with stock), optionally filtered by location IDs.
- * When location IDs are provided, uses a recursive CTE to include wines assigned
- * to any descendant of the selected locations, so selecting "France" returns
- * wines from all French regions and vineyards.
- * Filtering is performed entirely at the database level.
+ * Get available wines (with stock), optionally filtered by location IDs and/or winery IDs.
+ * Location filter expands downward through the hierarchy and matches wines where either
+ * the wine's own locationId OR its winery's locationId is within the selected locations,
+ * so filtering by "Pennsylvania" returns wines whose winery is based there even if the
+ * grapes come from elsewhere. Winery filter restricts results to the specified wineries.
+ * All filtering is performed at the database level.
  */
 export async function getAvailableWinesFiltered(locationIds?: number[], wineryIds?: number[]) {
   const db = await getDb();
