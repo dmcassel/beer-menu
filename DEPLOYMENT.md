@@ -91,6 +91,15 @@ npx drizzle-kit push
 
 ### Step-by-Step Production Deployment
 
+#### Prerequisites: Environment Files
+
+All `docker compose` commands require an explicit `--env-file` flag. The production env file is `.env.compose.prod`:
+
+```bash
+docker compose --env-file .env.compose.prod build
+docker compose --env-file .env.compose.prod up -d
+```
+
 #### Step 1: Deploy Code Changes
 
 ```bash
@@ -102,10 +111,10 @@ cd /path/to/beer-menu
 git pull origin main
 
 # Rebuild the Docker container with updated code
-docker-compose build
+docker compose --env-file .env.compose.prod build
 
 # Restart the container
-docker-compose up -d
+docker compose --env-file .env.compose.prod up -d
 ```
 
 #### Step 2: Apply Database Migration
@@ -249,7 +258,7 @@ node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style
 **For Production**:
 ```bash
 # 1. Deploy code
-git pull && docker-compose build && docker-compose up -d
+git pull && docker compose --env-file .env.compose.prod build && docker compose --env-file .env.compose.prod up -d
 
 # 2. Run migration
 docker-compose exec app node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
