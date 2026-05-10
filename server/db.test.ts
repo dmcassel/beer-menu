@@ -29,6 +29,7 @@ import {
   createMenuCategory,
   updateMenuCategory,
   deleteMenuCategory,
+  addBeerToMenuCategory,
 } from "./db";
 import { seedDatabase, clearDatabase } from "./test-utils";
 
@@ -260,6 +261,68 @@ describe("Database Functions - CRUD Operations", () => {
       const beer = await getBeerById(testBeer.beerId);
       expect(beer).toBeDefined();
       expect(beer?.name).toBe("Hoppy Pale Ale");
+    });
+
+    it("should return all beers when no filters provided", async () => {
+      const beers = await getAllBeers({});
+      expect(beers.length).toBe(5);
+    });
+
+    it("should filter by text search on beer name", async () => {
+      const beers = await getAllBeers({ search: "Hoppy" });
+      expect(beers.length).toBe(1);
+      expect(beers[0].name).toBe("Hoppy Pale Ale");
+    });
+
+    it("should filter by text search on brewery name", async () => {
+      const beers = await getAllBeers({ search: "Test Brewery A" });
+      expect(beers.length).toBe(2);
+      const names = beers.map(b => b.name);
+      expect(names).toContain("Hoppy Pale Ale");
+      expect(names).toContain("West Coast IPA");
+    });
+
+    it("should filter by styleId", async () => {
+      const ipaStyle = seedData.styles[1];
+      const beers = await getAllBeers({ styleIds: [ipaStyle.styleId] });
+      expect(beers.length).toBe(1);
+      expect(beers[0].name).toBe("West Coast IPA");
+    });
+
+    it("should filter by breweryId", async () => {
+      const breweryB = seedData.breweries[1];
+      const beers = await getAllBeers({ breweryIds: [breweryB.breweryId] });
+      expect(beers.length).toBe(2);
+      const names = beers.map(b => b.name);
+      expect(names).toContain("Crisp Lager");
+      expect(names).toContain("Out of Stock Beer");
+    });
+
+    it("should filter by menuCategoryId", async () => {
+      const hoppy = seedData.beers[0];
+      const hoppyCat = seedData.menuCategories[1];
+      await addBeerToMenuCategory({
+        beerId: hoppy.beerId,
+        menuCatId: hoppyCat.menuCatId,
+      });
+      const beers = await getAllBeers({ menuCategoryIds: [hoppyCat.menuCatId] });
+      expect(beers.length).toBe(1);
+      expect(beers[0].name).toBe("Hoppy Pale Ale");
+    });
+
+    it("should return empty array when no beers match search", async () => {
+      const beers = await getAllBeers({ search: "zzznomatch" });
+      expect(beers.length).toBe(0);
+    });
+
+    it("should AND multiple filters together", async () => {
+      const breweryA = seedData.breweries[0];
+      const beers = await getAllBeers({
+        breweryIds: [breweryA.breweryId],
+        search: "IPA",
+      });
+      expect(beers.length).toBe(1);
+      expect(beers[0].name).toBe("West Coast IPA");
     });
 
     it("should create beer", async () => {

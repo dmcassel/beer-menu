@@ -1,4 +1,4 @@
-import { asc, eq, and, ne } from "drizzle-orm";
+import { asc, eq, and, ne, ilike, inArray, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import {
   InsertUser,
@@ -237,10 +237,60 @@ export async function deleteBrewery(id: number) {
 }
 
 // Beer queries
-export async function getAllBeers() {
+interface BeerFilters {
+  search?: string;
+  menuCategoryIds?: number[];
+  styleIds?: number[];
+  breweryIds?: number[];
+}
+
+export async function getAllBeers(filters: BeerFilters = {}) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(beer).orderBy(asc(beer.name));
+
+  const { search, menuCategoryIds, styleIds, breweryIds } = filters;
+  const conditions = [];
+
+  if (search) {
+    conditions.push(
+      or(
+        ilike(beer.name, `%${search}%`),
+        ilike(beer.description, `%${search}%`),
+        ilike(brewery.name, `%${search}%`),
+        ilike(style.name, `%${search}%`)
+      )
+    );
+  }
+  if (styleIds && styleIds.length > 0) {
+    conditions.push(inArray(beer.styleId, styleIds));
+  }
+  if (breweryIds && breweryIds.length > 0) {
+    conditions.push(inArray(beer.breweryId, breweryIds));
+  }
+  if (menuCategoryIds && menuCategoryIds.length > 0) {
+    conditions.push(
+      inArray(
+        beer.beerId,
+        db
+          .select({ beerId: menuCategoryBeer.beerId })
+          .from(menuCategoryBeer)
+          .where(inArray(menuCategoryBeer.menuCatId, menuCategoryIds))
+      )
+    );
+  }
+
+  const query = db
+    .select()
+    .from(beer)
+    .leftJoin(brewery, eq(beer.breweryId, brewery.breweryId))
+    .leftJoin(style, eq(beer.styleId, style.styleId));
+
+  if (conditions.length > 0) {
+    return (await query.where(and(...conditions)).orderBy(asc(beer.name))).map(
+      r => r.beer
+    );
+  }
+  return (await query.orderBy(asc(beer.name))).map(r => r.beer);
 }
 
 export async function getAllAvailableBeers() {

@@ -25,7 +25,7 @@ export default function BeerPage() {
     status: "out" as "on_tap" | "bottle_can" | "out",
   });
 
-  const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery();
+  const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({});
   const { data: breweries } = trpc.brewery.list.useQuery();
   const { data: styles } = trpc.style.list.useQuery();
   const createMutation = trpc.beer.create.useMutation();
