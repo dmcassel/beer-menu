@@ -1,4 +1,4 @@
-import { eq, sql, or, gt, inArray } from "drizzle-orm";
+import { eq, sql, or, gt, inArray, and } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   winery,
@@ -412,14 +412,25 @@ export async function getAvailableLocations() {
   const db = await getDb();
   if (!db) return [];
 
-  // Find all location IDs directly assigned to available wines
+  // Find all location IDs from available wines (own location) and their wineries' locations,
+  // then walk up the hierarchy to include all ancestors so users can filter at any level.
   const result = await db.execute(sql`
     WITH RECURSIVE ancestor_tree AS (
-      -- Start with locations directly assigned to available wines
-      SELECT DISTINCT l.location_id
-      FROM location l
-      INNER JOIN wine w ON w.location_id = l.location_id
-      WHERE (w.refrigerated > 0 OR w.cellared > 0)
+      SELECT DISTINCT wine_or_winery_loc.location_id
+      FROM (
+        -- Wine's own location
+        SELECT w.location_id
+        FROM wine w
+        WHERE (w.refrigerated > 0 OR w.cellared > 0)
+          AND w.location_id IS NOT NULL
+        UNION
+        -- Winery's location for wineries that have available wines
+        SELECT wr.location_id
+        FROM winery wr
+        INNER JOIN wine w ON w.winery_id = wr.winery_id
+        WHERE (w.refrigerated > 0 OR w.cellared > 0)
+          AND wr.location_id IS NOT NULL
+      ) wine_or_winery_loc
 
       UNION
 
@@ -456,21 +467,26 @@ export async function getAvailableLocations() {
 }
 
 /**
- * Get available wines (with stock), optionally filtered by location IDs.
- * When location IDs are provided, uses a recursive CTE to include wines assigned
- * to any descendant of the selected locations, so selecting "France" returns
- * wines from all French regions and vineyards.
- * Filtering is performed entirely at the database level.
+ * Get available wines (with stock), optionally filtered by location IDs and/or winery IDs.
+ * Location filter expands downward through the hierarchy and matches wines where either
+ * the wine's own locationId OR its winery's locationId is within the selected locations,
+ * so filtering by "Pennsylvania" returns wines whose winery is based there even if the
+ * grapes come from elsewhere. Winery filter restricts results to the specified wineries.
+ * All filtering is performed at the database level.
  */
-export async function getAvailableWinesFiltered(locationIds?: number[]) {
+export async function getAvailableWinesFiltered(locationIds?: number[], wineryIds?: number[]) {
   const db = await getDb();
   if (!db) return [];
 
   let wines;
 
   if (locationIds && locationIds.length > 0) {
-    // Use a recursive CTE to expand selected location IDs to include all descendants
+    // Use a recursive CTE to expand selected location IDs to all descendants.
+    // A wine matches if its own locationId OR its winery's locationId is in the tree.
     const locationIdList = locationIds.join(", ");
+    const wineryClause = wineryIds && wineryIds.length > 0
+      ? `AND w.winery_id IN (${wineryIds.join(", ")})`
+      : "";
     const result = await db.execute(sql`
       WITH RECURSIVE location_tree AS (
         -- Start with the selected location IDs
@@ -500,7 +516,11 @@ export async function getAvailableWinesFiltered(locationIds?: number[]) {
       LEFT JOIN winery wr ON w.winery_id = wr.winery_id
       LEFT JOIN location l  ON w.location_id = l.location_id
       WHERE (w.refrigerated > 0 OR w.cellared > 0)
-        AND w.location_id IN (SELECT location_id FROM location_tree)
+        AND (
+          w.location_id IN (SELECT location_id FROM location_tree)
+          OR wr.location_id IN (SELECT location_id FROM location_tree)
+        )
+        ${sql.raw(wineryClause)}
       ORDER BY w.label
     `);
     wines = result.rows as Array<{
@@ -516,7 +536,11 @@ export async function getAvailableWinesFiltered(locationIds?: number[]) {
       locationName: string | null;
     }>;
   } else {
-    // No location filter — return all available wines
+    // No location filter — return all available wines, optionally filtered by winery
+    const availabilityFilter = or(gt(wine.refrigerated, 0), gt(wine.cellared, 0))!;
+    const wineryFilter = wineryIds && wineryIds.length > 0
+      ? inArray(wine.wineryId, wineryIds)
+      : undefined;
     const rows = await db
       .select({
         wineId: wine.wineId,
@@ -533,7 +557,7 @@ export async function getAvailableWinesFiltered(locationIds?: number[]) {
       .from(wine)
       .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
       .leftJoin(location, eq(wine.locationId, location.locationId))
-      .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)))
+      .where(wineryFilter ? and(availabilityFilter, wineryFilter) : availabilityFilter)
       .orderBy(wine.label);
     wines = rows;
   }
