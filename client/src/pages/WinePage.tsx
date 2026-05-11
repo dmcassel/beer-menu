@@ -64,23 +64,31 @@ function WineHeader() {
 
 export default function WinePage() {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedWineries, setSelectedWineries] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Fetch available wines, filtered at the database level by selected location IDs
+  // Fetch available wines, filtered at the database level by selected location and winery IDs
   const { data: availableWines = [], isLoading } =
     trpc.wine.listAvailable.useQuery({
       locationIds: selectedLocations.map(id => parseInt(id)),
+      wineryIds: selectedWineries.map(id => parseInt(id)),
     });
 
   // Fetch only locations that have available wines (for filter options)
   const { data: locations = [] } = trpc.location.listAvailable.useQuery();
 
+  // Fetch all wineries (for filter options)
+  const { data: wineries = [] } = trpc.winery.list.useQuery();
+
   const handleClearFilters = () => {
     setSelectedLocations([]);
+    setSelectedWineries([]);
   };
 
-  const hasActiveFilters = selectedLocations.length > 0;
-  const activeFilterCount = selectedLocations.length;
+  const hasActiveFilters =
+    selectedLocations.length > 0 || selectedWineries.length > 0;
+  const activeFilterCount =
+    selectedLocations.length + selectedWineries.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
@@ -124,6 +132,9 @@ export default function WinePage() {
               selectedLocations={selectedLocations}
               setSelectedLocations={setSelectedLocations}
               locations={locations}
+              selectedWineries={selectedWineries}
+              setSelectedWineries={setSelectedWineries}
+              wineries={wineries}
             />
           </div>
 
@@ -146,6 +157,26 @@ export default function WinePage() {
                     }
                   >
                     {loc.fullPath}
+                    <X className="w-3 h-3 ml-1" />
+                  </Badge>
+                ) : null;
+              })}
+              {selectedWineries.map(id => {
+                const winery = wineries.find(
+                  w => w.wineryId === parseInt(id)
+                );
+                return winery ? (
+                  <Badge
+                    key={`winery-${id}`}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() =>
+                      setSelectedWineries(
+                        selectedWineries.filter(wId => wId !== id)
+                      )
+                    }
+                  >
+                    {winery.name}
                     <X className="w-3 h-3 ml-1" />
                   </Badge>
                 ) : null;
@@ -174,6 +205,9 @@ export default function WinePage() {
               selectedLocations={selectedLocations}
               setSelectedLocations={setSelectedLocations}
               locations={locations}
+              selectedWineries={selectedWineries}
+              setSelectedWineries={setSelectedWineries}
+              wineries={wineries}
             />
             {hasActiveFilters && (
               <Button
@@ -205,7 +239,7 @@ export default function WinePage() {
               </p>
               <p className="text-gray-600">
                 {hasActiveFilters
-                  ? "Try adjusting or clearing your location filter."
+                  ? "Try adjusting or clearing your filters."
                   : "There are currently no wines with bottles in stock."}
               </p>
             </CardContent>
