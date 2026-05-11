@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, Trash2, Edit2, Filter, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Filter, X, CopyPlus } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { Label } from "@/components/ui/label";
@@ -128,6 +128,21 @@ export default function ManageWinePage() {
       varietalIds: wine.varietals?.map((v: any) => v.varietalId.toString()) || [],
     });
     setEditingId(wine.wineId);
+    setOpen(true);
+  };
+
+  const handleNewVintage = (wine: any) => {
+    setFormData({
+      label: wine.label,
+      wineryId: wine.wineryId?.toString() || "",
+      vintage: wine.vintage != null ? (wine.vintage + 1).toString() : "",
+      locationId: wine.locationId || null,
+      refrigerated: "0",
+      cellared: "0",
+      description: wine.description || "",
+      varietalIds: wine.varietals?.map((v: any) => v.varietalId.toString()) || [],
+    });
+    setEditingId(null);
     setOpen(true);
   };
 
@@ -376,6 +391,9 @@ export default function ManageWinePage() {
                   )}
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" title="New Vintage" onClick={() => handleNewVintage(wine)}>
+                    <CopyPlus className="w-4 h-4" />
+                  </Button>
                   <Button variant="ghost" size="sm" onClick={() => handleEdit(wine)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
