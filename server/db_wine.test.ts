@@ -1,6 +1,104 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { getAvailableWinesFiltered, getAvailableLocations } from "./db_wine";
+import { getAllWines, getAvailableWinesFiltered, getAvailableLocations } from "./db_wine";
 import { seedWineDatabase, clearDatabase } from "./test-utils";
+
+describe("getAllWines — curator filters", () => {
+  let seedData: Awaited<ReturnType<typeof seedWineDatabase>>;
+
+  beforeAll(async () => {
+    seedData = await seedWineDatabase();
+  });
+
+  afterAll(async () => {
+    await clearDatabase();
+  });
+
+  it("returns all wines including out-of-stock when no filters given", async () => {
+    const wines = await getAllWines();
+    expect(wines).toHaveLength(4);
+    const labels = wines.map(w => w.label).sort();
+    expect(labels).toEqual(["Napa Cab", "Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
+  });
+
+  it("winery filter — single winery returns only that winery's wines", async () => {
+    const wines = await getAllWines({ wineryIds: [seedData.wineries.r5.wineryId] });
+    expect(wines).toHaveLength(3);
+    const labels = wines.map(w => w.label).sort();
+    expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
+  });
+
+  it("winery filter — multiple wineries use OR semantics within the dimension", async () => {
+    const wines = await getAllWines({
+      wineryIds: [seedData.wineries.r5.wineryId, seedData.wineries.napaWinery.wineryId],
+    });
+    expect(wines).toHaveLength(4);
+  });
+
+  it("location filter — California matches wines by their own locationId", async () => {
+    const wines = await getAllWines({ locationIds: [seedData.locations.california.locationId] });
+    expect(wines).toHaveLength(4);
+  });
+
+  it("location filter — Pennsylvania matches R5 wines via winery location", async () => {
+    const wines = await getAllWines({ locationIds: [seedData.locations.pa.locationId] });
+    expect(wines).toHaveLength(3);
+    const labels = wines.map(w => w.label).sort();
+    expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
+  });
+
+  it("location filter — USA ancestor expansion returns all wines", async () => {
+    const wines = await getAllWines({ locationIds: [seedData.locations.usa.locationId] });
+    expect(wines).toHaveLength(4);
+  });
+
+  it("text search — matches wine label (case-insensitive)", async () => {
+    const wines = await getAllWines({ search: "napa" });
+    expect(wines).toHaveLength(1);
+    expect(wines[0].label).toBe("Napa Cab");
+  });
+
+  it("text search — matches winery name", async () => {
+    const wines = await getAllWines({ search: "R5" });
+    expect(wines).toHaveLength(3);
+    const labels = wines.map(w => w.label).sort();
+    expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
+  });
+
+  it("text search — matches varietal name", async () => {
+    // 'Cabernet' appears only in the varietal name, not in any label or winery name
+    const wines = await getAllWines({ search: "Cabernet" });
+    expect(wines).toHaveLength(2);
+    const labels = wines.map(w => w.label).sort();
+    expect(labels).toEqual(["Napa Cab", "R5 Cab"]);
+  });
+
+  it("winery + location filters use AND semantics across dimensions", async () => {
+    // R5 wines match Pennsylvania; Napa winery does not → 0 results
+    const wines = await getAllWines({
+      wineryIds: [seedData.wineries.napaWinery.wineryId],
+      locationIds: [seedData.locations.pa.locationId],
+    });
+    expect(wines).toHaveLength(0);
+  });
+
+  it("winery + text search use AND semantics across dimensions", async () => {
+    // R5 winery AND search 'cab' → only R5 Cab
+    const wines = await getAllWines({
+      wineryIds: [seedData.wineries.r5.wineryId],
+      search: "cab",
+    });
+    expect(wines).toHaveLength(1);
+    expect(wines[0].label).toBe("R5 Cab");
+  });
+
+  it("attaches varietals to returned wines", async () => {
+    const wines = await getAllWines({ wineryIds: [seedData.wineries.r5.wineryId] });
+    const cab = wines.find(w => w.label === "R5 Cab");
+    expect(cab).toBeDefined();
+    expect(cab!.varietals).toHaveLength(1);
+    expect(cab!.varietals[0].name).toBe("Cabernet Sauvignon");
+  });
+});
 
 describe("Wine DB — winery filter and dual-location matching", () => {
   let seedData: Awaited<ReturnType<typeof seedWineDatabase>>;

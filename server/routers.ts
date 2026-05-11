@@ -362,7 +362,15 @@ export const appRouter = router({
   }),
 
   wine: router({
-    list: publicProcedure.query(() => dbWine.getAllWines()),
+    list: publicProcedure
+      .input(
+        z.object({
+          wineryIds: z.array(z.number()).optional(),
+          locationIds: z.array(z.number()).optional(),
+          search: z.string().optional(),
+        })
+      )
+      .query(({ input }) => dbWine.getAllWines(input)),
     listAvailable: publicProcedure
       .input(
         z.object({
