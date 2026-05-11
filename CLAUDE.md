@@ -47,8 +47,10 @@ npm run format
 # Run tests (requires test DB running)
 npm test
 
-# Start test database
+# Start test database (uses the postgres-test service in docker-compose.yml)
 npm run test:db:start
+# Equivalent direct command:
+# docker-compose --env-file .env.test up -d postgres-test
 
 # Run tests with DB lifecycle managed automatically
 npm run test:with-db
