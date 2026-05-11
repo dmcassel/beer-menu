@@ -1,4 +1,4 @@
-import { eq, sql, or, gt, inArray, and } from "drizzle-orm";
+import { eq, sql, or, gt, inArray, and, ilike } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   winery,
@@ -168,33 +168,127 @@ export async function deleteLocation(id: number) {
 // Wine CRUD
 // ============================================================================
 
-export async function getAllWines() {
+export async function getAllWines(filters?: {
+  wineryIds?: number[];
+  locationIds?: number[];
+  search?: string;
+}) {
   const db = await getDb();
   if (!db) return [];
-  
-  // Get wines with their related data
-  const wines = await db
-    .select({
-      wineId: wine.wineId,
-      label: wine.label,
-      vintage: wine.vintage,
-      refrigerated: wine.refrigerated,
-      cellared: wine.cellared,
-      description: wine.description,
-      wineryId: wine.wineryId,
-      locationId: wine.locationId,
-      wineryName: winery.name,
-      locationName: location.name,
-    })
-    .from(wine)
-    .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
-    .leftJoin(location, eq(wine.locationId, location.locationId))
-    .orderBy(wine.label);
-  
-  // Get varietals for each wine
+
+  const { wineryIds, locationIds, search } = filters ?? {};
+  const searchTerm = search?.trim();
+
+  let wines: Array<{
+    wineId: number;
+    label: string;
+    vintage: number | null;
+    refrigerated: number;
+    cellared: number;
+    description: string | null;
+    wineryId: number | null;
+    locationId: number | null;
+    wineryName: string | null;
+    locationName: string | null;
+  }>;
+
+  if (locationIds && locationIds.length > 0) {
+    // Recursive CTE to expand selected location IDs to all descendants.
+    // A wine matches if its own locationId OR its winery's locationId is in the tree.
+    const locationIdList = locationIds.join(", ");
+    const wineryClause = wineryIds?.length
+      ? sql.raw(`AND w.winery_id IN (${wineryIds.join(", ")})`)
+      : sql.raw("");
+    const result = await db.execute(sql`
+      WITH RECURSIVE location_tree AS (
+        SELECT location_id
+        FROM location
+        WHERE location_id IN (${sql.raw(locationIdList)})
+        UNION ALL
+        SELECT l.location_id
+        FROM location l
+        INNER JOIN location_tree lt ON l.parent_id = lt.location_id
+      )
+      SELECT
+        w.wine_id       AS "wineId",
+        w.label,
+        w.vintage,
+        w.refrigerated,
+        w.cellared,
+        w.description,
+        w.winery_id     AS "wineryId",
+        w.location_id   AS "locationId",
+        wr.name         AS "wineryName",
+        l.name          AS "locationName"
+      FROM wine w
+      LEFT JOIN winery wr ON w.winery_id = wr.winery_id
+      LEFT JOIN location l  ON w.location_id = l.location_id
+      WHERE (
+        w.location_id IN (SELECT location_id FROM location_tree)
+        OR wr.location_id IN (SELECT location_id FROM location_tree)
+      )
+      ${wineryClause}
+      ${searchTerm
+        ? sql`AND (
+            w.label ILIKE ${'%' + searchTerm + '%'}
+            OR wr.name ILIKE ${'%' + searchTerm + '%'}
+            OR EXISTS (
+              SELECT 1 FROM wine_varietal wv
+              JOIN varietal v ON wv.varietal_id = v.varietal_id
+              WHERE wv.wine_id = w.wine_id AND v.name ILIKE ${'%' + searchTerm + '%'}
+            )
+          )`
+        : sql``}
+      ORDER BY w.label
+    `);
+    wines = result.rows as typeof wines;
+  } else {
+    // No location filter — use Drizzle ORM.
+    // Each dimension is ANDed together; multiple values within a dimension are ORed.
+    const conditions = [];
+
+    if (wineryIds?.length) {
+      conditions.push(inArray(wine.wineryId, wineryIds));
+    }
+
+    if (searchTerm) {
+      conditions.push(
+        or(
+          ilike(wine.label, `%${searchTerm}%`),
+          ilike(winery.name, `%${searchTerm}%`),
+          sql`EXISTS (
+            SELECT 1 FROM wine_varietal wv
+            JOIN varietal v ON wv.varietal_id = v.varietal_id
+            WHERE wv.wine_id = ${wine.wineId} AND v.name ILIKE ${'%' + searchTerm + '%'}
+          )`
+        )!
+      );
+    }
+
+    wines = await db
+      .select({
+        wineId: wine.wineId,
+        label: wine.label,
+        vintage: wine.vintage,
+        refrigerated: wine.refrigerated,
+        cellared: wine.cellared,
+        description: wine.description,
+        wineryId: wine.wineryId,
+        locationId: wine.locationId,
+        wineryName: winery.name,
+        locationName: location.name,
+      })
+      .from(wine)
+      .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
+      .leftJoin(location, eq(wine.locationId, location.locationId))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(wine.label);
+  }
+
+  // Attach varietals for each wine
   const winesWithVarietals = await Promise.all(
     wines.map(async (w) => {
-      const varietals = await db
+      const varietals = await db!
         .select({
           varietalId: varietal.varietalId,
           name: varietal.name,
@@ -202,14 +296,10 @@ export async function getAllWines() {
         .from(wineVarietal)
         .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
         .where(eq(wineVarietal.wineId, w.wineId));
-      
-      return {
-        ...w,
-        varietals,
-      };
+      return { ...w, varietals };
     })
   );
-  
+
   return winesWithVarietals;
 }
 

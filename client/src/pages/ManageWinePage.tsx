@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Plus, Trash2, Edit2, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { Label } from "@/components/ui/label";
 import { SearchableSelect, SearchableSelectOption } from "@/components/ui/searchable-select";
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
+import { WineFilterControls } from "@/components/WineFilterControls";
 
 
 export default function ManageWinePage() {
@@ -18,6 +21,10 @@ export default function ManageWinePage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [wineToDelete, setWineToDelete] = useState<{ id: number; label: string } | null>(null);
+  const [selectedWineries, setSelectedWineries] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [textSearch, setTextSearch] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [formData, setFormData] = useState({
     label: "",
     wineryId: "",
@@ -29,13 +36,28 @@ export default function ManageWinePage() {
     varietalIds: [] as string[],
   });
 
-  const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery();
+  const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
+    wineryIds: selectedWineries.map(id => parseInt(id, 10)),
+    locationIds: selectedLocations.map(id => parseInt(id, 10)),
+    search: textSearch.trim() || undefined,
+  });
   const { data: wineries } = trpc.winery.list.useQuery();
   const { data: varietals } = trpc.varietal.list.useQuery();
   const { data: locations } = trpc.location.listWithPaths.useQuery();
   const createMutation = trpc.wine.create.useMutation();
   const updateMutation = trpc.wine.update.useMutation();
   const deleteMutation = trpc.wine.delete.useMutation();
+
+  const hasActiveFilters =
+    selectedWineries.length > 0 || selectedLocations.length > 0 || textSearch.trim().length > 0;
+  const activeFilterCount =
+    selectedWineries.length + selectedLocations.length + (textSearch.trim() ? 1 : 0);
+
+  const handleClearFilters = () => {
+    setSelectedWineries([]);
+    setSelectedLocations([]);
+    setTextSearch("");
+  };
 
   const wineryOptions: SearchableSelectOption[] =
     wineries?.map((w: any) => ({
@@ -132,7 +154,24 @@ export default function ManageWinePage() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Wines</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsFilterOpen(true)}
+            className="md:hidden relative"
+          >
+            <Filter className="w-4 h-4" />
+            {activeFilterCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              >
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button
               onClick={() => {
@@ -248,12 +287,83 @@ export default function ManageWinePage() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
+
+      {/* Desktop filter row */}
+      <div className="hidden md:grid md:grid-cols-3 gap-4">
+        <WineFilterControls
+          selectedLocations={selectedLocations}
+          setSelectedLocations={setSelectedLocations}
+          locations={locations ?? []}
+          selectedWineries={selectedWineries}
+          setSelectedWineries={setSelectedWineries}
+          wineries={wineries ?? []}
+        />
+        <div>
+          <label className="text-sm font-medium text-gray-700 mb-2 block">Search</label>
+          <Input
+            placeholder="Label, winery, or varietal..."
+            value={textSearch}
+            onChange={e => setTextSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Active filter badges */}
+      {hasActiveFilters && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {selectedLocations.map(id => {
+            const loc = (locations ?? []).find(l => l.locationId === parseInt(id, 10));
+            return loc ? (
+              <Badge
+                key={`loc-${id}`}
+                variant="secondary"
+                className="cursor-pointer"
+                onClick={() => setSelectedLocations(selectedLocations.filter(x => x !== id))}
+              >
+                {loc.fullPath}<X className="w-3 h-3 ml-1" />
+              </Badge>
+            ) : null;
+          })}
+          {selectedWineries.map(id => {
+            const w = (wineries ?? []).find(w => w.wineryId === parseInt(id, 10));
+            return w ? (
+              <Badge
+                key={`winery-${id}`}
+                variant="secondary"
+                className="cursor-pointer"
+                onClick={() => setSelectedWineries(selectedWineries.filter(x => x !== id))}
+              >
+                {w.name}<X className="w-3 h-3 ml-1" />
+              </Badge>
+            ) : null;
+          })}
+          {textSearch.trim() && (
+            <Badge
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setTextSearch("")}
+            >
+              "{textSearch}"<X className="w-3 h-3 ml-1" />
+            </Badge>
+          )}
+          <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+            Clear All
+          </Button>
+        </div>
+      )}
+
 
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {!isLoading && wines?.length === 0 && (
+            <p className="col-span-full text-center py-8 text-gray-500">
+              {hasActiveFilters ? "No wines match your filters." : "No wines found."}
+            </p>
+          )}
           {wines?.map((wine: any) => (
             <Card key={wine.wineId}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -312,6 +422,38 @@ export default function ManageWinePage() {
         title="Delete Wine"
         description={`Are you sure you want to delete "${wineToDelete?.label}"? This action cannot be undone.`}
       />
+
+      {/* Mobile filter Sheet */}
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen} modal={false}>
+        <SheetContent side="bottom" className="h-[85vh]">
+          <SheetHeader>
+            <SheetTitle>Filter Wines</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-4 mt-6">
+            <WineFilterControls
+              selectedLocations={selectedLocations}
+              setSelectedLocations={setSelectedLocations}
+              locations={locations ?? []}
+              selectedWineries={selectedWineries}
+              setSelectedWineries={setSelectedWineries}
+              wineries={wineries ?? []}
+            />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Search</label>
+              <Input
+                placeholder="Label, winery, or varietal..."
+                value={textSearch}
+                onChange={e => setTextSearch(e.target.value)}
+              />
+            </div>
+            {hasActiveFilters && (
+              <Button variant="outline" onClick={handleClearFilters} className="w-full">
+                Clear All Filters
+              </Button>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
