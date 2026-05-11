@@ -70,8 +70,8 @@ export default function WinePage() {
   // Fetch available wines, filtered at the database level by selected location and winery IDs
   const { data: availableWines = [], isLoading } =
     trpc.wine.listAvailable.useQuery({
-      locationIds: selectedLocations.map(id => parseInt(id)),
-      wineryIds: selectedWineries.map(id => parseInt(id)),
+      locationIds: selectedLocations.map(id => parseInt(id, 10)),
+      wineryIds: selectedWineries.map(id => parseInt(id, 10)),
     });
 
   // Fetch only locations that have available wines (for filter options)
@@ -143,7 +143,7 @@ export default function WinePage() {
             <div className="mt-4 flex items-center gap-2 flex-wrap">
               {selectedLocations.map(id => {
                 const loc = locations.find(
-                  l => l.locationId === parseInt(id)
+                  l => l.locationId === parseInt(id, 10)
                 );
                 return loc ? (
                   <Badge
@@ -163,7 +163,7 @@ export default function WinePage() {
               })}
               {selectedWineries.map(id => {
                 const winery = wineries.find(
-                  w => w.wineryId === parseInt(id)
+                  w => w.wineryId === parseInt(id, 10)
                 );
                 return winery ? (
                   <Badge
