@@ -38,7 +38,21 @@ Transform the input into a battle-tested implementation plan through codebase ex
 
 ---
 
-## Phase 2: EXPLORE
+## Phase 2: SYNC CODEBASE
+
+Before exploring, ensure the codebase is up to date:
+
+```bash
+# If not on main, switch to it
+git checkout main
+
+# Pull latest changes and prune stale remote branches
+git pull -p
+```
+
+---
+
+## Phase 3: EXPLORE
 
 ### Study the Codebase
 
@@ -61,7 +75,7 @@ Use the Explore agent to find:
 
 ---
 
-## Phase 3: DESIGN
+## Phase 4: DESIGN
 
 ### Map the Changes
 
@@ -91,7 +105,7 @@ Each plan should be completable as a PR reviewable in under 30 minutes.
 
 ---
 
-## Phase 4: GENERATE
+## Phase 5: GENERATE
 
 ### Create Plan File
 
@@ -205,7 +219,7 @@ npm test
 
 ---
 
-## Phase 5: GITHUB PROJECT UPDATE
+## Phase 6: GITHUB PROJECT UPDATE
 
 If the plan has a GitHub Issue number in its Metadata table:
 
@@ -221,7 +235,7 @@ If the plan has a GitHub Issue number in its Metadata table:
 
 ---
 
-## Phase 6: OUTPUT
+## Phase 7: OUTPUT
 
 ```markdown
 ## Plan Created

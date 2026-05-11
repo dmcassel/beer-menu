@@ -182,7 +182,21 @@ gh pr review {NUMBER} --comment --body-file .agents/reviews/pr-{NUMBER}-review.m
 
 ---
 
-## Phase 6: OUTPUT
+## Phase 6: APPLY CHANGES (if requested)
+
+If the user asks you to make a code change based on findings from this review:
+
+1. Make the change on the **same branch** as the code being reviewed (for a PR, check out that branch first).
+2. Commit the change with a clear message referencing the review finding.
+3. Push the branch to GitHub:
+
+```bash
+git push
+```
+
+---
+
+## Phase 7: OUTPUT
 
 ```markdown
 ## Review Complete
