@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, curatorProcedure } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import * as dbWine from "./db_wine";
@@ -64,6 +65,38 @@ export const appRouter = router({
         success: true,
       } as const;
     }),
+    devLogin: publicProcedure
+      .input(z.object({ role: z.enum(["user", "curator", "admin"]) }))
+      .mutation(async ({ input, ctx }) => {
+        if (process.env.NODE_ENV === "production") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Dev login is not available in production",
+          });
+        }
+
+        await db.upsertUser({
+          googleId: "dev-local",
+          email: "dev@localhost",
+          name: "Dev User",
+          role: input.role,
+          lastSignedIn: new Date(),
+        });
+
+        const user = await db.getUserByGoogleId("dev-local");
+        if (!user) {
+          throw new Error("Failed to create dev user");
+        }
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(
+          COOKIE_NAME,
+          JSON.stringify({ userId: user.id }),
+          cookieOptions
+        );
+
+        return { success: true, user };
+      }),
   }),
 
   // Beer Catalog CRUD routers

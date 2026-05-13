@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Beer } from "lucide-react";
 
@@ -14,6 +16,8 @@ declare global {
 export default function Login() {
   const [location, setLocation] = useLocation();
   const googleCallbackMutation = trpc.auth.googleCallback.useMutation();
+  const devLoginMutation = trpc.auth.devLogin.useMutation();
+  const [devRole, setDevRole] = useState<"user" | "curator" | "admin">("curator");
   
   // Get return URL from query parameter, default to /dashboard
   const searchParams = new URLSearchParams(window.location.search);
@@ -51,6 +55,16 @@ export default function Login() {
     };
   }, []);
 
+  const handleDevLogin = async () => {
+    try {
+      await devLoginMutation.mutateAsync({ role: devRole });
+      toast.success(`Logged in as Dev User (${devRole})`);
+      setLocation(returnUrl);
+    } catch (error: any) {
+      toast.error(error.message || "Dev login failed.");
+    }
+  };
+
   const handleGoogleCallback = async (response: any) => {
     try {
       const result = await googleCallbackMutation.mutateAsync({
@@ -82,6 +96,33 @@ export default function Login() {
           <div className="flex justify-center">
             <div id="google-signin-button"></div>
           </div>
+          {import.meta.env.DEV && (
+            <div className="mt-6 pt-6 border-t border-dashed border-amber-300">
+              <p className="text-xs text-muted-foreground text-center mb-3 font-medium uppercase tracking-wide">
+                Dev Login (local only)
+              </p>
+              <div className="flex gap-2">
+                <Select value={devRole} onValueChange={(v) => setDevRole(v as typeof devRole)}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="curator">Curator</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleDevLogin}
+                  disabled={devLoginMutation.isPending}
+                  variant="outline"
+                  className="border-amber-400 text-amber-800 hover:bg-amber-50"
+                >
+                  {devLoginMutation.isPending ? "Logging in…" : "Login"}
+                </Button>
+              </div>
+            </div>
+          )}
           <div className="mt-6 text-center">
             <a
               href="/browser"
