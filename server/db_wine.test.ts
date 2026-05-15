@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { getAllWines, getAvailableWinesFiltered, getAvailableLocations } from "./db_wine";
+import { getAllWines, getAvailableWinesFiltered, getAvailableLocations, getAvailableWineries } from "./db_wine";
 import { seedWineDatabase, clearDatabase } from "./test-utils";
 
 describe("getAllWines — curator filters", () => {
@@ -205,6 +205,32 @@ describe("Wine DB — winery filter and dual-location matching", () => {
       const locations = await getAvailableLocations();
       const names = locations.map((l) => l.name);
       expect(names).not.toContain("Chester County");
+    });
+  });
+
+  describe("getAvailableWineries", () => {
+    it("returns R5 Winery (has in-stock wines)", async () => {
+      const wineries = await getAvailableWineries();
+      const names = wineries.map((w) => w.name);
+      expect(names).toContain("R5 Winery");
+    });
+
+    it("returns Napa Valley Winery (has in-stock wines)", async () => {
+      const wineries = await getAvailableWineries();
+      const names = wineries.map((w) => w.name);
+      expect(names).toContain("Napa Valley Winery");
+    });
+
+    it("does not return Empty Winery (no wines)", async () => {
+      const wineries = await getAvailableWineries();
+      const names = wineries.map((w) => w.name);
+      expect(names).not.toContain("Empty Winery");
+    });
+
+    it("returns wineries ordered by name", async () => {
+      const wineries = await getAvailableWineries();
+      const names = wineries.map((w) => w.name);
+      expect(names).toEqual([...names].sort());
     });
   });
 });

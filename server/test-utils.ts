@@ -230,10 +230,12 @@ export async function seedWineDatabase() {
     .values([
       { name: "R5 Winery", locationId: pa.locationId },
       { name: "Napa Valley Winery", locationId: california.locationId },
+      { name: "Empty Winery" },
     ])
     .returning();
   const r5 = wineries[0];
   const napaWinery = wineries[1];
+  const emptyWinery = wineries[2];
 
   const varietals = await db
     .insert(varietal)
@@ -267,7 +269,7 @@ export async function seedWineDatabase() {
 
   return {
     locations: { usa, pa, california, chesterCounty },
-    wineries: { r5, napaWinery },
+    wineries: { r5, napaWinery, emptyWinery },
     varietals: { cab, chard },
     wines: { r5Cab, r5Chard, napaCab, outOfStock },
   };
