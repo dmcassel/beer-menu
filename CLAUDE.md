@@ -220,6 +220,12 @@ After implementation is complete:
 1. Create a PR with `gh pr create`
 2. Do **not** close the issue — leave it open until the PR is merged/closed
 
+### Discovering New Work Mid-Epic
+
+If, while working on an issue that belongs to an Epic, you notice missing work that warrants its own ticket:
+1. Create the new issue (with the `Claude` label, per below) and add it to the GitHub project with status **"Todo"**
+2. Add a link to the new issue in the Epic issue's body (`gh issue edit <epic-number> --body "..."`), the same way sub-issues are listed when the Epic is first created
+
 ### Epic Completion
 
 When the last sub-issue in an Epic is closed, close the Epic issue.
