@@ -60,6 +60,8 @@ export default function WinePage() {
     wineryIds: selectedWineries.map((id) => parseInt(id, 10)),
   });
 
+  const totalBottles = availableWines.reduce((sum, wine) => sum + wine.refrigerated + wine.cellared, 0);
+
   // Fetch only locations that have available wines (for filter options)
   const { data: locations = [] } = trpc.location.listAvailable.useQuery();
 
@@ -212,7 +214,8 @@ export default function WinePage() {
           <>
             <p className="text-sm text-gray-600 mb-6">
               Showing {availableWines.length} wine
-              {availableWines.length !== 1 ? "s" : ""}
+              {availableWines.length !== 1 ? "s" : ""} ({totalBottles} bottle
+              {totalBottles !== 1 ? "s" : ""})
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {availableWines.map((wine) => (
