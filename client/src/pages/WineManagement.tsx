@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Wine, GrapeIcon, MapPinned, Building2 } from "lucide-react";
+import { Wine, GrapeIcon, ListChecks, MapPinned, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import ManageWinePage from "./ManageWinePage";
 import WineryPage from "./WineryPage";
@@ -66,6 +66,12 @@ export default function WineManagement() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/wine/inventory">
+              <Button variant="outline" size="sm">
+                <ListChecks className="w-4 h-4 mr-1" />
+                Inventory Mode
+              </Button>
+            </Link>
             <Link href="/dashboard">
               <Button variant="outline" size="sm">
                 Back to Dashboard
