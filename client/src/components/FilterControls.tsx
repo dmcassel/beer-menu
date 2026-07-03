@@ -23,17 +23,17 @@ export function FilterControls({
   styles,
   breweries,
 }: FilterControlsProps) {
-  const menuCategoryOptions: MultiSelectOption[] = menuCategories.map(cat => ({
+  const menuCategoryOptions: MultiSelectOption[] = menuCategories.map((cat) => ({
     label: cat.name,
     value: cat.menu_cat_id.toString(),
   }));
 
-  const styleOptions: MultiSelectOption[] = styles.map(style => ({
+  const styleOptions: MultiSelectOption[] = styles.map((style) => ({
     label: style.name,
     value: style.styleId.toString(),
   }));
 
-  const breweryOptions: MultiSelectOption[] = breweries.map(brewery => ({
+  const breweryOptions: MultiSelectOption[] = breweries.map((brewery) => ({
     label: brewery.name,
     value: brewery.breweryId.toString(),
   }));
@@ -41,9 +41,7 @@ export function FilterControls({
   return (
     <>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Menu Category
-        </label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Menu Category</label>
         <MultiSelect
           options={menuCategoryOptions}
           selected={selectedMenuCategories}
@@ -53,9 +51,7 @@ export function FilterControls({
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Beer Style
-        </label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Beer Style</label>
         <MultiSelect
           options={styleOptions}
           selected={selectedStyles}
@@ -65,9 +61,7 @@ export function FilterControls({
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Brewery
-        </label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Brewery</label>
         <MultiSelect
           options={breweryOptions}
           selected={selectedBreweries}

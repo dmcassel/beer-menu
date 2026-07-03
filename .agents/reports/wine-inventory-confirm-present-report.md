@@ -10,19 +10,19 @@ Added a "Confirm present" action to each row in `client/src/pages/WineInventory.
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add confirmed-IDs state, derived visible list, and confirm handler | `client/src/pages/WineInventory.tsx` | ✅ |
-| 2 | Render the confirm button per row and switch rendering to `visibleWines` | `client/src/pages/WineInventory.tsx` | ✅ |
+| #   | Task                                                                     | File                                 | Status |
+| --- | ------------------------------------------------------------------------ | ------------------------------------ | ------ |
+| 1   | Add confirmed-IDs state, derived visible list, and confirm handler       | `client/src/pages/WineInventory.tsx` | ✅     |
+| 2   | Render the confirm button per row and switch rendering to `visibleWines` | `client/src/pages/WineInventory.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check (`npm run check`) | ✅ (pre-existing unrelated errors in Map.tsx/BeerBrowser.tsx/Login.tsx/oauth.ts/sdk.ts confirmed present on `main` before this change too — none in `WineInventory.tsx`) |
-| Format (`npm run format`) | ✅ (WineInventory.tsx reported "unchanged" — already formatted; ran repo-wide by mistake, reverted all unrelated reformatted files to keep the diff scoped) |
-| Tests (`npm test`) | ✅ 90 passed (4 test files) — no server logic touched, purely client-side change |
-| E2E (Playwright, driven manually against local dev server) | ✅ see below |
+| Check                                                      | Result                                                                                                                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Type check (`npm run check`)                               | ✅ (pre-existing unrelated errors in Map.tsx/BeerBrowser.tsx/Login.tsx/oauth.ts/sdk.ts confirmed present on `main` before this change too — none in `WineInventory.tsx`) |
+| Format (`npm run format`)                                  | ✅ (WineInventory.tsx reported "unchanged" — already formatted; ran repo-wide by mistake, reverted all unrelated reformatted files to keep the diff scoped)              |
+| Tests (`npm test`)                                         | ✅ 90 passed (4 test files) — no server logic touched, purely client-side change                                                                                         |
+| E2E (Playwright, driven manually against local dev server) | ✅ see below                                                                                                                                                             |
 
 ## End-to-End Verification
 
@@ -39,8 +39,8 @@ Dev DB was restored to its pre-test state (`cellared` reset back to 0 for Sylvan
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
+| File                                 | Action | Lines  |
+| ------------------------------------ | ------ | ------ |
 | `client/src/pages/WineInventory.tsx` | UPDATE | +26/-6 |
 
 ## Deviations from Plan

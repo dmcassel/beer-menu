@@ -31,7 +31,7 @@ export async function getAvailableWineries() {
     .from(wine)
     .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)));
 
-  const ids = rows.map(r => r.wineryId).filter((id): id is number => id !== null);
+  const ids = rows.map((r) => r.wineryId).filter((id): id is number => id !== null);
   if (ids.length === 0) return [];
 
   return db.select().from(winery).where(inArray(winery.wineryId, ids)).orderBy(winery.name);
@@ -54,11 +54,7 @@ export async function createWinery(data: InsertWinery) {
 export async function updateWinery(id: number, data: Partial<InsertWinery>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db
-    .update(winery)
-    .set(data)
-    .where(eq(winery.wineryId, id))
-    .returning();
+  const result = await db.update(winery).set(data).where(eq(winery.wineryId, id)).returning();
   return result[0];
 }
 
@@ -95,11 +91,7 @@ export async function createVarietal(data: InsertVarietal) {
 export async function updateVarietal(id: number, data: Partial<InsertVarietal>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db
-    .update(varietal)
-    .set(data)
-    .where(eq(varietal.varietalId, id))
-    .returning();
+  const result = await db.update(varietal).set(data).where(eq(varietal.varietalId, id)).returning();
   return result[0];
 }
 
@@ -129,7 +121,7 @@ export async function getLocationById(id: number) {
 export async function getLocationsByParentId(parentId: number | null) {
   const db = await getDb();
   if (!db) return [];
-  
+
   if (parentId === null) {
     return db
       .select()
@@ -137,22 +129,14 @@ export async function getLocationsByParentId(parentId: number | null) {
       .where(sql`${location.parentId} IS NULL`)
       .orderBy(location.name);
   }
-  
-  return db
-    .select()
-    .from(location)
-    .where(eq(location.parentId, parentId))
-    .orderBy(location.name);
+
+  return db.select().from(location).where(eq(location.parentId, parentId)).orderBy(location.name);
 }
 
 export async function getLocationsByType(type: "country" | "area" | "vineyard") {
   const db = await getDb();
   if (!db) return [];
-  return db
-    .select()
-    .from(location)
-    .where(eq(location.type, type))
-    .orderBy(location.name);
+  return db.select().from(location).where(eq(location.type, type)).orderBy(location.name);
 }
 
 export async function createLocation(data: InsertLocation) {
@@ -165,11 +149,7 @@ export async function createLocation(data: InsertLocation) {
 export async function updateLocation(id: number, data: Partial<InsertLocation>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db
-    .update(location)
-    .set(data)
-    .where(eq(location.locationId, id))
-    .returning();
+  const result = await db.update(location).set(data).where(eq(location.locationId, id)).returning();
   return result[0];
 }
 
@@ -183,11 +163,7 @@ export async function deleteLocation(id: number) {
 // Wine CRUD
 // ============================================================================
 
-export async function getAllWines(filters?: {
-  wineryIds?: number[];
-  locationIds?: number[];
-  search?: string;
-}) {
+export async function getAllWines(filters?: { wineryIds?: number[]; locationIds?: number[]; search?: string }) {
   const db = await getDb();
   if (!db) return [];
 
@@ -211,9 +187,7 @@ export async function getAllWines(filters?: {
     // Recursive CTE to expand selected location IDs to all descendants.
     // A wine matches if its own locationId OR its winery's locationId is in the tree.
     const locationIdList = locationIds.join(", ");
-    const wineryClause = wineryIds?.length
-      ? sql.raw(`AND w.winery_id IN (${wineryIds.join(", ")})`)
-      : sql.raw("");
+    const wineryClause = wineryIds?.length ? sql.raw(`AND w.winery_id IN (${wineryIds.join(", ")})`) : sql.raw("");
     const result = await db.execute(sql`
       WITH RECURSIVE location_tree AS (
         SELECT location_id
@@ -243,17 +217,19 @@ export async function getAllWines(filters?: {
         OR wr.location_id IN (SELECT location_id FROM location_tree)
       )
       ${wineryClause}
-      ${searchTerm
-        ? sql`AND (
-            w.label ILIKE ${'%' + searchTerm + '%'}
-            OR wr.name ILIKE ${'%' + searchTerm + '%'}
+      ${
+        searchTerm
+          ? sql`AND (
+            w.label ILIKE ${"%" + searchTerm + "%"}
+            OR wr.name ILIKE ${"%" + searchTerm + "%"}
             OR EXISTS (
               SELECT 1 FROM wine_varietal wv
               JOIN varietal v ON wv.varietal_id = v.varietal_id
-              WHERE wv.wine_id = w.wine_id AND v.name ILIKE ${'%' + searchTerm + '%'}
+              WHERE wv.wine_id = w.wine_id AND v.name ILIKE ${"%" + searchTerm + "%"}
             )
           )`
-        : sql``}
+          : sql``
+      }
       ORDER BY w.label
     `);
     wines = result.rows as typeof wines;
@@ -274,7 +250,7 @@ export async function getAllWines(filters?: {
           sql`EXISTS (
             SELECT 1 FROM wine_varietal wv
             JOIN varietal v ON wv.varietal_id = v.varietal_id
-            WHERE wv.wine_id = ${wine.wineId} AND v.name ILIKE ${'%' + searchTerm + '%'}
+            WHERE wv.wine_id = ${wine.wineId} AND v.name ILIKE ${"%" + searchTerm + "%"}
           )`
         )!
       );
@@ -321,7 +297,7 @@ export async function getAllWines(filters?: {
 export async function getAvailableWines() {
   const db = await getDb();
   if (!db) return [];
-  
+
   // Get wines with at least one bottle (refrigerated > 0 OR cellared > 0)
   const wines = await db
     .select({
@@ -341,7 +317,7 @@ export async function getAvailableWines() {
     .leftJoin(location, eq(wine.locationId, location.locationId))
     .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)))
     .orderBy(wine.label);
-  
+
   // Get varietals for each wine
   const winesWithVarietals = await Promise.all(
     wines.map(async (w) => {
@@ -353,21 +329,21 @@ export async function getAvailableWines() {
         .from(wineVarietal)
         .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
         .where(eq(wineVarietal.wineId, w.wineId));
-      
+
       return {
         ...w,
         varietals,
       };
     })
   );
-  
+
   return winesWithVarietals;
 }
 
 export async function getWineById(id: number) {
   const db = await getDb();
   if (!db) return null;
-  
+
   const results = await db
     .select({
       wineId: wine.wineId,
@@ -385,9 +361,9 @@ export async function getWineById(id: number) {
     .leftJoin(winery, eq(wine.wineryId, winery.wineryId))
     .leftJoin(location, eq(wine.locationId, location.locationId))
     .where(eq(wine.wineId, id));
-  
+
   if (!results[0]) return null;
-  
+
   const varietals = await db
     .select({
       varietalId: varietal.varietalId,
@@ -396,7 +372,7 @@ export async function getWineById(id: number) {
     .from(wineVarietal)
     .innerJoin(varietal, eq(wineVarietal.varietalId, varietal.varietalId))
     .where(eq(wineVarietal.wineId, id));
-  
+
   return {
     ...results[0],
     varietals,
@@ -406,13 +382,13 @@ export async function getWineById(id: number) {
 export async function createWine(data: InsertWine & { varietalIds?: number[] }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const { varietalIds, ...wineData } = data;
-  
+
   // Insert wine
   const result = await db.insert(wine).values(wineData).returning();
   const newWine = result[0];
-  
+
   // Insert wine-varietal relationships
   if (varietalIds && varietalIds.length > 0) {
     await db.insert(wineVarietal).values(
@@ -422,28 +398,24 @@ export async function createWine(data: InsertWine & { varietalIds?: number[] }) 
       }))
     );
   }
-  
+
   return newWine;
 }
 
 export async function updateWine(id: number, data: Partial<InsertWine> & { varietalIds?: number[] }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const { varietalIds, ...wineData } = data;
-  
+
   // Update wine
-  const result = await db
-    .update(wine)
-    .set(wineData)
-    .where(eq(wine.wineId, id))
-    .returning();
-  
+  const result = await db.update(wine).set(wineData).where(eq(wine.wineId, id)).returning();
+
   // Update wine-varietal relationships if provided
   if (varietalIds !== undefined) {
     // Delete existing relationships
     await db.delete(wineVarietal).where(eq(wineVarietal.wineId, id));
-    
+
     // Insert new relationships
     if (varietalIds.length > 0) {
       await db.insert(wineVarietal).values(
@@ -454,17 +426,17 @@ export async function updateWine(id: number, data: Partial<InsertWine> & { varie
       );
     }
   }
-  
+
   return result[0];
 }
 
 export async function deleteWine(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   // Delete wine-varietal relationships first (cascade should handle this, but being explicit)
   await db.delete(wineVarietal).where(eq(wineVarietal.wineId, id));
-  
+
   // Delete wine
   await db.delete(wine).where(eq(wine.wineId, id));
 }
@@ -473,29 +445,29 @@ export async function deleteWine(id: number) {
 async function buildLocationPath(db: any, locationId: number): Promise<string> {
   const locations: string[] = [];
   let currentId: number | null = locationId;
-  
+
   while (currentId !== null) {
     const results: Array<{ locationId: number; name: string; type: string; parentId: number | null }> = await db
       .select()
       .from(location)
       .where(eq(location.locationId, currentId));
-    
+
     if (results.length === 0) break;
-    
+
     const loc: { locationId: number; name: string; type: string; parentId: number | null } = results[0];
     locations.unshift(loc.name); // Add to beginning of array
     currentId = loc.parentId;
   }
-  
+
   return locations.join(" → ");
 }
 
 export async function getAllLocationsWithPaths() {
   const db = await getDb();
   if (!db) return [];
-  
+
   const allLocations = await db.select().from(location).orderBy(location.name);
-  
+
   // Build full path for each location
   const locationsWithPaths = await Promise.all(
     allLocations.map(async (loc) => ({
@@ -503,7 +475,7 @@ export async function getAllLocationsWithPaths() {
       fullPath: await buildLocationPath(db, loc.locationId),
     }))
   );
-  
+
   // Sort by full path for better UX
   return locationsWithPaths.sort((a, b) => a.fullPath.localeCompare(b.fullPath));
 }
@@ -589,9 +561,7 @@ export async function getAvailableWinesFiltered(locationIds?: number[], wineryId
     // Use a recursive CTE to expand selected location IDs to all descendants.
     // A wine matches if its own locationId OR its winery's locationId is in the tree.
     const locationIdList = locationIds.join(", ");
-    const wineryClause = wineryIds && wineryIds.length > 0
-      ? `AND w.winery_id IN (${wineryIds.join(", ")})`
-      : "";
+    const wineryClause = wineryIds && wineryIds.length > 0 ? `AND w.winery_id IN (${wineryIds.join(", ")})` : "";
     const result = await db.execute(sql`
       WITH RECURSIVE location_tree AS (
         -- Start with the selected location IDs
@@ -643,9 +613,7 @@ export async function getAvailableWinesFiltered(locationIds?: number[], wineryId
   } else {
     // No location filter — return all available wines, optionally filtered by winery
     const availabilityFilter = or(gt(wine.refrigerated, 0), gt(wine.cellared, 0))!;
-    const wineryFilter = wineryIds && wineryIds.length > 0
-      ? inArray(wine.wineryId, wineryIds)
-      : undefined;
+    const wineryFilter = wineryIds && wineryIds.length > 0 ? inArray(wine.wineryId, wineryIds) : undefined;
     const rows = await db
       .select({
         wineId: wine.wineId,

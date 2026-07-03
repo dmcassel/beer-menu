@@ -18,31 +18,29 @@ So that I can quickly find specific wines when updating inventory after a new sh
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | MEDIUM |
+| Field            | Value                                                                           |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Type             | ENHANCEMENT                                                                     |
+| Complexity       | MEDIUM                                                                          |
 | Systems Affected | `server/db_wine.ts`, `server/routers.ts`, `client/src/pages/ManageWinePage.tsx` |
-| GitHub Issue | 108 |
+| GitHub Issue     | 108                                                                             |
 
 ---
 
 ## Patterns to Follow
 
 ### DB filter function with CTE (location hierarchy)
+
 ```typescript
 // SOURCE: server/db_wine.ts:477-563
 // getAvailableWinesFiltered — use same recursive CTE approach,
 // but drop the stock check (refrigerated>0 / cellared>0).
 // Add text search as ilike on label, winery name, and EXISTS on varietal name.
-export async function getAllWines(filters?: {
-  wineryIds?: number[];
-  locationIds?: number[];
-  search?: string;
-})
+export async function getAllWines(filters?: { wineryIds?: number[]; locationIds?: number[]; search?: string });
 ```
 
 ### Router input schema
+
 ```typescript
 // SOURCE: server/routers.ts:366-373  (listAvailable pattern)
 list: publicProcedure
@@ -57,6 +55,7 @@ list: publicProcedure
 ```
 
 ### Filter state + query in page
+
 ```typescript
 // SOURCE: client/src/pages/WinePage.tsx:66-75
 const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -64,14 +63,19 @@ const [selectedWineries, setSelectedWineries] = useState<string[]>([]);
 const [isFilterOpen, setIsFilterOpen] = useState(false);
 const [textSearch, setTextSearch] = useState("");
 
-const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
-  wineryIds: selectedWineries.map(id => parseInt(id, 10)),
-  locationIds: selectedLocations.map(id => parseInt(id, 10)),
+const {
+  data: wines,
+  isLoading,
+  refetch,
+} = trpc.wine.list.useQuery({
+  wineryIds: selectedWineries.map((id) => parseInt(id, 10)),
+  locationIds: selectedLocations.map((id) => parseInt(id, 10)),
   search: textSearch.trim() || undefined,
 });
 ```
 
 ### WineFilterControls usage + mobile Sheet
+
 ```typescript
 // SOURCE: client/src/pages/WinePage.tsx:130-223
 // Desktop: hidden md:grid md:grid-cols-3 gap-4
@@ -80,6 +84,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 ```
 
 ### Active filter badges
+
 ```typescript
 // SOURCE: client/src/pages/WinePage.tsx:142-193
 // selectedLocations and selectedWineries render dismissible <Badge> per value.
@@ -90,11 +95,11 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `server/db_wine.ts` | UPDATE | Add optional filter params to `getAllWines()` |
-| `server/routers.ts` | UPDATE | Add input schema to `wine.list` procedure |
-| `client/src/pages/ManageWinePage.tsx` | UPDATE | Filter state, query params, filter UI |
+| File                                  | Action | Purpose                                       |
+| ------------------------------------- | ------ | --------------------------------------------- |
+| `server/db_wine.ts`                   | UPDATE | Add optional filter params to `getAllWines()` |
+| `server/routers.ts`                   | UPDATE | Add input schema to `wine.list` procedure     |
+| `client/src/pages/ManageWinePage.tsx` | UPDATE | Filter state, query params, filter UI         |
 
 ---
 
@@ -125,6 +130,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 - **File**: `server/routers.ts`
 - **Action**: UPDATE
 - **Implement**: Replace the current no-input `list` procedure:
+
   ```typescript
   // Before:
   list: publicProcedure.query(() => dbWine.getAllWines()),
@@ -140,6 +146,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
     )
     .query(({ input }) => dbWine.getAllWines(input)),
   ```
+
 - **Mirror**: `server/routers.ts:366-373` — exact same shape as `listAvailable`
 - **Validate**: `npm run check`
 
@@ -148,26 +155,33 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 - **File**: `client/src/pages/ManageWinePage.tsx`
 - **Action**: UPDATE
 - **Implement**: After the existing `useState` declarations (around line 20), add:
+
   ```typescript
   const [selectedWineries, setSelectedWineries] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [textSearch, setTextSearch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   ```
+
   Update the existing `trpc.wine.list.useQuery()` call (line 32) to pass filter params:
+
   ```typescript
-  const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
-    wineryIds: selectedWineries.map(id => parseInt(id, 10)),
-    locationIds: selectedLocations.map(id => parseInt(id, 10)),
+  const {
+    data: wines,
+    isLoading,
+    refetch,
+  } = trpc.wine.list.useQuery({
+    wineryIds: selectedWineries.map((id) => parseInt(id, 10)),
+    locationIds: selectedLocations.map((id) => parseInt(id, 10)),
     search: textSearch.trim() || undefined,
   });
   ```
+
   Add derived values after the query:
+
   ```typescript
-  const hasActiveFilters =
-    selectedWineries.length > 0 || selectedLocations.length > 0 || textSearch.trim().length > 0;
-  const activeFilterCount =
-    selectedWineries.length + selectedLocations.length + (textSearch.trim() ? 1 : 0);
+  const hasActiveFilters = selectedWineries.length > 0 || selectedLocations.length > 0 || textSearch.trim().length > 0;
+  const activeFilterCount = selectedWineries.length + selectedLocations.length + (textSearch.trim() ? 1 : 0);
 
   const handleClearFilters = () => {
     setSelectedWineries([]);
@@ -175,6 +189,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
     setTextSearch("");
   };
   ```
+
 - **Mirror**: `client/src/pages/WinePage.tsx:66-91`
 - **Validate**: `npm run check`
 
@@ -195,15 +210,10 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 - **File**: `client/src/pages/ManageWinePage.tsx`
 - **Action**: UPDATE
 - **Implement**: Between the existing header row (`<div className="flex justify-between items-center">`) and the loading/grid section, insert:
-
   1. **Mobile filter button** — add inside the header row next to the "Add Wine" Dialog trigger:
+
   ```tsx
-  <Button
-    variant="outline"
-    size="sm"
-    onClick={() => setIsFilterOpen(true)}
-    className="md:hidden relative"
-  >
+  <Button variant="outline" size="sm" onClick={() => setIsFilterOpen(true)} className="md:hidden relative">
     <Filter className="w-4 h-4" />
     {activeFilterCount > 0 && (
       <Badge
@@ -217,6 +227,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
   ```
 
   2. **Desktop filter grid** — after the header row div:
+
   ```tsx
   <div className="hidden md:grid md:grid-cols-3 gap-4 mt-4">
     <WineFilterControls
@@ -232,57 +243,59 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
       <Input
         placeholder="Label, winery, or varietal..."
         value={textSearch}
-        onChange={e => setTextSearch(e.target.value)}
+        onChange={(e) => setTextSearch(e.target.value)}
       />
     </div>
   </div>
   ```
 
   3. **Active filter badges** — after the desktop filter grid:
+
   ```tsx
-  {hasActiveFilters && (
-    <div className="mt-3 flex items-center gap-2 flex-wrap">
-      {selectedLocations.map(id => {
-        const loc = (locations ?? []).find(l => l.locationId === parseInt(id, 10));
-        return loc ? (
-          <Badge
-            key={`loc-${id}`}
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() => setSelectedLocations(selectedLocations.filter(x => x !== id))}
-          >
-            {loc.fullPath}<X className="w-3 h-3 ml-1" />
+  {
+    hasActiveFilters && (
+      <div className="mt-3 flex items-center gap-2 flex-wrap">
+        {selectedLocations.map((id) => {
+          const loc = (locations ?? []).find((l) => l.locationId === parseInt(id, 10));
+          return loc ? (
+            <Badge
+              key={`loc-${id}`}
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedLocations(selectedLocations.filter((x) => x !== id))}
+            >
+              {loc.fullPath}
+              <X className="w-3 h-3 ml-1" />
+            </Badge>
+          ) : null;
+        })}
+        {selectedWineries.map((id) => {
+          const w = (wineries ?? []).find((w) => w.wineryId === parseInt(id, 10));
+          return w ? (
+            <Badge
+              key={`winery-${id}`}
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedWineries(selectedWineries.filter((x) => x !== id))}
+            >
+              {w.name}
+              <X className="w-3 h-3 ml-1" />
+            </Badge>
+          ) : null;
+        })}
+        {textSearch.trim() && (
+          <Badge variant="secondary" className="cursor-pointer" onClick={() => setTextSearch("")}>
+            "{textSearch}"<X className="w-3 h-3 ml-1" />
           </Badge>
-        ) : null;
-      })}
-      {selectedWineries.map(id => {
-        const w = (wineries ?? []).find(w => w.wineryId === parseInt(id, 10));
-        return w ? (
-          <Badge
-            key={`winery-${id}`}
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() => setSelectedWineries(selectedWineries.filter(x => x !== id))}
-          >
-            {w.name}<X className="w-3 h-3 ml-1" />
-          </Badge>
-        ) : null;
-      })}
-      {textSearch.trim() && (
-        <Badge
-          variant="secondary"
-          className="cursor-pointer"
-          onClick={() => setTextSearch("")}
-        >
-          "{textSearch}"<X className="w-3 h-3 ml-1" />
-        </Badge>
-      )}
-      <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-        Clear All
-      </Button>
-    </div>
-  )}
+        )}
+        <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+          Clear All
+        </Button>
+      </div>
+    );
+  }
   ```
+
 - **Mirror**: `client/src/pages/WinePage.tsx:107-193`
 - **Validate**: `npm run check`
 
@@ -311,7 +324,7 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
           <Input
             placeholder="Label, winery, or varietal..."
             value={textSearch}
-            onChange={e => setTextSearch(e.target.value)}
+            onChange={(e) => setTextSearch(e.target.value)}
           />
         </div>
         {hasActiveFilters && (
@@ -332,11 +345,13 @@ const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
 - **Action**: UPDATE
 - **Implement**: The `wines` array from the query now reflects filters, so no structural change is needed to the grid. Add an empty-state message when `!isLoading && wines?.length === 0`:
   ```tsx
-  {!isLoading && wines?.length === 0 && (
-    <p className="col-span-full text-center py-8 text-gray-500">
-      {hasActiveFilters ? "No wines match your filters." : "No wines found."}
-    </p>
-  )}
+  {
+    !isLoading && wines?.length === 0 && (
+      <p className="col-span-full text-center py-8 text-gray-500">
+        {hasActiveFilters ? "No wines match your filters." : "No wines found."}
+      </p>
+    );
+  }
   ```
   Place this inside the `<div className="grid ...">` before the `wines?.map(...)` call.
 - **Mirror**: `client/src/pages/WinePage.tsx:231-238`

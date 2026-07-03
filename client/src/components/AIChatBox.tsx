@@ -151,15 +151,13 @@ export function AIChatBox({
 
   // Scroll to bottom helper function with smooth animation
   const scrollToBottom = () => {
-    const viewport = scrollAreaRef.current?.querySelector(
-      '[data-radix-scroll-area-viewport]'
-    ) as HTMLDivElement;
+    const viewport = scrollAreaRef.current?.querySelector("[data-radix-scroll-area-viewport]") as HTMLDivElement;
 
     if (viewport) {
       requestAnimationFrame(() => {
         viewport.scrollTo({
           top: viewport.scrollHeight,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       });
     }
@@ -190,10 +188,7 @@ export function AIChatBox({
   return (
     <div
       ref={containerRef}
-      className={cn(
-        "flex flex-col bg-card text-card-foreground rounded-lg border shadow-sm",
-        className
-      )}
+      className={cn("flex flex-col bg-card text-card-foreground rounded-lg border shadow-sm", className)}
       style={{ height }}
     >
       {/* Messages Area */}
@@ -228,23 +223,16 @@ export function AIChatBox({
               {displayMessages.map((message, index) => {
                 // Apply min-height to last message only if NOT loading (when loading, the loading indicator gets it)
                 const isLastMessage = index === displayMessages.length - 1;
-                const shouldApplyMinHeight =
-                  isLastMessage && !isLoading && minHeightForLastMessage > 0;
+                const shouldApplyMinHeight = isLastMessage && !isLoading && minHeightForLastMessage > 0;
 
                 return (
                   <div
                     key={index}
                     className={cn(
                       "flex gap-3",
-                      message.role === "user"
-                        ? "justify-end items-start"
-                        : "justify-start items-start"
+                      message.role === "user" ? "justify-end items-start" : "justify-start items-start"
                     )}
-                    style={
-                      shouldApplyMinHeight
-                        ? { minHeight: `${minHeightForLastMessage}px` }
-                        : undefined
-                    }
+                    style={shouldApplyMinHeight ? { minHeight: `${minHeightForLastMessage}px` } : undefined}
                   >
                     {message.role === "assistant" && (
                       <div className="size-8 shrink-0 mt-1 rounded-full bg-primary/10 flex items-center justify-center">
@@ -255,9 +243,7 @@ export function AIChatBox({
                     <div
                       className={cn(
                         "max-w-[80%] rounded-lg px-4 py-2.5",
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-foreground"
+                        message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                       )}
                     >
                       {message.role === "assistant" ? (
@@ -265,9 +251,7 @@ export function AIChatBox({
                           <Streamdown>{message.content}</Streamdown>
                         </div>
                       ) : (
-                        <p className="whitespace-pre-wrap text-sm">
-                          {message.content}
-                        </p>
+                        <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                       )}
                     </div>
 
@@ -283,11 +267,7 @@ export function AIChatBox({
               {isLoading && (
                 <div
                   className="flex items-start gap-3"
-                  style={
-                    minHeightForLastMessage > 0
-                      ? { minHeight: `${minHeightForLastMessage}px` }
-                      : undefined
-                  }
+                  style={minHeightForLastMessage > 0 ? { minHeight: `${minHeightForLastMessage}px` } : undefined}
                 >
                   <div className="size-8 shrink-0 mt-1 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="size-4 text-primary" />
@@ -303,11 +283,7 @@ export function AIChatBox({
       </div>
 
       {/* Input Area */}
-      <form
-        ref={inputAreaRef}
-        onSubmit={handleSubmit}
-        className="flex gap-2 p-4 border-t bg-background/50 items-end"
-      >
+      <form ref={inputAreaRef} onSubmit={handleSubmit} className="flex gap-2 p-4 border-t bg-background/50 items-end">
         <Textarea
           ref={textareaRef}
           value={input}
@@ -317,17 +293,8 @@ export function AIChatBox({
           className="flex-1 max-h-32 resize-none min-h-9"
           rows={1}
         />
-        <Button
-          type="submit"
-          size="icon"
-          disabled={!input.trim() || isLoading}
-          className="shrink-0 h-[38px] w-[38px]"
-        >
-          {isLoading ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Send className="size-4" />
-          )}
+        <Button type="submit" size="icon" disabled={!input.trim() || isLoading} className="shrink-0 h-[38px] w-[38px]">
+          {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
         </Button>
       </form>
     </div>

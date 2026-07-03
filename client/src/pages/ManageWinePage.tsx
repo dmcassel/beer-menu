@@ -15,7 +15,6 @@ import { SearchableSelect, SearchableSelectOption } from "@/components/ui/search
 import { MultiSelect, MultiSelectOption } from "@/components/ui/multi-select";
 import { WineFilterControls } from "@/components/WineFilterControls";
 
-
 export default function ManageWinePage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -36,9 +35,13 @@ export default function ManageWinePage() {
     varietalIds: [] as string[],
   });
 
-  const { data: wines, isLoading, refetch } = trpc.wine.list.useQuery({
-    wineryIds: selectedWineries.map(id => parseInt(id, 10)),
-    locationIds: selectedLocations.map(id => parseInt(id, 10)),
+  const {
+    data: wines,
+    isLoading,
+    refetch,
+  } = trpc.wine.list.useQuery({
+    wineryIds: selectedWineries.map((id) => parseInt(id, 10)),
+    locationIds: selectedLocations.map((id) => parseInt(id, 10)),
     search: textSearch.trim() || undefined,
   });
   const { data: wineries } = trpc.winery.list.useQuery();
@@ -48,10 +51,8 @@ export default function ManageWinePage() {
   const updateMutation = trpc.wine.update.useMutation();
   const deleteMutation = trpc.wine.delete.useMutation();
 
-  const hasActiveFilters =
-    selectedWineries.length > 0 || selectedLocations.length > 0 || textSearch.trim().length > 0;
-  const activeFilterCount =
-    selectedWineries.length + selectedLocations.length + (textSearch.trim() ? 1 : 0);
+  const hasActiveFilters = selectedWineries.length > 0 || selectedLocations.length > 0 || textSearch.trim().length > 0;
+  const activeFilterCount = selectedWineries.length + selectedLocations.length + (textSearch.trim() ? 1 : 0);
 
   const handleClearFilters = () => {
     setSelectedWineries([]);
@@ -170,12 +171,7 @@ export default function ManageWinePage() {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Wines</h2>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsFilterOpen(true)}
-            className="md:hidden relative"
-          >
+          <Button variant="outline" size="sm" onClick={() => setIsFilterOpen(true)} className="md:hidden relative">
             <Filter className="w-4 h-4" />
             {activeFilterCount > 0 && (
               <Badge
@@ -187,121 +183,121 @@ export default function ManageWinePage() {
             )}
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setEditingId(null);
-                setFormData({
-                  label: "",
-                  wineryId: "",
-                  vintage: "",
-                  locationId: null,
-                  refrigerated: "0",
-                  cellared: "0",
-                  description: "",
-                  varietalIds: [],
-                });
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Wine
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Wine" : "Add Wine"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="label">Label *</Label>
-                <Input
-                  id="label"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Winery</Label>
-                <SearchableSelect
-                  options={wineryOptions}
-                  value={formData.wineryId}
-                  onChange={(value) => setFormData({ ...formData, wineryId: value })}
-                  placeholder="Select winery..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="vintage">Vintage</Label>
-                <Input
-                  id="vintage"
-                  type="number"
-                  value={formData.vintage}
-                  onChange={(e) => setFormData({ ...formData, vintage: e.target.value })}
-                  placeholder="e.g., 2020"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Location</Label>
-                <SearchableSelect
-                  options={locationOptions}
-                  value={formData.locationId?.toString() || ""}
-                  onChange={(value) => setFormData({ ...formData, locationId: value ? parseInt(value) : null })}
-                  placeholder="Search and select location..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Varietals</Label>
-                <MultiSelect
-                  options={varietalOptions}
-                  selected={formData.varietalIds}
-                  onChange={(varietalIds) => setFormData({ ...formData, varietalIds })}
-                  placeholder="Select varietals..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="refrigerated">Refrigerated</Label>
-                  <Input
-                    id="refrigerated"
-                    type="number"
-                    min="0"
-                    value={formData.refrigerated}
-                    onChange={(e) => setFormData({ ...formData, refrigerated: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cellared">Cellared</Label>
-                  <Input
-                    id="cellared"
-                    type="number"
-                    min="0"
-                    value={formData.cellared}
-                    onChange={(e) => setFormData({ ...formData, cellared: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              <Button type="submit" className="w-full">
-                {editingId ? "Update" : "Create"}
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => {
+                  setEditingId(null);
+                  setFormData({
+                    label: "",
+                    wineryId: "",
+                    vintage: "",
+                    locationId: null,
+                    refrigerated: "0",
+                    cellared: "0",
+                    description: "",
+                    varietalIds: [],
+                  });
+                }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Wine
               </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editingId ? "Edit Wine" : "Add Wine"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="label">Label *</Label>
+                  <Input
+                    id="label"
+                    value={formData.label}
+                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Winery</Label>
+                  <SearchableSelect
+                    options={wineryOptions}
+                    value={formData.wineryId}
+                    onChange={(value) => setFormData({ ...formData, wineryId: value })}
+                    placeholder="Select winery..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="vintage">Vintage</Label>
+                  <Input
+                    id="vintage"
+                    type="number"
+                    value={formData.vintage}
+                    onChange={(e) => setFormData({ ...formData, vintage: e.target.value })}
+                    placeholder="e.g., 2020"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <SearchableSelect
+                    options={locationOptions}
+                    value={formData.locationId?.toString() || ""}
+                    onChange={(value) => setFormData({ ...formData, locationId: value ? parseInt(value) : null })}
+                    placeholder="Search and select location..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Varietals</Label>
+                  <MultiSelect
+                    options={varietalOptions}
+                    selected={formData.varietalIds}
+                    onChange={(varietalIds) => setFormData({ ...formData, varietalIds })}
+                    placeholder="Select varietals..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="refrigerated">Refrigerated</Label>
+                    <Input
+                      id="refrigerated"
+                      type="number"
+                      min="0"
+                      value={formData.refrigerated}
+                      onChange={(e) => setFormData({ ...formData, refrigerated: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cellared">Cellared</Label>
+                    <Input
+                      id="cellared"
+                      type="number"
+                      min="0"
+                      value={formData.cellared}
+                      onChange={(e) => setFormData({ ...formData, cellared: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                  />
+                </div>
+
+                <Button type="submit" className="w-full">
+                  {editingId ? "Update" : "Create"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -320,7 +316,7 @@ export default function ManageWinePage() {
           <Input
             placeholder="Label, winery, or varietal..."
             value={textSearch}
-            onChange={e => setTextSearch(e.target.value)}
+            onChange={(e) => setTextSearch(e.target.value)}
           />
         </div>
       </div>
@@ -328,38 +324,36 @@ export default function ManageWinePage() {
       {/* Active filter badges */}
       {hasActiveFilters && (
         <div className="flex items-center gap-2 flex-wrap">
-          {selectedLocations.map(id => {
-            const loc = (locations ?? []).find(l => l.locationId === parseInt(id, 10));
+          {selectedLocations.map((id) => {
+            const loc = (locations ?? []).find((l) => l.locationId === parseInt(id, 10));
             return loc ? (
               <Badge
                 key={`loc-${id}`}
                 variant="secondary"
                 className="cursor-pointer"
-                onClick={() => setSelectedLocations(selectedLocations.filter(x => x !== id))}
+                onClick={() => setSelectedLocations(selectedLocations.filter((x) => x !== id))}
               >
-                {loc.fullPath}<X className="w-3 h-3 ml-1" />
+                {loc.fullPath}
+                <X className="w-3 h-3 ml-1" />
               </Badge>
             ) : null;
           })}
-          {selectedWineries.map(id => {
-            const w = (wineries ?? []).find(w => w.wineryId === parseInt(id, 10));
+          {selectedWineries.map((id) => {
+            const w = (wineries ?? []).find((w) => w.wineryId === parseInt(id, 10));
             return w ? (
               <Badge
                 key={`winery-${id}`}
                 variant="secondary"
                 className="cursor-pointer"
-                onClick={() => setSelectedWineries(selectedWineries.filter(x => x !== id))}
+                onClick={() => setSelectedWineries(selectedWineries.filter((x) => x !== id))}
               >
-                {w.name}<X className="w-3 h-3 ml-1" />
+                {w.name}
+                <X className="w-3 h-3 ml-1" />
               </Badge>
             ) : null;
           })}
           {textSearch.trim() && (
-            <Badge
-              variant="secondary"
-              className="cursor-pointer"
-              onClick={() => setTextSearch("")}
-            >
+            <Badge variant="secondary" className="cursor-pointer" onClick={() => setTextSearch("")}>
               "{textSearch}"<X className="w-3 h-3 ml-1" />
             </Badge>
           )}
@@ -368,7 +362,6 @@ export default function ManageWinePage() {
           </Button>
         </div>
       )}
-
 
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
@@ -386,9 +379,7 @@ export default function ManageWinePage() {
                   <CardTitle className="text-lg font-medium">
                     {wine.label} {wine.vintage && `(${wine.vintage})`}
                   </CardTitle>
-                  {wine.wineryName && (
-                    <p className="text-sm text-gray-600 mt-1">{wine.wineryName}</p>
-                  )}
+                  {wine.wineryName && <p className="text-sm text-gray-600 mt-1">{wine.wineryName}</p>}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" title="New Vintage" onClick={() => handleNewVintage(wine)}>
@@ -397,11 +388,7 @@ export default function ManageWinePage() {
                   <Button variant="ghost" size="sm" onClick={() => handleEdit(wine)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteClick(wine.wineId, wine.label)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(wine.wineId, wine.label)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -420,8 +407,8 @@ export default function ManageWinePage() {
                     </p>
                   )}
                   <p className="text-sm">
-                    <span className="font-medium">Inventory:</span> {wine.refrigerated} refrigerated,{" "}
-                    {wine.cellared} cellared
+                    <span className="font-medium">Inventory:</span> {wine.refrigerated} refrigerated, {wine.cellared}{" "}
+                    cellared
                   </p>
                   {wine.description && (
                     <p className="text-sm text-gray-600 mt-2 whitespace-pre-line">{wine.description}</p>
@@ -461,7 +448,7 @@ export default function ManageWinePage() {
               <Input
                 placeholder="Label, winery, or varietal..."
                 value={textSearch}
-                onChange={e => setTextSearch(e.target.value)}
+                onChange={(e) => setTextSearch(e.target.value)}
               />
             </div>
             {hasActiveFilters && (

@@ -12,18 +12,19 @@ So that I can quickly locate the specific beer I need to update
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | LOW |
+| Field            | Value                                           |
+| ---------------- | ----------------------------------------------- |
+| Type             | ENHANCEMENT                                     |
+| Complexity       | LOW                                             |
 | Systems Affected | Frontend only (`client/src/pages/BeerPage.tsx`) |
-| GitHub Issue | 97 |
+| GitHub Issue     | 97                                              |
 
 ---
 
 ## Patterns to Follow
 
 ### Filter state + debounced search
+
 ```typescript
 // SOURCE: client/src/pages/BeerBrowser.tsx:73-77
 const [selectedMenuCategories, setSelectedMenuCategories] = useState<string[]>([]);
@@ -37,6 +38,7 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 ```
 
 ### FilterControls usage
+
 ```typescript
 // SOURCE: client/src/pages/BeerBrowser.tsx:206-216
 <div className="grid grid-cols-3 gap-4">
@@ -55,6 +57,7 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 ```
 
 ### FilterControls expected prop shapes
+
 ```typescript
 // SOURCE: client/src/components/FilterControls.tsx:3-13
 // menuCategories must be Array<{ menu_cat_id: number; name: string }>
@@ -68,15 +71,16 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 ```
 
 ### Passing filters to beer.list query
+
 ```typescript
 // SOURCE: server/routers.ts:182-191
 // beer.list accepts: { search?, menuCategoryIds?, styleIds?, breweryIds? }
 // All optional; pass numeric arrays converted from string state
 const { data: beers } = trpc.beer.list.useQuery({
   search: debouncedSearch || undefined,
-  menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
-  styleIds: selectedStyles.map(id => parseInt(id)),
-  breweryIds: selectedBreweries.map(id => parseInt(id)),
+  menuCategoryIds: selectedMenuCategories.map((id) => parseInt(id)),
+  styleIds: selectedStyles.map((id) => parseInt(id)),
+  breweryIds: selectedBreweries.map((id) => parseInt(id)),
 });
 ```
 
@@ -84,8 +88,8 @@ const { data: beers } = trpc.beer.list.useQuery({
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
+| File                            | Action | Purpose                                                      |
+| ------------------------------- | ------ | ------------------------------------------------------------ |
 | `client/src/pages/BeerPage.tsx` | UPDATE | Add filter state, debounced search, filter UI, updated query |
 
 ---
@@ -127,11 +131,15 @@ const { data: beers } = trpc.beer.list.useQuery({
     ```
   - Replace the existing `trpc.beer.list.useQuery({})` call (line 28) with:
     ```typescript
-    const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({
+    const {
+      data: beers,
+      isLoading,
+      refetch,
+    } = trpc.beer.list.useQuery({
       search: debouncedSearch || undefined,
-      menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
-      styleIds: selectedStyles.map(id => parseInt(id)),
-      breweryIds: selectedBreweries.map(id => parseInt(id)),
+      menuCategoryIds: selectedMenuCategories.map((id) => parseInt(id)),
+      styleIds: selectedStyles.map((id) => parseInt(id)),
+      breweryIds: selectedBreweries.map((id) => parseInt(id)),
     });
     ```
 - **Mirror**: `client/src/pages/BeerBrowser.tsx:83-94` for query patterns
@@ -149,11 +157,7 @@ const { data: beers } = trpc.beer.list.useQuery({
   - Insert a filter section in the JSX between the header `<div>` (the "Add Beer" button row) and the loading/list section (around line 212, before `{isLoading ? ...}`):
     ```tsx
     <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
-      <Input
-        placeholder="Search beers..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
+      <Input placeholder="Search beers..." value={search} onChange={(e) => setSearch(e.target.value)} />
       <div className="grid grid-cols-3 gap-4">
         <FilterControls
           selectedMenuCategories={selectedMenuCategories}

@@ -42,15 +42,15 @@ services:
   postgres-test:
     image: postgres:16.11
     container_name: beer_menu_test_db
-    restart: "no"  # Don't auto-restart test database
+    restart: "no" # Don't auto-restart test database
     environment:
       POSTGRES_USER: ${POSTGRES_TEST_USER:-test_user}
       POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD:-test_password}
       POSTGRES_DB: ${POSTGRES_TEST_DB:-beer_menu_test}
     ports:
-      - "${POSTGRES_TEST_PORT:-5433}:5432"  # Different port to avoid conflicts
+      - "${POSTGRES_TEST_PORT:-5433}:5432" # Different port to avoid conflicts
     tmpfs:
-      - /var/lib/postgresql/data  # Use tmpfs for faster tests and auto-cleanup
+      - /var/lib/postgresql/data # Use tmpfs for faster tests and auto-cleanup
     networks:
       - beer_network
     healthcheck:

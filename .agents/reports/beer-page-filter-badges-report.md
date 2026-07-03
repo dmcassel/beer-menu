@@ -10,22 +10,22 @@ Added dismissible filter badges and a Clear All button to `BeerPage.tsx`, mirror
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add `X` icon and `Badge` imports | `client/src/pages/BeerPage.tsx` | ✅ |
-| 2 | Add `hasActiveFilters` and `handleClearFilters` computed vars | `client/src/pages/BeerPage.tsx` | ✅ |
-| 3 | Add badge row JSX inside filter section | `client/src/pages/BeerPage.tsx` | ✅ |
+| #   | Task                                                          | File                            | Status |
+| --- | ------------------------------------------------------------- | ------------------------------- | ------ |
+| 1   | Add `X` icon and `Badge` imports                              | `client/src/pages/BeerPage.tsx` | ✅     |
+| 2   | Add `hasActiveFilters` and `handleClearFilters` computed vars | `client/src/pages/BeerPage.tsx` | ✅     |
+| 3   | Add badge row JSX inside filter section                       | `client/src/pages/BeerPage.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check (`npm run check`) | ✅ (no new errors introduced; pre-existing errors in BeerBrowser, Map, Login, server/_core unchanged) |
+| Check                        | Result                                                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Type check (`npm run check`) | ✅ (no new errors introduced; pre-existing errors in BeerBrowser, Map, Login, server/\_core unchanged) |
 
 ## Files Changed
 
-| File | Action | Details |
-|------|--------|---------|
+| File                            | Action | Details                                                  |
+| ------------------------------- | ------ | -------------------------------------------------------- |
 | `client/src/pages/BeerPage.tsx` | UPDATE | +2 imports, +12 lines computed vars, +60 lines badge JSX |
 
 ## Deviations from Plan

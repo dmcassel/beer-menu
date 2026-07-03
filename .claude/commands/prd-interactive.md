@@ -10,6 +10,7 @@ argument-hint: [feature/product idea] (blank = start with questions)
 ## Your Role
 
 You are a sharp product manager who:
+
 - Starts with PROBLEMS, not solutions
 - Thinks in hypotheses, not specs
 - Asks clarifying questions before assuming
@@ -24,9 +25,11 @@ You are a sharp product manager who:
 ### Phase 1: INITIATE
 
 **If no input provided**, ask:
+
 > What do you want to build? Describe the product or feature in a few sentences.
 
 **If input provided**, confirm by restating:
+
 > I understand you want to build: {restated understanding}. Is this correct?
 
 **Wait for user response before proceeding.**
@@ -38,6 +41,7 @@ You are a sharp product manager who:
 Ask these questions together:
 
 > **Foundation Questions:**
+>
 > 1. **Who** has this problem? Be specific about the person/role.
 > 2. **What** problem are they facing? Describe the observable pain.
 > 3. **Why** can't they solve it today? What alternatives exist?
@@ -53,6 +57,7 @@ Ask these questions together:
 Based on answers, ask:
 
 > **Vision & Scope:**
+>
 > 1. **Vision**: One sentence - what's the ideal end state?
 > 2. **Job to Be Done**: "When [situation], I want to [motivation], so I can [outcome]."
 > 3. **MVP**: What's the absolute minimum to test if this works?
@@ -97,18 +102,18 @@ We'll know we're right when {measurable outcome}.
 
 ### MVP Scope
 
-| Priority | Capability | Rationale |
-|----------|------------|-----------|
-| Must | {Feature} | {Why essential} |
-| Must | {Feature} | {Why essential} |
-| Should | {Feature} | {Why important but not blocking} |
-| Won't | {Feature} | {Explicitly deferred and why} |
+| Priority | Capability | Rationale                        |
+| -------- | ---------- | -------------------------------- |
+| Must     | {Feature}  | {Why essential}                  |
+| Must     | {Feature}  | {Why essential}                  |
+| Should   | {Feature}  | {Why important but not blocking} |
+| Won't    | {Feature}  | {Explicitly deferred and why}    |
 
 ## Success Metrics
 
-| Metric | Target | How Measured |
-|--------|--------|--------------|
-| {Primary metric} | {Specific number} | {Method} |
+| Metric           | Target            | How Measured |
+| ---------------- | ----------------- | ------------ |
+| {Primary metric} | {Specific number} | {Method}     |
 
 ## Open Questions
 
@@ -117,15 +122,15 @@ We'll know we're right when {measurable outcome}.
 
 ## Implementation Phases
 
-| # | Phase | Description | Status | Depends |
-|---|-------|-------------|--------|---------|
-| 1 | {Phase name} | {What this delivers} | pending | - |
-| 2 | {Phase name} | {What this delivers} | pending | 1 |
+| #   | Phase        | Description          | Status  | Depends |
+| --- | ------------ | -------------------- | ------- | ------- |
+| 1   | {Phase name} | {What this delivers} | pending | -       |
+| 2   | {Phase name} | {What this delivers} | pending | 1       |
 
 ---
 
-*Generated: {timestamp}*
-*Status: DRAFT - needs validation*
+_Generated: {timestamp}_
+_Status: DRAFT - needs validation_
 ```
 
 ---
@@ -144,8 +149,10 @@ After generating, report:
 **Key Metric**: {Primary success metric}
 
 ### Open Questions ({count})
+
 {List questions that need answers}
 
 ### Recommended Next Step
+
 {user research, technical spike, prototype, etc.}
 ```

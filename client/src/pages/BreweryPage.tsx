@@ -3,13 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
@@ -96,22 +90,16 @@ export default function BreweryPage() {
                 <label className="block text-sm font-medium mb-1">Name</label>
                 <Input
                   value={formData.name}
-                  onChange={e =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Brewery name"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Location
-                </label>
+                <label className="block text-sm font-medium mb-1">Location</label>
                 <Input
                   value={formData.location}
-                  onChange={e =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="City, State"
                 />
               </div>
@@ -127,23 +115,15 @@ export default function BreweryPage() {
         <div className="text-center py-8">Loading...</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {breweries?.map(brewery => (
+          {breweries?.map((brewery) => (
             <Card key={brewery.breweryId}>
               <CardHeader>
                 <CardTitle className="text-lg">{brewery.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                {brewery.location && (
-                  <p className="text-sm text-gray-600 mb-4">
-                    {brewery.location}
-                  </p>
-                )}
+                {brewery.location && <p className="text-sm text-gray-600 mb-4">{brewery.location}</p>}
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(brewery)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(brewery)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
                   <Button

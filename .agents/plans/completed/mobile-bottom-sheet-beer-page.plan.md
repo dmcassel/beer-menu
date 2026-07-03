@@ -12,12 +12,12 @@ So that I can use the filters without the dropdowns consuming the entire viewpor
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | LOW |
+| Field            | Value                           |
+| ---------------- | ------------------------------- |
+| Type             | ENHANCEMENT                     |
+| Complexity       | LOW                             |
 | Systems Affected | `client/src/pages/BeerPage.tsx` |
-| GitHub Issue | 99 |
+| GitHub Issue     | 99                              |
 
 ---
 
@@ -27,12 +27,7 @@ So that I can use the filters without the dropdowns consuming the entire viewpor
 
 ```tsx
 // SOURCE: client/src/pages/BeerBrowser.tsx:184-199
-<Button
-  variant="outline"
-  size="sm"
-  onClick={() => setIsFilterOpen(true)}
-  className="md:hidden relative"
->
+<Button variant="outline" size="sm" onClick={() => setIsFilterOpen(true)} className="md:hidden relative">
   <Filter className="w-4 h-4" />
   {activeFilterCount > 0 && (
     <Badge
@@ -86,8 +81,8 @@ const [isFilterOpen, setIsFilterOpen] = useState(false);
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
+| File                            | Action | Purpose                                                                   |
+| ------------------------------- | ------ | ------------------------------------------------------------------------- |
 | `client/src/pages/BeerPage.tsx` | UPDATE | Add mobile filter button, hide inline filters on mobile, add Sheet drawer |
 
 ---

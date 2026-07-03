@@ -3,10 +3,12 @@
 ## 🚀 Quick Start (5 minutes)
 
 ### 1. Prerequisites
+
 - **Node.js 18+** - Download from https://nodejs.org/
 - **MySQL Server** - Download from https://dev.mysql.com/downloads/mysql/
 
 ### 2. Extract and Open
+
 ```powershell
 # Extract the zip file to your desired location
 # Then open PowerShell in the beer_catalog_app folder
@@ -14,22 +16,27 @@ cd C:\path\to\beer_catalog_app
 ```
 
 ### 3. Create Database Configuration
+
 Create a `.env.local` file in the project root:
+
 ```powershell
 New-Item -Path .env.local -ItemType File
 ```
 
 Edit `.env.local` and add:
+
 ```
 DATABASE_URL="mysql://root:your_password@localhost:3306/beer_catalog"
 ```
 
 Create the database:
+
 ```powershell
 mysql -u root -p -e "CREATE DATABASE beer_catalog;"
 ```
 
 ### 4. Install and Run
+
 ```powershell
 # Install dependencies (handles peer dependency conflicts automatically)
 npm install
@@ -69,17 +76,20 @@ If you prefer an automated setup, run the PowerShell script:
 ## 🆘 Troubleshooting
 
 **Port 3000 already in use?**
+
 ```powershell
 $env:PORT = 3001
 npm run dev
 ```
 
 **npm install fails?**
+
 ```powershell
 npm install --legacy-peer-deps
 ```
 
 **Database connection error?**
+
 - Verify MySQL is running
 - Check your `.env.local` file
 - Ensure the `beer_catalog` database exists

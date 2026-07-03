@@ -9,9 +9,7 @@ export type TrpcContext = {
   user: User | null;
 };
 
-export async function createContext(
-  opts: CreateExpressContextOptions
-): Promise<TrpcContext> {
+export async function createContext(opts: CreateExpressContextOptions): Promise<TrpcContext> {
   let user: User | null = null;
 
   try {
@@ -20,7 +18,7 @@ export async function createContext(
     if (sessionCookie) {
       const session = JSON.parse(sessionCookie);
       if (session.userId) {
-        user = await db.getUserById(session.userId) || null;
+        user = (await db.getUserById(session.userId)) || null;
       }
     }
   } catch (error) {

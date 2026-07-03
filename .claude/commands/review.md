@@ -10,6 +10,7 @@ argument-hint: <pr-number|file|folder|scope>
 ## Your Mission
 
 Perform a thorough code review:
+
 1. **Understand** what you're reviewing and its purpose
 2. **Check** the code against project patterns
 3. **Run** validation (type-check, lint, tests)
@@ -24,17 +25,18 @@ Perform a thorough code review:
 
 ### Parse Input
 
-| Input Type | Example | Action |
-|------------|---------|--------|
-| PR number | `123`, `#123` | Fetch PR diff with `gh pr diff 123` |
-| PR URL | `github.com/.../pull/123` | Extract number, fetch PR diff |
-| File path | `src/api/flags.ts` | Review single file |
-| Folder path | `server/src/` | Review all files in folder |
-| Blank | (none) | Review unstaged git changes |
+| Input Type  | Example                   | Action                              |
+| ----------- | ------------------------- | ----------------------------------- |
+| PR number   | `123`, `#123`             | Fetch PR diff with `gh pr diff 123` |
+| PR URL      | `github.com/.../pull/123` | Extract number, fetch PR diff       |
+| File path   | `src/api/flags.ts`        | Review single file                  |
+| Folder path | `server/src/`             | Review all files in folder          |
+| Blank       | (none)                    | Review unstaged git changes         |
 
 ### Check PR Size (for PRs only)
 
 Before reviewing, run:
+
 ```bash
 gh pr diff {NUMBER} --stat
 ```
@@ -48,18 +50,21 @@ generated files), stop and flag it immediately:
 ### Get Review Target
 
 **For PR:**
+
 ```bash
 gh pr view {NUMBER} --json number,title,author,files
 gh pr diff {NUMBER}
 ```
 
 **For file/folder:**
+
 ```bash
 # List files to review
 find {path} -name "*.ts" -o -name "*.tsx" | grep -v node_modules
 ```
 
 **For blank (unstaged changes):**
+
 ```bash
 git diff --name-only
 git diff
@@ -87,22 +92,22 @@ git diff
 
 For each file in scope, check:
 
-| Category | Check |
-|----------|-------|
-| **Correctness** | Does the code work as intended? |
-| **Type Safety** | Are types explicit, no implicit `any`? |
-| **Patterns** | Does it follow existing codebase patterns? |
-| **Error Handling** | Are errors handled appropriately? |
-| **Tests** | Are there tests for this code? |
+| Category           | Check                                      |
+| ------------------ | ------------------------------------------ |
+| **Correctness**    | Does the code work as intended?            |
+| **Type Safety**    | Are types explicit, no implicit `any`?     |
+| **Patterns**       | Does it follow existing codebase patterns? |
+| **Error Handling** | Are errors handled appropriately?          |
+| **Tests**          | Are there tests for this code?             |
 
 ### Categorize Issues
 
-| Severity | Criteria |
-|----------|----------|
-| **Critical** | Security issues, data loss, crashes |
-| **High** | Type violations, missing error handling, logic errors |
-| **Medium** | Pattern inconsistencies, missing edge cases |
-| **Low** | Style suggestions, minor improvements |
+| Severity     | Criteria                                              |
+| ------------ | ----------------------------------------------------- |
+| **Critical** | Security issues, data loss, crashes                   |
+| **High**     | Type violations, missing error handling, logic errors |
+| **Medium**   | Pattern inconsistencies, missing edge cases           |
+| **Low**      | Style suggestions, minor improvements                 |
 
 ---
 
@@ -111,11 +116,14 @@ For each file in scope, check:
 Run automated checks:
 
 ```bash
-# Type check
-npm run build
+# Format (auto-fixes in place)
+npm run format
 
-# Lint
-npm run lint
+# Type check
+npm run check
+
+# Production build (catches bundling issues npm run check won't)
+npm run build
 
 # Tests
 npm test
@@ -146,24 +154,28 @@ mkdir -p .agents/reviews
 ## Issues Found
 
 ### Critical
+
 {List or "None"}
 
 ### High Priority
+
 {List or "None"}
 
 ### Medium Priority
+
 {List or "None"}
 
 ### Suggestions
+
 {List or "None"}
 
 ## Validation Results
 
-| Check | Status |
-|-------|--------|
+| Check      | Status      |
+| ---------- | ----------- |
 | Type Check | {PASS/FAIL} |
-| Lint | {PASS/FAIL} |
-| Tests | {PASS/FAIL} |
+| Lint       | {PASS/FAIL} |
+| Tests      | {PASS/FAIL} |
 
 ## What's Good
 
@@ -207,18 +219,18 @@ git push
 ### Issues Found
 
 | Severity | Count |
-|----------|-------|
-| Critical | {N} |
-| High | {N} |
-| Medium | {N} |
+| -------- | ----- |
+| Critical | {N}   |
+| High     | {N}   |
+| Medium   | {N}   |
 
 ### Validation
 
-| Check | Result |
-|-------|--------|
+| Check      | Result      |
+| ---------- | ----------- |
 | Type Check | {PASS/FAIL} |
-| Lint | {PASS/FAIL} |
-| Tests | {PASS/FAIL} |
+| Lint       | {PASS/FAIL} |
+| Tests      | {PASS/FAIL} |
 
 ### Report
 

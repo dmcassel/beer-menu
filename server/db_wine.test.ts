@@ -16,14 +16,14 @@ describe("getAllWines — curator filters", () => {
   it("returns all wines including out-of-stock when no filters given", async () => {
     const wines = await getAllWines();
     expect(wines).toHaveLength(4);
-    const labels = wines.map(w => w.label).sort();
+    const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Napa Cab", "Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
   });
 
   it("winery filter — single winery returns only that winery's wines", async () => {
     const wines = await getAllWines({ wineryIds: [seedData.wineries.r5.wineryId] });
     expect(wines).toHaveLength(3);
-    const labels = wines.map(w => w.label).sort();
+    const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
   });
 
@@ -42,7 +42,7 @@ describe("getAllWines — curator filters", () => {
   it("location filter — Pennsylvania matches R5 wines via winery location", async () => {
     const wines = await getAllWines({ locationIds: [seedData.locations.pa.locationId] });
     expect(wines).toHaveLength(3);
-    const labels = wines.map(w => w.label).sort();
+    const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
   });
 
@@ -60,7 +60,7 @@ describe("getAllWines — curator filters", () => {
   it("text search — matches winery name", async () => {
     const wines = await getAllWines({ search: "R5" });
     expect(wines).toHaveLength(3);
-    const labels = wines.map(w => w.label).sort();
+    const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Out of Stock Wine", "R5 Cab", "R5 Chardonnay"]);
   });
 
@@ -68,7 +68,7 @@ describe("getAllWines — curator filters", () => {
     // 'Cabernet' appears only in the varietal name, not in any label or winery name
     const wines = await getAllWines({ search: "Cabernet" });
     expect(wines).toHaveLength(2);
-    const labels = wines.map(w => w.label).sort();
+    const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Napa Cab", "R5 Cab"]);
   });
 
@@ -93,7 +93,7 @@ describe("getAllWines — curator filters", () => {
 
   it("attaches varietals to returned wines", async () => {
     const wines = await getAllWines({ wineryIds: [seedData.wineries.r5.wineryId] });
-    const cab = wines.find(w => w.label === "R5 Cab");
+    const cab = wines.find((w) => w.label === "R5 Cab");
     expect(cab).toBeDefined();
     expect(cab!.varietals).toHaveLength(1);
     expect(cab!.varietals[0].name).toBe("Cabernet Sauvignon");

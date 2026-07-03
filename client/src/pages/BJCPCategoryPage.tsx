@@ -70,7 +70,12 @@ export default function BJCPCategoryPage() {
         <h2 className="text-xl font-bold">BJCP Categories</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ label: "", name: "" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ label: "", name: "" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Category
             </Button>
@@ -118,11 +123,7 @@ export default function BJCPCategoryPage() {
               <CardContent>
                 <p className="text-sm text-gray-600 mb-4">{category.name}</p>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(category)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(category)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
                   <Button

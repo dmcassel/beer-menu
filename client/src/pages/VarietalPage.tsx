@@ -71,7 +71,12 @@ export default function VarietalPage() {
         <h2 className="text-xl font-bold">Grape Varietals</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Varietal
             </Button>

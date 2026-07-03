@@ -12,18 +12,19 @@ So that filter-based searches on the browse and curation pages return complete a
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | MEDIUM |
+| Field            | Value                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| Type             | ENHANCEMENT                                                                        |
+| Complexity       | MEDIUM                                                                             |
 | Systems Affected | server/db_wine.ts, server/routers.ts, server/test-utils.ts, server/db_wine.test.ts |
-| GitHub Issue | 106 |
+| GitHub Issue     | 106                                                                                |
 
 ---
 
 ## Patterns to Follow
 
 ### Recursive CTE — current location descendant expansion
+
 ```typescript
 // SOURCE: server/db_wine.ts:474-505
 const result = await db.execute(sql`
@@ -46,6 +47,7 @@ const result = await db.execute(sql`
 ```
 
 ### Recursive CTE — current ancestor expansion (for filter options)
+
 ```typescript
 // SOURCE: server/db_wine.ts:416-438
 WITH RECURSIVE ancestor_tree AS (
@@ -63,6 +65,7 @@ WITH RECURSIVE ancestor_tree AS (
 ```
 
 ### tRPC input schema with optional array
+
 ```typescript
 // SOURCE: server/routers.ts:367-372
 listAvailable: publicProcedure
@@ -75,6 +78,7 @@ listAvailable: publicProcedure
 ```
 
 ### Drizzle path — no-filter wine query
+
 ```typescript
 // SOURCE: server/db_wine.ts:520-538
 const rows = await db
@@ -87,6 +91,7 @@ const rows = await db
 ```
 
 ### Test structure
+
 ```typescript
 // SOURCE: server/db_additions.test.ts:1-24
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
@@ -101,6 +106,7 @@ describe("...", () => {
 ```
 
 ### clearDatabase pattern
+
 ```typescript
 // SOURCE: server/test-utils.ts:20-32
 await db.execute(sql`TRUNCATE TABLE menu_category_beer CASCADE;`);
@@ -112,12 +118,12 @@ await db.execute(sql`TRUNCATE TABLE beer CASCADE;`);
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `server/test-utils.ts` | UPDATE | Add wine table truncation to `clearDatabase`; add `seedWineDatabase` helper |
-| `server/db_wine.ts` | UPDATE | Extend `getAvailableLocations` to include winery locations; extend `getAvailableWinesFiltered` to accept `wineryIds` and use dual-location OR logic |
-| `server/routers.ts` | UPDATE | Add `wineryIds` to `wine.listAvailable` input schema |
-| `server/db_wine.test.ts` | CREATE | Tests for winery filter, dual-location matching, combined filters |
+| File                     | Action | Purpose                                                                                                                                             |
+| ------------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server/test-utils.ts`   | UPDATE | Add wine table truncation to `clearDatabase`; add `seedWineDatabase` helper                                                                         |
+| `server/db_wine.ts`      | UPDATE | Extend `getAvailableLocations` to include winery locations; extend `getAvailableWinesFiltered` to accept `wineryIds` and use dual-location OR logic |
+| `server/routers.ts`      | UPDATE | Add `wineryIds` to `wine.listAvailable` input schema                                                                                                |
+| `server/db_wine.test.ts` | CREATE | Tests for winery filter, dual-location matching, combined filters                                                                                   |
 
 ---
 
@@ -215,13 +221,14 @@ await db.execute(sql`TRUNCATE TABLE beer CASCADE;`);
 - **File**: `server/db_wine.ts`
 - **Action**: UPDATE
 - **Implement**:
-
   1. Change function signature to:
+
      ```typescript
-     export async function getAvailableWinesFiltered(locationIds?: number[], wineryIds?: number[])
+     export async function getAvailableWinesFiltered(locationIds?: number[], wineryIds?: number[]);
      ```
 
   2. **Raw SQL path** (when `locationIds` is non-empty): update the WHERE clause to use OR for dual-location matching, and append a winery ID filter if `wineryIds` is provided:
+
      ```sql
      WHERE (w.refrigerated > 0 OR w.cellared > 0)
        AND (
@@ -229,7 +236,9 @@ await db.execute(sql`TRUNCATE TABLE beer CASCADE;`);
          OR wr.location_id IN (SELECT location_id FROM location_tree)
        )
      ```
+
      If `wineryIds` is provided, append before `ORDER BY`:
+
      ```sql
        AND w.winery_id IN (${sql.raw(wineryIds.join(", "))})
      ```
@@ -237,9 +246,7 @@ await db.execute(sql`TRUNCATE TABLE beer CASCADE;`);
   3. **Drizzle path** (no location filter): add winery filter when `wineryIds` is provided. Import `inArray` from `drizzle-orm`. Build the where condition:
      ```typescript
      const availabilityFilter = or(gt(wine.refrigerated, 0), gt(wine.cellared, 0));
-     const wineryFilter = wineryIds && wineryIds.length > 0
-       ? inArray(wine.wineryId, wineryIds)
-       : undefined;
+     const wineryFilter = wineryIds && wineryIds.length > 0 ? inArray(wine.wineryId, wineryIds) : undefined;
      // combine: .where(wineryFilter ? and(availabilityFilter, wineryFilter) : availabilityFilter)
      ```
 

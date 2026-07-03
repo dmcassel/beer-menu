@@ -12,18 +12,19 @@ So that I can quickly create a new year's entry for an existing wine without re-
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | NEW_CAPABILITY |
-| Complexity | LOW |
+| Field            | Value                               |
+| ---------------- | ----------------------------------- |
+| Type             | NEW_CAPABILITY                      |
+| Complexity       | LOW                                 |
 | Systems Affected | client/src/pages/ManageWinePage.tsx |
-| GitHub Issue | 109 |
+| GitHub Issue     | 109                                 |
 
 ---
 
 ## Patterns to Follow
 
 ### Existing handleEdit handler
+
 ```tsx
 // SOURCE: client/src/pages/ManageWinePage.tsx:119-132
 const handleEdit = (wine: any) => {
@@ -43,6 +44,7 @@ const handleEdit = (wine: any) => {
 ```
 
 ### Wine card button row
+
 ```tsx
 // SOURCE: client/src/pages/ManageWinePage.tsx:378-389
 <div className="flex gap-2">
@@ -56,12 +58,14 @@ const handleEdit = (wine: any) => {
 ```
 
 ### Dialog title based on editingId
+
 ```tsx
 // SOURCE: client/src/pages/ManageWinePage.tsx:197
 <DialogTitle>{editingId ? "Edit Wine" : "Add Wine"}</DialogTitle>
 ```
 
 ### lucide-react icon import
+
 ```tsx
 // SOURCE: client/src/pages/ManageWinePage.tsx:10
 import { Plus, Trash2, Edit2, Filter, X } from "lucide-react";
@@ -71,8 +75,8 @@ import { Plus, Trash2, Edit2, Filter, X } from "lucide-react";
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
+| File                                  | Action | Purpose                                                         |
+| ------------------------------------- | ------ | --------------------------------------------------------------- |
 | `client/src/pages/ManageWinePage.tsx` | UPDATE | Add icon import, handler function, and button to each wine card |
 
 ---

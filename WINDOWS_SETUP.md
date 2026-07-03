@@ -50,11 +50,13 @@ The `.npmrc` file in the project automatically handles peer dependency conflicts
 ## Step 3: Configure Database Connection
 
 1. Create a `.env.local` file in the project root with your database configuration:
+
    ```powershell
    New-Item -Path .env.local -ItemType File
    ```
 
 2. Edit the `.env.local` file and add your database connection string. The format should be:
+
    ```
    DATABASE_URL="mysql://username:password@localhost:3306/beer_catalog"
    ```
@@ -83,6 +85,7 @@ npm run db:push
 ```
 
 This command will:
+
 - Generate the Drizzle ORM schema
 - Run migrations to create all database tables
 
@@ -95,6 +98,7 @@ npm run dev
 ```
 
 You should see output similar to:
+
 ```
 Server running on http://localhost:3000/
 ```
@@ -115,15 +119,15 @@ Open your browser and navigate to: `http://localhost:3000`
 
 Here are the most useful commands you'll use:
 
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | Start the development server (http://localhost:3000) |
-| `npm run build` | Build the application for production |
-| `npm run start` | Start the production server |
-| `npm run test` | Run all tests |
-| `npm run check` | Check TypeScript for errors |
-| `npm run format` | Format code with Prettier |
-| `npm run db:push` | Push database schema changes |
+| Command           | Purpose                                              |
+| ----------------- | ---------------------------------------------------- |
+| `npm run dev`     | Start the development server (http://localhost:3000) |
+| `npm run build`   | Build the application for production                 |
+| `npm run start`   | Start the production server                          |
+| `npm run test`    | Run all tests                                        |
+| `npm run check`   | Check TypeScript for errors                          |
+| `npm run format`  | Format code with Prettier                            |
+| `npm run db:push` | Push database schema changes                         |
 
 ## Troubleshooting
 
@@ -147,6 +151,7 @@ npm run dev
 ### Database connection fails
 
 1. Verify MySQL is running:
+
    ```powershell
    mysql -u root -p
    ```

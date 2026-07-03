@@ -10,22 +10,22 @@ Beer Menu is a full-stack web application for managing a craft beverage catalog 
 
 ## Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| React 19 + TypeScript | Frontend UI |
-| Wouter | Client-side routing |
-| tRPC v11 | End-to-end type-safe API (client ↔ server) |
-| TanStack Query | Server state / caching |
-| Tailwind CSS v4 | Styling |
-| shadcn/ui (Radix UI) | Component library |
-| Express | HTTP server |
-| Drizzle ORM | Database access |
-| PostgreSQL | Database |
-| Zod | Input validation (tRPC inputs) |
-| Vite | Frontend bundler |
-| Vitest | Testing |
-| Docker / docker-compose | Local dev database and production deployment |
-| Google Auth Library | OAuth sign-in |
+| Technology              | Purpose                                      |
+| ----------------------- | -------------------------------------------- |
+| React 19 + TypeScript   | Frontend UI                                  |
+| Wouter                  | Client-side routing                          |
+| tRPC v11                | End-to-end type-safe API (client ↔ server)   |
+| TanStack Query          | Server state / caching                       |
+| Tailwind CSS v4         | Styling                                      |
+| shadcn/ui (Radix UI)    | Component library                            |
+| Express                 | HTTP server                                  |
+| Drizzle ORM             | Database access                              |
+| PostgreSQL              | Database                                     |
+| Zod                     | Input validation (tRPC inputs)               |
+| Vite                    | Frontend bundler                             |
+| Vitest                  | Testing                                      |
+| Docker / Docker Compose | Local dev database and production deployment |
+| Google Auth Library     | OAuth sign-in                                |
 
 ---
 
@@ -52,7 +52,7 @@ npm test
 # Start test database (uses the postgres-test service in docker-compose.yml)
 npm run test:db:start
 # Equivalent direct command:
-# docker-compose --env-file .env.test up -d postgres-test
+# docker compose --env-file .env.test up -d postgres-test
 
 # Run tests with DB lifecycle managed automatically
 npm run test:with-db
@@ -103,6 +103,7 @@ Data flows: React page → tRPC hook (via `@/lib/trpc`) → tRPC router (`server
 ### tRPC procedures
 
 Three permission levels are defined in `server/_core/trpc.ts`:
+
 - `publicProcedure` — no auth required
 - `protectedProcedure` — any authenticated user
 - `curatorProcedure` — curator or admin role only
@@ -114,16 +115,18 @@ Read operations use `publicProcedure`; all writes use `curatorProcedure`.
 
 All DB functions in `server/db.ts` and `server/db_wine.ts` follow the same pattern: call `getDb()`, guard against null (return empty/undefined for reads, throw for writes), then run the Drizzle query.
 
+**Raw SQL (`db.execute(sql\`...\`)`) must have an explicit row type.** Calling `db.execute()` without a type argument silently resolves to `any` — not a type error, just a quiet loss of type safety that propagates through every caller (including across tRPC to the client; `npm run check` will not catch this). Define an interface for the query's actual selected columns and cast the result, e.g. `return result.rows as MyRowInterface[];` — see `server/db_additions.ts` for the pattern. Prefer Drizzle's query builder over raw SQL when the query doesn't need it, since the builder infers row types correctly on its own.
+
 ### Types
 
 Schema types are defined in `drizzle/schema.ts` using `$inferSelect` / `$inferInsert` and re-exported from `shared/types.ts`. Import shared types via `@shared/types` on the client.
 
 ### Path aliases
 
-| Alias | Resolves to |
-|-------|------------|
-| `@/` | `client/src/` |
-| `@shared/` | `shared/` |
+| Alias      | Resolves to        |
+| ---------- | ------------------ |
+| `@/`       | `client/src/`      |
+| `@shared/` | `shared/`          |
 | `@assets/` | `attached_assets/` |
 
 ### Naming
@@ -138,7 +141,7 @@ Schema types are defined in `drizzle/schema.ts` using `$inferSelect` / `$inferIn
 
 - **Run tests**: `npm test` (requires the test DB to be running first)
 - **Test location**: `server/**/*.test.ts`
-- **DB for tests**: separate PostgreSQL instance via docker-compose on port 5433, configured by `.env.test`
+- **DB for tests**: separate PostgreSQL instance via `docker compose` on port 5433, configured by `.env.test`
 - Tests run sequentially (`fileParallelism: false`) because multiple test files share the database
 
 ---
@@ -155,30 +158,30 @@ npm test        # Run tests (needs test DB)
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `drizzle/schema.ts` | Canonical DB schema — all tables, enums, relations, and inferred types |
-| `server/routers.ts` | All tRPC endpoints; the single source of truth for the API surface |
-| `server/db.ts` | Beer/menu/user query functions |
-| `server/db_wine.ts` | Wine query functions |
-| `server/_core/trpc.ts` | tRPC init + procedure middleware (auth guards) |
-| `server/_core/context.ts` | tRPC request context (user session resolution) |
-| `client/src/lib/trpc.ts` | tRPC client setup |
-| `client/src/App.tsx` | Route definitions |
-| `shared/const.ts` | Shared constants (cookie name, error messages) |
-| `.env.example` | Documents all required environment variables |
+| File                      | Purpose                                                                |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `drizzle/schema.ts`       | Canonical DB schema — all tables, enums, relations, and inferred types |
+| `server/routers.ts`       | All tRPC endpoints; the single source of truth for the API surface     |
+| `server/db.ts`            | Beer/menu/user query functions                                         |
+| `server/db_wine.ts`       | Wine query functions                                                   |
+| `server/_core/trpc.ts`    | tRPC init + procedure middleware (auth guards)                         |
+| `server/_core/context.ts` | tRPC request context (user session resolution)                         |
+| `client/src/lib/trpc.ts`  | tRPC client setup                                                      |
+| `client/src/App.tsx`      | Route definitions                                                      |
+| `shared/const.ts`         | Shared constants (cookie name, error messages)                         |
+| `.env.example`            | Documents all required environment variables                           |
 
 ---
 
 ## On-Demand Context
 
-| Topic | File |
-|-------|------|
-| Deployment | `DEPLOYMENT.md` |
-| Google OAuth setup | `GOOGLE_AUTH_SETUP.md` |
-| PostgreSQL setup | `POSTGRESQL_SETUP.md` |
-| Test DB setup | `TEST_SETUP.md` |
-| Docker setup | `Docker Setup for Beer Menu Application.md` |
+| Topic              | File                                        |
+| ------------------ | ------------------------------------------- |
+| Deployment         | `DEPLOYMENT.md`                             |
+| Google OAuth setup | `GOOGLE_AUTH_SETUP.md`                      |
+| PostgreSQL setup   | `POSTGRESQL_SETUP.md`                       |
+| Test DB setup      | `TEST_SETUP.md`                             |
+| Docker setup       | `Docker Setup for Beer Menu Application.md` |
 
 ---
 
@@ -203,6 +206,7 @@ Use the user's existing worktree via `EnterWorktree`. Do not create a new worktr
 ### Creating Stories (`/create-stories`)
 
 After creating GitHub issues:
+
 1. Add each issue to the GitHub project with status **"Todo"**
 2. If more than one issue is created, also create an **Epic** issue:
    - Title prefix: `EPIC: `
@@ -217,12 +221,14 @@ If the issue belongs to an Epic, also move the Epic to **"In Progress"** (when t
 ### After Implementing (`/implement`)
 
 After implementation is complete:
+
 1. Create a PR with `gh pr create`
 2. Do **not** close the issue — leave it open until the PR is merged/closed
 
 ### Discovering New Work Mid-Epic
 
 If, while working on an issue that belongs to an Epic, you notice missing work that warrants its own ticket:
+
 1. Create the new issue (with the `Claude` label, per below) and add it to the GitHub project with status **"Todo"**
 2. Add a link to the new issue in the Epic issue's body (`gh issue edit <epic-number> --body "..."`), the same way sub-issues are listed when the Epic is first created
 
@@ -237,6 +243,7 @@ Always add the `Claude` label to any issue or PR you create.
 ### GitHub Project CLI
 
 Add an issue to the project:
+
 ```bash
 gh project item-add 1 --owner dmcassel --url <issue-url>
 ```

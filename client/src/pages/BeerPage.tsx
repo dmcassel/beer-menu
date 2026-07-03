@@ -41,10 +41,7 @@ export default function BeerPage() {
   }, [search]);
 
   const hasActiveFilters =
-    search.length > 0 ||
-    selectedMenuCategories.length > 0 ||
-    selectedStyles.length > 0 ||
-    selectedBreweries.length > 0;
+    search.length > 0 || selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0;
 
   const handleClearFilters = () => {
     setSearch("");
@@ -53,11 +50,15 @@ export default function BeerPage() {
     setSelectedBreweries([]);
   };
 
-  const { data: beers, isLoading, refetch } = trpc.beer.list.useQuery({
+  const {
+    data: beers,
+    isLoading,
+    refetch,
+  } = trpc.beer.list.useQuery({
     search: debouncedSearch || undefined,
-    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id, 10)),
-    styleIds: selectedStyles.map(id => parseInt(id, 10)),
-    breweryIds: selectedBreweries.map(id => parseInt(id, 10)),
+    menuCategoryIds: selectedMenuCategories.map((id) => parseInt(id, 10)),
+    styleIds: selectedStyles.map((id) => parseInt(id, 10)),
+    breweryIds: selectedBreweries.map((id) => parseInt(id, 10)),
   });
   const { data: breweries } = trpc.brewery.list.useQuery();
   const { data: styles } = trpc.style.list.useQuery();
@@ -77,7 +78,7 @@ export default function BeerPage() {
         await updateMutation.mutateAsync({
           id: editingId,
           name: formData.name || undefined,
-          description: formData.description === "" ? "" : (formData.description || undefined),
+          description: formData.description === "" ? "" : formData.description || undefined,
           breweryId,
           styleId,
           abv: formData.abv || undefined,
@@ -145,7 +146,12 @@ export default function BeerPage() {
         <h2 className="text-xl font-bold">Beers</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "", status: "out" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "", description: "", breweryId: "", styleId: "", abv: "", ibu: "", status: "out" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Beer
             </Button>
@@ -228,7 +234,9 @@ export default function BeerPage() {
                 <label className="block text-sm font-medium mb-1">Status</label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as "on_tap" | "bottle_can" | "out" })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as "on_tap" | "bottle_can" | "out" })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value="on_tap">On Tap</option>
@@ -249,7 +257,7 @@ export default function BeerPage() {
           <Input
             placeholder="Search beers..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="flex-1"
           />
           <Button
@@ -284,48 +292,44 @@ export default function BeerPage() {
         </div>
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
-            {selectedMenuCategories.map(id => {
-              const category = menuCategories.find((c: { menu_cat_id: number; name: string }) => c.menu_cat_id === parseInt(id, 10));
+            {selectedMenuCategories.map((id) => {
+              const category = menuCategories.find(
+                (c: { menu_cat_id: number; name: string }) => c.menu_cat_id === parseInt(id, 10)
+              );
               return category ? (
                 <Badge
                   key={`cat-${id}`}
                   variant="secondary"
                   className="cursor-pointer"
-                  onClick={() =>
-                    setSelectedMenuCategories(selectedMenuCategories.filter(catId => catId !== id))
-                  }
+                  onClick={() => setSelectedMenuCategories(selectedMenuCategories.filter((catId) => catId !== id))}
                 >
                   {category.name}
                   <X className="w-3 h-3 ml-1" />
                 </Badge>
               ) : null;
             })}
-            {selectedStyles.map(id => {
-              const style = styles?.find(s => s.styleId === parseInt(id, 10));
+            {selectedStyles.map((id) => {
+              const style = styles?.find((s) => s.styleId === parseInt(id, 10));
               return style ? (
                 <Badge
                   key={`style-${id}`}
                   variant="secondary"
                   className="cursor-pointer"
-                  onClick={() =>
-                    setSelectedStyles(selectedStyles.filter(styleId => styleId !== id))
-                  }
+                  onClick={() => setSelectedStyles(selectedStyles.filter((styleId) => styleId !== id))}
                 >
                   {style.name}
                   <X className="w-3 h-3 ml-1" />
                 </Badge>
               ) : null;
             })}
-            {selectedBreweries.map(id => {
-              const brewery = breweries?.find(b => b.breweryId === parseInt(id, 10));
+            {selectedBreweries.map((id) => {
+              const brewery = breweries?.find((b) => b.breweryId === parseInt(id, 10));
               return brewery ? (
                 <Badge
                   key={`brewery-${id}`}
                   variant="secondary"
                   className="cursor-pointer"
-                  onClick={() =>
-                    setSelectedBreweries(selectedBreweries.filter(breweryId => breweryId !== id))
-                  }
+                  onClick={() => setSelectedBreweries(selectedBreweries.filter((breweryId) => breweryId !== id))}
                 >
                   {brewery.name}
                   <X className="w-3 h-3 ml-1" />
@@ -370,23 +374,18 @@ export default function BeerPage() {
                   )}
                   {beer.abv && <p>ABV: {beer.abv}%</p>}
                   {beer.ibu && <p>IBU: {beer.ibu}</p>}
-                  <p>Status: <span className="font-medium">
-                    {beer.status === "on_tap" ? "On Tap" : beer.status === "bottle_can" ? "Bottle/Can" : "Out"}
-                  </span></p>
+                  <p>
+                    Status:{" "}
+                    <span className="font-medium">
+                      {beer.status === "on_tap" ? "On Tap" : beer.status === "bottle_can" ? "Bottle/Can" : "Out"}
+                    </span>
+                  </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(beer)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(beer)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteClick(beer.beerId, beer.name)}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(beer.beerId, beer.name)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>

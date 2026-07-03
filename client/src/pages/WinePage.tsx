@@ -4,12 +4,7 @@ import { Wine, Loader2, Filter, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { WineFilterControls } from "@/components/WineFilterControls";
@@ -34,14 +29,9 @@ function WineHeader() {
   if (user) {
     return (
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">
-          Welcome, {user.name || user.email}
-        </span>
+        <span className="text-sm text-gray-600">Welcome, {user.name || user.email}</span>
         {(user.role === "curator" || user.role === "admin") && (
-          <a
-            href="/dashboard"
-            className="text-sm text-purple-700 hover:text-purple-900 underline"
-          >
+          <a href="/dashboard" className="text-sm text-purple-700 hover:text-purple-900 underline">
             Manage Catalog
           </a>
         )}
@@ -53,10 +43,7 @@ function WineHeader() {
   }
 
   return (
-    <a
-      href="/login?returnUrl=/wine"
-      className="text-sm text-purple-700 hover:text-purple-900 underline"
-    >
+    <a href="/login?returnUrl=/wine" className="text-sm text-purple-700 hover:text-purple-900 underline">
       Login
     </a>
   );
@@ -68,11 +55,10 @@ export default function WinePage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Fetch available wines, filtered at the database level by selected location and winery IDs
-  const { data: availableWines = [], isLoading } =
-    trpc.wine.listAvailable.useQuery({
-      locationIds: selectedLocations.map(id => parseInt(id, 10)),
-      wineryIds: selectedWineries.map(id => parseInt(id, 10)),
-    });
+  const { data: availableWines = [], isLoading } = trpc.wine.listAvailable.useQuery({
+    locationIds: selectedLocations.map((id) => parseInt(id, 10)),
+    wineryIds: selectedWineries.map((id) => parseInt(id, 10)),
+  });
 
   // Fetch only locations that have available wines (for filter options)
   const { data: locations = [] } = trpc.location.listAvailable.useQuery();
@@ -85,10 +71,8 @@ export default function WinePage() {
     setSelectedWineries([]);
   };
 
-  const hasActiveFilters =
-    selectedLocations.length > 0 || selectedWineries.length > 0;
-  const activeFilterCount =
-    selectedLocations.length + selectedWineries.length;
+  const hasActiveFilters = selectedLocations.length > 0 || selectedWineries.length > 0;
+  const activeFilterCount = selectedLocations.length + selectedWineries.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
@@ -99,9 +83,7 @@ export default function WinePage() {
             <a href="/">
               <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
                 <Wine className="w-8 h-8 text-purple-700" />
-                <h1 className="text-3xl font-bold text-purple-900">
-                  Wine Catalog
-                </h1>
+                <h1 className="text-3xl font-bold text-purple-900">Wine Catalog</h1>
               </div>
             </a>
             <div className="flex items-center gap-3">
@@ -141,40 +123,28 @@ export default function WinePage() {
           {/* Active Filter Badges */}
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              {selectedLocations.map(id => {
-                const loc = locations.find(
-                  l => l.locationId === parseInt(id, 10)
-                );
+              {selectedLocations.map((id) => {
+                const loc = locations.find((l) => l.locationId === parseInt(id, 10));
                 return loc ? (
                   <Badge
                     key={`loc-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() =>
-                      setSelectedLocations(
-                        selectedLocations.filter(locId => locId !== id)
-                      )
-                    }
+                    onClick={() => setSelectedLocations(selectedLocations.filter((locId) => locId !== id))}
                   >
                     {loc.fullPath}
                     <X className="w-3 h-3 ml-1" />
                   </Badge>
                 ) : null;
               })}
-              {selectedWineries.map(id => {
-                const winery = wineries.find(
-                  w => w.wineryId === parseInt(id, 10)
-                );
+              {selectedWineries.map((id) => {
+                const winery = wineries.find((w) => w.wineryId === parseInt(id, 10));
                 return winery ? (
                   <Badge
                     key={`winery-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() =>
-                      setSelectedWineries(
-                        selectedWineries.filter(wId => wId !== id)
-                      )
-                    }
+                    onClick={() => setSelectedWineries(selectedWineries.filter((wId) => wId !== id))}
                   >
                     {winery.name}
                     <X className="w-3 h-3 ml-1" />
@@ -210,11 +180,7 @@ export default function WinePage() {
               wineries={wineries}
             />
             {hasActiveFilters && (
-              <Button
-                variant="outline"
-                onClick={handleClearFilters}
-                className="w-full"
-              >
+              <Button variant="outline" onClick={handleClearFilters} className="w-full">
                 Clear All Filters
               </Button>
             )}
@@ -233,9 +199,7 @@ export default function WinePage() {
             <CardContent className="text-center py-12">
               <Wine className="w-16 h-16 text-purple-300 mx-auto mb-4" />
               <p className="text-xl font-semibold text-purple-800 mb-2">
-                {hasActiveFilters
-                  ? "No wines match your filters."
-                  : "No wines available"}
+                {hasActiveFilters ? "No wines match your filters." : "No wines available"}
               </p>
               <p className="text-gray-600">
                 {hasActiveFilters
@@ -251,27 +215,19 @@ export default function WinePage() {
               {availableWines.length !== 1 ? "s" : ""}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {availableWines.map(wine => (
-                <Card
-                  key={wine.wineId}
-                  className="border-purple-200 hover:shadow-lg transition-shadow"
-                >
+              {availableWines.map((wine) => (
+                <Card key={wine.wineId} className="border-purple-200 hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle className="text-lg text-purple-900">
                       {wine.label}
-                      {wine.vintage && (
-                        <span className="text-purple-600 font-normal ml-2">
-                          {wine.vintage}
-                        </span>
-                      )}
+                      {wine.vintage && <span className="text-purple-600 font-normal ml-2">{wine.vintage}</span>}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       {wine.wineryName && (
                         <p className="text-sm text-gray-700">
-                          <span className="font-medium">Winery:</span>{" "}
-                          {wine.wineryName}
+                          <span className="font-medium">Winery:</span> {wine.wineryName}
                         </p>
                       )}
 
@@ -281,28 +237,21 @@ export default function WinePage() {
                             Varietal
                             {wine.varietals.length > 1 ? "s" : ""}:
                           </span>{" "}
-                          {wine.varietals.map(v => v.name).join(", ")}
+                          {wine.varietals.map((v) => v.name).join(", ")}
                         </p>
                       )}
 
                       {wine.locationName && (
                         <p className="text-sm text-gray-700">
-                          <span className="font-medium">Location:</span>{" "}
-                          {wine.locationName}
+                          <span className="font-medium">Location:</span> {wine.locationName}
                         </p>
                       )}
 
                       <div className="flex gap-4 text-sm text-gray-700 pt-2">
                         {wine.refrigerated > 0 && (
-                          <span className="font-medium">
-                            🧊 Refrigerated: {wine.refrigerated}
-                          </span>
+                          <span className="font-medium">🧊 Refrigerated: {wine.refrigerated}</span>
                         )}
-                        {wine.cellared > 0 && (
-                          <span className="font-medium">
-                            🍷 Cellared: {wine.cellared}
-                          </span>
-                        )}
+                        {wine.cellared > 0 && <span className="font-medium">🍷 Cellared: {wine.cellared}</span>}
                       </div>
 
                       {wine.description && (

@@ -20,6 +20,7 @@ This is a full-stack app (Express + React/Vite) — one package.json, one dev se
 ## Report
 
 Output what you've done in a concise bullet point list:
+
 - Dependencies: installed or already up to date
 - Database: schema pushed
 - Dev server: http://localhost:3000

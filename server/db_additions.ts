@@ -1,11 +1,32 @@
 import { sql } from "drizzle-orm";
 import { getDb } from "./db";
 
+// `db.execute()` on raw SQL loses row typing (resolves to `any`), which then
+// poisons every caller's inferred type. These interfaces describe the actual
+// columns each query selects so callers get real types back.
+interface AvailableMenuCategoryRow {
+  menu_cat_id: number;
+  name: string;
+  description: string | null;
+}
+
+interface AvailableBreweryRow {
+  breweryId: number;
+  name: string;
+  location: string | null;
+}
+
+interface AvailableStyleRow {
+  styleId: number;
+  name: string;
+  menuCategoryId: number | null;
+}
+
 /**
  * Get menu categories that have at least one beer style associated with them
  * and at least one beer in that style with status not "out"
  */
-export async function getAvailableMenuCategories() {
+export async function getAvailableMenuCategories(): Promise<AvailableMenuCategoryRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -18,7 +39,7 @@ export async function getAvailableMenuCategories() {
     ORDER BY mc.name
   `);
 
-  return result.rows;
+  return result.rows as AvailableMenuCategoryRow[];
 }
 
 /**
@@ -47,7 +68,7 @@ export async function getBeersByMenuCategory(menuCatId: number) {
 export async function getAvailableBreweries(
   menuCategoryIds?: number[],
   styleIds?: number[]
-) {
+): Promise<AvailableBreweryRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -70,7 +91,7 @@ export async function getAvailableBreweries(
   // Add menu category filter
   if (menuCategoryIds && menuCategoryIds.length > 0) {
     query = sql`${query} AND s.menu_category_id IN (${sql.join(
-      menuCategoryIds.map(id => sql`${id}`),
+      menuCategoryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -78,7 +99,7 @@ export async function getAvailableBreweries(
   // Add style filter
   if (styleIds && styleIds.length > 0) {
     query = sql`${query} AND b.style_id IN (${sql.join(
-      styleIds.map(id => sql`${id}`),
+      styleIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -86,7 +107,7 @@ export async function getAvailableBreweries(
   query = sql`${query} ORDER BY br.name`;
 
   const result = await db.execute(query);
-  return result.rows;
+  return result.rows as AvailableBreweryRow[];
 }
 
 /**
@@ -96,7 +117,7 @@ export async function getAvailableBreweries(
 export async function getAvailableStyles(
   menuCategoryIds?: number[],
   breweryIds?: number[]
-) {
+): Promise<AvailableStyleRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -112,7 +133,7 @@ export async function getAvailableStyles(
   // Add menu category filter
   if (menuCategoryIds && menuCategoryIds.length > 0) {
     query = sql`${query} AND s.menu_category_id IN (${sql.join(
-      menuCategoryIds.map(id => sql`${id}`),
+      menuCategoryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -120,7 +141,7 @@ export async function getAvailableStyles(
   // Add brewery filter
   if (breweryIds && breweryIds.length > 0) {
     query = sql`${query} AND b.brewery_id IN (${sql.join(
-      breweryIds.map(id => sql`${id}`),
+      breweryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -128,5 +149,5 @@ export async function getAvailableStyles(
   query = sql`${query} ORDER BY s.name`;
 
   const result = await db.execute(query);
-  return result.rows;
+  return result.rows as AvailableStyleRow[];
 }

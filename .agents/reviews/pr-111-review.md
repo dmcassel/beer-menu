@@ -10,6 +10,7 @@ This PR adds winery filtering and dual-location matching to the wine query backe
 ## Issues Found
 
 ### Critical
+
 None.
 
 ### High Priority
@@ -35,6 +36,7 @@ The same pattern exists pre-PR for `locationIdList` (line 485, `sql.raw(location
 The JSDoc still describes only location filtering. It doesn't mention the new `wineryIds` parameter or the dual-location OR behaviour. A future reader won't understand the function's full contract without reading the implementation.
 
 Suggested update:
+
 ```
 * Get available wines (with stock), optionally filtered by location IDs and/or winery IDs.
 * Location filter expands downward through the hierarchy and matches wines where either
@@ -50,15 +52,15 @@ Suggested update:
 
 **`chesterCounty` is seeded but only tested negatively**
 
-`seedWineDatabase` inserts Chester County (a vineyard under PA) to verify it doesn't appear in `getAvailableLocations`. The negative assertion is valuable, but consider adding a positive counterpart: a wine or winery at Chester County that confirms it *does* appear when there's stock there. Current coverage is sufficient for the stated requirements.
+`seedWineDatabase` inserts Chester County (a vineyard under PA) to verify it doesn't appear in `getAvailableLocations`. The negative assertion is valuable, but consider adding a positive counterpart: a wine or winery at Chester County that confirms it _does_ appear when there's stock there. Current coverage is sufficient for the stated requirements.
 
 ## Validation Results
 
-| Check | Status |
-|-------|--------|
+| Check                     | Status                                               |
+| ------------------------- | ---------------------------------------------------- |
 | Type check (server files) | ✅ (pre-existing client errors unrelated to this PR) |
-| esbuild syntax | ✅ |
-| Tests (74 total) | ✅ All pass with test DB running |
+| esbuild syntax            | ✅                                                   |
+| Tests (74 total)          | ✅ All pass with test DB running                     |
 
 ## What's Good
 

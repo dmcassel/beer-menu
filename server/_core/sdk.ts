@@ -1,10 +1,5 @@
-import { COOKIE_NAME, FETCH_TIMEOUT_MS, ONE_YEAR_MS } from "@shared/const";
-import { ForbiddenError } from "@shared/_core/errors";
-import { parse as parseCookieHeader } from "cookie";
-import type { Request } from "express";
+import { FETCH_TIMEOUT_MS, ONE_YEAR_MS } from "@shared/const";
 import { SignJWT, jwtVerify } from "jose";
-import type { User } from "../../drizzle/schema";
-import * as db from "../db";
 import { ENV } from "./env";
 import type {
   ExchangeTokenRequest,
@@ -14,8 +9,7 @@ import type {
   GetUserInfoWithJwtResponse,
 } from "./types/manusTypes";
 // Utility function
-const isNonEmptyString = (value: unknown): value is string =>
-  typeof value === "string" && value.length > 0;
+const isNonEmptyString = (value: unknown): value is string => typeof value === "string" && value.length > 0;
 
 export type SessionPayload = {
   openId: string;
@@ -46,9 +40,7 @@ function createOAuthHttpClient(baseURL: string, timeoutMs: number): OAuthHttpCli
         });
         if (!response.ok) {
           const errorBody = await response.text();
-          throw new Error(
-            `HTTP error ${response.status}: ${response.statusText} — ${errorBody}`
-          );
+          throw new Error(`HTTP error ${response.status}: ${response.statusText} — ${errorBody}`);
         }
         return (await response.json()) as T;
       } catch (err) {
@@ -67,9 +59,7 @@ class OAuthService {
   constructor(private client: OAuthHttpClient) {
     console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
-      );
+      console.error("[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable.");
     }
   }
 
@@ -78,10 +68,7 @@ class OAuthService {
     return redirectUri;
   }
 
-  async getTokenByCode(
-    code: string,
-    state: string
-  ): Promise<ExchangeTokenResponse> {
+  async getTokenByCode(code: string, state: string): Promise<ExchangeTokenResponse> {
     const payload: ExchangeTokenRequest = {
       clientId: ENV.appId,
       grantType: "authorization_code",
@@ -92,9 +79,7 @@ class OAuthService {
     return this.client.post<ExchangeTokenResponse>(EXCHANGE_TOKEN_PATH, payload);
   }
 
-  async getUserInfoByToken(
-    token: ExchangeTokenResponse
-  ): Promise<GetUserInfoResponse> {
+  async getUserInfoByToken(token: ExchangeTokenResponse): Promise<GetUserInfoResponse> {
     return this.client.post<GetUserInfoResponse>(GET_USER_INFO_PATH, {
       accessToken: token.accessToken,
     });
@@ -105,33 +90,19 @@ class SDKServer {
   private readonly client: OAuthHttpClient;
   private readonly oauthService: OAuthService;
 
-  constructor(
-    client: OAuthHttpClient = createOAuthHttpClient(
-      ENV.oAuthServerUrl,
-      FETCH_TIMEOUT_MS
-    )
-  ) {
+  constructor(client: OAuthHttpClient = createOAuthHttpClient(ENV.oAuthServerUrl, FETCH_TIMEOUT_MS)) {
     this.client = client;
     this.oauthService = new OAuthService(this.client);
   }
 
-  private deriveLoginMethod(
-    platforms: unknown,
-    fallback: string | null | undefined
-  ): string | null {
+  private deriveLoginMethod(platforms: unknown, fallback: string | null | undefined): string | null {
     if (fallback && fallback.length > 0) return fallback;
     if (!Array.isArray(platforms) || platforms.length === 0) return null;
-    const set = new Set<string>(
-      platforms.filter((p): p is string => typeof p === "string")
-    );
+    const set = new Set<string>(platforms.filter((p): p is string => typeof p === "string"));
     if (set.has("REGISTERED_PLATFORM_EMAIL")) return "email";
     if (set.has("REGISTERED_PLATFORM_GOOGLE")) return "google";
     if (set.has("REGISTERED_PLATFORM_APPLE")) return "apple";
-    if (
-      set.has("REGISTERED_PLATFORM_MICROSOFT") ||
-      set.has("REGISTERED_PLATFORM_AZURE")
-    )
-      return "microsoft";
+    if (set.has("REGISTERED_PLATFORM_MICROSOFT") || set.has("REGISTERED_PLATFORM_AZURE")) return "microsoft";
     if (set.has("REGISTERED_PLATFORM_GITHUB")) return "github";
     const first = Array.from(set)[0];
     return first ? first.toLowerCase() : null;
@@ -142,10 +113,7 @@ class SDKServer {
    * @example
    * const tokenResponse = await sdk.exchangeCodeForToken(code, state);
    */
-  async exchangeCodeForToken(
-    code: string,
-    state: string
-  ): Promise<ExchangeTokenResponse> {
+  async exchangeCodeForToken(code: string, state: string): Promise<ExchangeTokenResponse> {
     return this.oauthService.getTokenByCode(code, state);
   }
 
@@ -169,15 +137,6 @@ class SDKServer {
     } as GetUserInfoResponse;
   }
 
-  private parseCookies(cookieHeader: string | undefined) {
-    if (!cookieHeader) {
-      return new Map<string, string>();
-    }
-
-    const parsed = parseCookieHeader(cookieHeader);
-    return new Map(Object.entries(parsed));
-  }
-
   private getSessionSecret() {
     const secret = ENV.cookieSecret;
     return new TextEncoder().encode(secret);
@@ -188,10 +147,7 @@ class SDKServer {
    * @example
    * const sessionToken = await sdk.createSessionToken(userInfo.openId);
    */
-  async createSessionToken(
-    openId: string,
-    options: { expiresInMs?: number; name?: string } = {}
-  ): Promise<string> {
+  async createSessionToken(openId: string, options: { expiresInMs?: number; name?: string } = {}): Promise<string> {
     return this.signSession(
       {
         openId,
@@ -202,10 +158,7 @@ class SDKServer {
     );
   }
 
-  async signSession(
-    payload: SessionPayload,
-    options: { expiresInMs?: number } = {}
-  ): Promise<string> {
+  async signSession(payload: SessionPayload, options: { expiresInMs?: number } = {}): Promise<string> {
     const issuedAt = Date.now();
     const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
     const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1000);
@@ -236,11 +189,7 @@ class SDKServer {
       });
       const { openId, appId, name } = payload as Record<string, unknown>;
 
-      if (
-        !isNonEmptyString(openId) ||
-        !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
-      ) {
+      if (!isNonEmptyString(openId) || !isNonEmptyString(appId) || !isNonEmptyString(name)) {
         console.warn("[Auth] Session payload missing required fields");
         return null;
       }
@@ -256,18 +205,13 @@ class SDKServer {
     }
   }
 
-  async getUserInfoWithJwt(
-    jwtToken: string
-  ): Promise<GetUserInfoWithJwtResponse> {
+  async getUserInfoWithJwt(jwtToken: string): Promise<GetUserInfoWithJwtResponse> {
     const payload: GetUserInfoWithJwtRequest = {
       jwtToken,
       projectId: ENV.appId,
     };
 
-    const data = await this.client.post<GetUserInfoWithJwtResponse>(
-      GET_USER_INFO_WITH_JWT_PATH,
-      payload
-    );
+    const data = await this.client.post<GetUserInfoWithJwtResponse>(GET_USER_INFO_WITH_JWT_PATH, payload);
 
     const loginMethod = this.deriveLoginMethod(
       (data as any)?.platforms,
@@ -278,50 +222,6 @@ class SDKServer {
       platform: loginMethod,
       loginMethod,
     } as GetUserInfoWithJwtResponse;
-  }
-
-  async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
-    const cookies = this.parseCookies(req.headers.cookie);
-    const sessionCookie = cookies.get(COOKIE_NAME);
-    const session = await this.verifySession(sessionCookie);
-
-    if (!session) {
-      throw ForbiddenError("Invalid session cookie");
-    }
-
-    const sessionUserId = session.openId;
-    const signedInAt = new Date();
-    let user = await db.getUserByOpenId(sessionUserId);
-
-    // If user not in DB, sync from OAuth server automatically
-    if (!user) {
-      try {
-        const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: signedInAt,
-        });
-        user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
-      }
-    }
-
-    if (!user) {
-      throw ForbiddenError("User not found");
-    }
-
-    await db.upsertUser({
-      openId: user.openId,
-      lastSignedIn: signedInAt,
-    });
-
-    return user;
   }
 }
 

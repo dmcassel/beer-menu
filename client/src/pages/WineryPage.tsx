@@ -15,9 +15,9 @@ export default function WineryPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [wineryToDelete, setWineryToDelete] = useState<{ id: number; name: string } | null>(null);
-  const [formData, setFormData] = useState({ 
-    name: "", 
-    locationId: null as number | null 
+  const [formData, setFormData] = useState({
+    name: "",
+    locationId: null as number | null,
   });
 
   const { data: wineries, isLoading, refetch } = trpc.winery.list.useQuery();
@@ -57,9 +57,9 @@ export default function WineryPage() {
   };
 
   const handleEdit = (winery: any) => {
-    setFormData({ 
-      name: winery.name, 
-      locationId: winery.locationId || null 
+    setFormData({
+      name: winery.name,
+      locationId: winery.locationId || null,
     });
     setEditingId(winery.wineryId);
     setOpen(true);
@@ -97,10 +97,12 @@ export default function WineryPage() {
         <h2 className="text-xl font-bold">Wineries</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { 
-              setEditingId(null); 
-              setFormData({ name: "", locationId: null }); 
-            }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "", locationId: null });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Winery
             </Button>
@@ -148,20 +150,14 @@ export default function WineryPage() {
                   <Button variant="ghost" size="sm" onClick={() => handleEdit(winery)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteClick(winery.wineryId, winery.name)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(winery.wineryId, winery.name)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </CardHeader>
               {(winery.location || winery.locationId) && (
                 <CardContent>
-                  <p className="text-sm text-gray-600">
-                    {getLocationPath(winery.locationId) || winery.location}
-                  </p>
+                  <p className="text-sm text-gray-600">{getLocationPath(winery.locationId) || winery.location}</p>
                 </CardContent>
               )}
             </Card>

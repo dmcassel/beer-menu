@@ -5,19 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Beer } from "lucide-react";
 
-declare global {
-  interface Window {
-    google: any;
-  }
-}
-
 export default function Login() {
   const [location, setLocation] = useLocation();
   const googleCallbackMutation = trpc.auth.googleCallback.useMutation();
-  
+
   // Get return URL from query parameter, default to /dashboard
   const searchParams = new URLSearchParams(window.location.search);
-  const returnUrl = searchParams.get('returnUrl') || '/dashboard';
+  const returnUrl = searchParams.get("returnUrl") || "/dashboard";
 
   useEffect(() => {
     // Load Google Sign-In script
@@ -34,15 +28,12 @@ export default function Login() {
           callback: handleGoogleCallback,
         });
 
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-button"),
-          {
-            theme: "outline",
-            size: "large",
-            width: 350,
-            text: "signin_with",
-          }
-        );
+        window.google.accounts.id.renderButton(document.getElementById("google-signin-button"), {
+          theme: "outline",
+          size: "large",
+          width: 350,
+          text: "signin_with",
+        });
       }
     };
 
@@ -83,10 +74,7 @@ export default function Login() {
             <div id="google-signin-button"></div>
           </div>
           <div className="mt-6 text-center">
-            <a
-              href="/browser"
-              className="text-sm text-amber-700 hover:text-amber-900 underline"
-            >
+            <a href="/browser" className="text-sm text-amber-700 hover:text-amber-900 underline">
               View Beer Catalog
             </a>
           </div>

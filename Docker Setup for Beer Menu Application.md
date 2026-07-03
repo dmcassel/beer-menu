@@ -37,7 +37,7 @@ The default configuration works out of the box with Docker Compose.
 ### 3. Start All Services
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This command will:
@@ -76,32 +76,32 @@ This command will:
 
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f app
-docker-compose logs -f postgres
-docker-compose logs -f pgadmin
+docker compose logs -f app
+docker compose logs -f postgres
+docker compose logs -f pgadmin
 ```
 
 ### Restart Services
 
 ```bash
 # Restart all services
-docker-compose restart
+docker compose restart
 
 # Restart specific service
-docker-compose restart app
+docker compose restart app
 ```
 
 ### Stop Services
 
 ```bash
 # Stop all services
-docker-compose down
+docker compose down
 
 # Stop and remove volumes (WARNING: This deletes all data)
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Rebuild Application
@@ -109,7 +109,7 @@ docker-compose down -v
 If you make changes to the code:
 
 ```bash
-docker-compose up -d --build app
+docker compose up -d --build app
 ```
 
 ### Run Database Migrations
@@ -117,19 +117,19 @@ docker-compose up -d --build app
 Migrations run automatically on startup, but you can run them manually:
 
 ```bash
-docker-compose exec app npm run db:push
+docker compose exec app npm run db:push
 ```
 
 ### Access Application Shell
 
 ```bash
-docker-compose exec app sh
+docker compose exec app sh
 ```
 
 ### Access PostgreSQL CLI
 
 ```bash
-docker-compose exec postgres psql -U postgres -d beer_menu
+docker compose exec postgres psql -U postgres -d beer_menu
 ```
 
 ## Configuration
@@ -204,13 +204,13 @@ If you see "port is already allocated" errors:
 1. Ensure PostgreSQL is healthy:
 
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 2. Check PostgreSQL logs:
 
    ```bash
-   docker-compose logs postgres
+   docker compose logs postgres
    ```
 
 3. Verify the connection string in your `.env` file matches the Docker Compose configuration
@@ -220,18 +220,18 @@ If you see "port is already allocated" errors:
 1. Check application logs:
 
    ```bash
-   docker-compose logs app
+   docker compose logs app
    ```
 
 2. Ensure all dependencies are installed:
 
    ```bash
-   docker-compose exec app npm install
+   docker compose exec app npm install
    ```
 
 3. Rebuild the container:
    ```bash
-   docker-compose up -d --build app
+   docker compose up -d --build app
    ```
 
 ### Reset Everything
@@ -239,8 +239,8 @@ If you see "port is already allocated" errors:
 To start fresh (WARNING: This deletes all data):
 
 ```bash
-docker-compose down -v
-docker-compose up -d --build
+docker compose down -v
+docker compose up -d --build
 ```
 
 ## Production Deployment
@@ -250,7 +250,7 @@ For production deployment, consider:
 1. **Use environment-specific configuration files**:
 
    ```bash
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
 
 2. **Set strong passwords** in environment variables or secrets

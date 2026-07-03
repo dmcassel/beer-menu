@@ -12,18 +12,19 @@ So that I can quickly see all wines from a specific producer
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | LOW |
+| Field            | Value                                        |
+| ---------------- | -------------------------------------------- |
+| Type             | ENHANCEMENT                                  |
+| Complexity       | LOW                                          |
 | Systems Affected | Frontend only (WinePage, WineFilterControls) |
-| GitHub Issue | 107 |
+| GitHub Issue     | 107                                          |
 
 ---
 
 ## Patterns to Follow
 
 ### Location filter in WineFilterControls (the model to mirror)
+
 ```typescript
 // SOURCE: client/src/components/WineFilterControls.tsx:3-17
 interface WineFilterControlsProps {
@@ -46,6 +47,7 @@ const locationOptions: MultiSelectOption[] = locations.map(loc => ({
 ```
 
 ### Winery fetch in curation form (how to get winery list)
+
 ```typescript
 // SOURCE: client/src/pages/ManageWinePage.tsx:33-44
 const { data: wineries } = trpc.winery.list.useQuery();
@@ -58,43 +60,45 @@ const wineryOptions: SearchableSelectOption[] =
 ```
 
 ### Active filter badge pattern
+
 ```tsx
 // SOURCE: client/src/pages/WinePage.tsx:133-152
-{selectedLocations.map(id => {
-  const loc = locations.find(l => l.locationId === parseInt(id));
-  return loc ? (
-    <Badge
-      key={`loc-${id}`}
-      variant="secondary"
-      className="cursor-pointer"
-      onClick={() =>
-        setSelectedLocations(selectedLocations.filter(locId => locId !== id))
-      }
-    >
-      {loc.fullPath}
-      <X className="w-3 h-3 ml-1" />
-    </Badge>
-  ) : null;
-})}
+{
+  selectedLocations.map((id) => {
+    const loc = locations.find((l) => l.locationId === parseInt(id));
+    return loc ? (
+      <Badge
+        key={`loc-${id}`}
+        variant="secondary"
+        className="cursor-pointer"
+        onClick={() => setSelectedLocations(selectedLocations.filter((locId) => locId !== id))}
+      >
+        {loc.fullPath}
+        <X className="w-3 h-3 ml-1" />
+      </Badge>
+    ) : null;
+  });
+}
 ```
 
 ### Backend tRPC signature (no changes needed)
+
 ```typescript
 // SOURCE: server/routers.ts (wine.listAvailable)
 z.object({
   locationIds: z.array(z.number()).optional(),
   wineryIds: z.array(z.number()).optional(),
-})
+});
 ```
 
 ---
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `client/src/components/WineFilterControls.tsx` | UPDATE | Add winery props and MultiSelect |
-| `client/src/pages/WinePage.tsx` | UPDATE | Add winery state, fetch, query param, badges |
+| File                                           | Action | Purpose                                      |
+| ---------------------------------------------- | ------ | -------------------------------------------- |
+| `client/src/components/WineFilterControls.tsx` | UPDATE | Add winery props and MultiSelect             |
+| `client/src/pages/WinePage.tsx`                | UPDATE | Add winery state, fetch, query param, badges |
 
 ---
 
