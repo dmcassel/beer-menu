@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Beer } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Beer, Check } from "lucide-react";
 import { toast } from "sonner";
 
 type BeerStatus = "on_tap" | "bottle_can" | "out";
@@ -15,6 +16,8 @@ export default function BeerInventory() {
   const { data: beers, isLoading: beersLoading } = trpc.beer.listAvailable.useQuery();
   const updateMutation = trpc.beer.update.useMutation();
   const utils = trpc.useUtils();
+  const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
+  const visibleBeers = beers?.filter((b) => !confirmedIds.has(b.beerId));
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
@@ -39,6 +42,10 @@ export default function BeerInventory() {
     }
   };
 
+  const handleConfirm = (beerId: number) => {
+    setConfirmedIds((prev) => new Set(prev).add(beerId));
+  };
+
   if (userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -61,6 +68,7 @@ export default function BeerInventory() {
           <div className="flex items-center gap-3">
             <Beer className="w-8 h-8 text-amber-600" />
             <h1 className="text-2xl font-bold text-gray-900">Beer Inventory</h1>
+            {!beersLoading && <Badge variant="secondary">{visibleBeers?.length ?? 0} remaining</Badge>}
           </div>
           <Link href="/dashboard">
             <Button variant="outline" size="sm">
@@ -73,26 +81,36 @@ export default function BeerInventory() {
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
         {beersLoading ? (
           <div className="text-center py-8">Loading...</div>
-        ) : beers?.length === 0 ? (
+        ) : visibleBeers?.length === 0 ? (
           <div className="text-center py-8 text-gray-500">No beers currently available.</div>
         ) : (
-          beers?.map((beer) => (
+          visibleBeers?.map((beer) => (
             <Card key={beer.beerId}>
               <CardContent className="flex items-center justify-between gap-4 py-4">
                 <span className="text-lg font-medium">{beer.name}</span>
-                <Select
-                  value={beer.status ?? "out"}
-                  onValueChange={(value: BeerStatus) => handleStatusChange(beer.beerId, value)}
-                >
-                  <SelectTrigger className="h-12 w-40 text-base">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="on_tap">On Tap</SelectItem>
-                    <SelectItem value="bottle_can">Bottle/Can</SelectItem>
-                    <SelectItem value="out">Out</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={beer.status ?? "out"}
+                    onValueChange={(value: BeerStatus) => handleStatusChange(beer.beerId, value)}
+                  >
+                    <SelectTrigger className="h-12 w-40 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="on_tap">On Tap</SelectItem>
+                      <SelectItem value="bottle_can">Bottle/Can</SelectItem>
+                      <SelectItem value="out">Out</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => handleConfirm(beer.beerId)}
+                    aria-label="Confirm present"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))
