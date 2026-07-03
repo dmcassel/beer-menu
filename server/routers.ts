@@ -16,47 +16,41 @@ export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user ?? null),
-    googleCallback: publicProcedure
-      .input(z.object({ credential: z.string() }))
-      .mutation(async ({ input, ctx }) => {
-        const { verifyGoogleToken } = await import("./auth/google");
-        const googleUser = await verifyGoogleToken(input.credential);
+    me: publicProcedure.query((opts) => opts.ctx.user ?? null),
+    googleCallback: publicProcedure.input(z.object({ credential: z.string() })).mutation(async ({ input, ctx }) => {
+      const { verifyGoogleToken } = await import("./auth/google");
+      const googleUser = await verifyGoogleToken(input.credential);
 
-        // Upsert user in database
-        await db.upsertUser({
-          googleId: googleUser.googleId,
-          email: googleUser.email,
-          name: googleUser.name,
-          picture: googleUser.picture,
-          lastSignedIn: new Date(),
-        });
+      // Upsert user in database
+      await db.upsertUser({
+        googleId: googleUser.googleId,
+        email: googleUser.email,
+        name: googleUser.name,
+        picture: googleUser.picture,
+        lastSignedIn: new Date(),
+      });
 
-        // Get user from database to get role and ID
-        const user = await db.getUserByGoogleId(googleUser.googleId);
-        if (!user) {
-          throw new Error("Failed to create user");
-        }
+      // Get user from database to get role and ID
+      const user = await db.getUserByGoogleId(googleUser.googleId);
+      if (!user) {
+        throw new Error("Failed to create user");
+      }
 
-        // Set session cookie
-        const cookieOptions = getSessionCookieOptions(ctx.req);
-        ctx.res.cookie(
-          COOKIE_NAME,
-          JSON.stringify({ userId: user.id }),
-          cookieOptions
-        );
+      // Set session cookie
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, JSON.stringify({ userId: user.id }), cookieOptions);
 
-        return {
-          success: true,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-            role: user.role,
-          },
-        };
-      }),
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          picture: user.picture,
+          role: user.role,
+        },
+      };
+    }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions });
@@ -69,9 +63,7 @@ export const appRouter = router({
   // Beer Catalog CRUD routers
   bjcpCategory: router({
     list: publicProcedure.query(() => db.getAllBJCPCategories()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getBJCPCategoryById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => db.getBJCPCategoryById(input.id)),
     create: curatorProcedure
       .input(z.object({ label: z.string(), name: z.string() }))
       .mutation(({ input }) => db.createBJCPCategory(input)),
@@ -103,13 +95,9 @@ export const appRouter = router({
           breweryIds: z.array(z.number()).optional(),
         })
       )
-      .query(({ input }) =>
-        getAvailableStyles(input.menuCategoryIds, input.breweryIds)
-      ),
+      .query(({ input }) => getAvailableStyles(input.menuCategoryIds, input.breweryIds)),
 
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getStyleById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => db.getStyleById(input.id)),
     create: curatorProcedure
       .input(
         z.object({
@@ -136,9 +124,7 @@ export const appRouter = router({
         const { id, ...data } = input;
         return db.updateStyle(id, data);
       }),
-    delete: curatorProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(({ input }) => db.deleteStyle(input.id)),
+    delete: curatorProcedure.input(z.object({ id: z.number() })).mutation(({ input }) => db.deleteStyle(input.id)),
   }),
 
   brewery: router({
@@ -150,12 +136,8 @@ export const appRouter = router({
           styleIds: z.array(z.number()).optional(),
         })
       )
-      .query(({ input }) =>
-        getAvailableBreweries(input.menuCategoryIds, input.styleIds)
-      ),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getBreweryById(input.id)),
+      .query(({ input }) => getAvailableBreweries(input.menuCategoryIds, input.styleIds)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => db.getBreweryById(input.id)),
     create: curatorProcedure
       .input(z.object({ name: z.string(), location: z.string().optional() }))
       .mutation(({ input }) => db.createBrewery(input)),
@@ -173,9 +155,7 @@ export const appRouter = router({
           location: input.location,
         })
       ),
-    delete: curatorProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(({ input }) => db.deleteBrewery(input.id)),
+    delete: curatorProcedure.input(z.object({ id: z.number() })).mutation(({ input }) => db.deleteBrewery(input.id)),
   }),
 
   beer: router({
@@ -190,9 +170,7 @@ export const appRouter = router({
       )
       .query(({ input }) => db.getAllBeers(input)),
     listAvailable: publicProcedure.query(() => db.getAllAvailableBeers()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getBeerById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => db.getBeerById(input.id)),
     create: curatorProcedure
       .input(
         z.object({
@@ -223,17 +201,13 @@ export const appRouter = router({
         const { id, ...data } = input;
         return db.updateBeer(id, data);
       }),
-    delete: curatorProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(({ input }) => db.deleteBeer(input.id)),
+    delete: curatorProcedure.input(z.object({ id: z.number() })).mutation(({ input }) => db.deleteBeer(input.id)),
   }),
 
   menuCategory: router({
     list: publicProcedure.query(() => db.getAllMenuCategories()),
     listAvailable: publicProcedure.query(() => getAvailableMenuCategories()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getMenuCategoryById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => db.getMenuCategoryById(input.id)),
     getBeersByCategory: publicProcedure
       .input(z.object({ menuCatId: z.number() }))
       .query(({ input }) => getBeersByMenuCategory(input.menuCatId)),
@@ -268,18 +242,14 @@ export const appRouter = router({
       .mutation(({ input }) => db.addBeerToMenuCategory(input)),
     removeBeerFromCategory: curatorProcedure
       .input(z.object({ menuCatId: z.number(), beerId: z.number() }))
-      .mutation(({ input }) =>
-        db.removeBeerFromMenuCategory(input.menuCatId, input.beerId)
-      ),
+      .mutation(({ input }) => db.removeBeerFromMenuCategory(input.menuCatId, input.beerId)),
   }),
 
   // Wine management routes
   winery: router({
     list: publicProcedure.query(() => dbWine.getAllWineries()),
     listAvailable: publicProcedure.query(() => dbWine.getAvailableWineries()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => dbWine.getWineryById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => dbWine.getWineryById(input.id)),
     create: curatorProcedure
       .input(
         z.object({
@@ -299,16 +269,12 @@ export const appRouter = router({
         })
       )
       .mutation(({ input }) => dbWine.updateWinery(input.id, input)),
-    delete: curatorProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(({ input }) => dbWine.deleteWinery(input.id)),
+    delete: curatorProcedure.input(z.object({ id: z.number() })).mutation(({ input }) => dbWine.deleteWinery(input.id)),
   }),
 
   varietal: router({
     list: publicProcedure.query(() => dbWine.getAllVarietals()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => dbWine.getVarietalById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => dbWine.getVarietalById(input.id)),
     create: curatorProcedure
       .input(z.object({ name: z.string() }))
       .mutation(({ input }) => dbWine.createVarietal(input)),
@@ -329,9 +295,7 @@ export const appRouter = router({
     list: publicProcedure.query(() => dbWine.getAllLocations()),
     listWithPaths: publicProcedure.query(() => dbWine.getAllLocationsWithPaths()),
     listAvailable: publicProcedure.query(() => dbWine.getAvailableLocations()),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => dbWine.getLocationById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => dbWine.getLocationById(input.id)),
     getByParentId: publicProcedure
       .input(z.object({ parentId: z.number().nullable() }))
       .query(({ input }) => dbWine.getLocationsByParentId(input.parentId)),
@@ -380,9 +344,7 @@ export const appRouter = router({
         })
       )
       .query(({ input }) => dbWine.getAvailableWinesFiltered(input.locationIds, input.wineryIds)),
-    getById: publicProcedure
-      .input(z.object({ id: z.number() }))
-      .query(({ input }) => dbWine.getWineById(input.id)),
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(({ input }) => dbWine.getWineById(input.id)),
     create: curatorProcedure
       .input(
         z.object({
@@ -412,9 +374,7 @@ export const appRouter = router({
         })
       )
       .mutation(({ input }) => dbWine.updateWine(input.id, input)),
-    delete: curatorProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(({ input }) => dbWine.deleteWine(input.id)),
+    delete: curatorProcedure.input(z.object({ id: z.number() })).mutation(({ input }) => dbWine.deleteWine(input.id)),
   }),
 });
 

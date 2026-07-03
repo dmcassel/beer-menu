@@ -44,10 +44,7 @@ export async function getBeersByMenuCategory(menuCatId: number) {
  * Get breweries that have at least one available beer,
  * optionally filtered by menu categories and/or beer styles
  */
-export async function getAvailableBreweries(
-  menuCategoryIds?: number[],
-  styleIds?: number[]
-) {
+export async function getAvailableBreweries(menuCategoryIds?: number[], styleIds?: number[]) {
   const db = await getDb();
   if (!db) return [];
 
@@ -70,7 +67,7 @@ export async function getAvailableBreweries(
   // Add menu category filter
   if (menuCategoryIds && menuCategoryIds.length > 0) {
     query = sql`${query} AND s.menu_category_id IN (${sql.join(
-      menuCategoryIds.map(id => sql`${id}`),
+      menuCategoryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -78,7 +75,7 @@ export async function getAvailableBreweries(
   // Add style filter
   if (styleIds && styleIds.length > 0) {
     query = sql`${query} AND b.style_id IN (${sql.join(
-      styleIds.map(id => sql`${id}`),
+      styleIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -93,10 +90,7 @@ export async function getAvailableBreweries(
  * Get styles that have at least one available beer,
  * optionally filtered by menu categories and/or breweries
  */
-export async function getAvailableStyles(
-  menuCategoryIds?: number[],
-  breweryIds?: number[]
-) {
+export async function getAvailableStyles(menuCategoryIds?: number[], breweryIds?: number[]) {
   const db = await getDb();
   if (!db) return [];
 
@@ -112,7 +106,7 @@ export async function getAvailableStyles(
   // Add menu category filter
   if (menuCategoryIds && menuCategoryIds.length > 0) {
     query = sql`${query} AND s.menu_category_id IN (${sql.join(
-      menuCategoryIds.map(id => sql`${id}`),
+      menuCategoryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }
@@ -120,7 +114,7 @@ export async function getAvailableStyles(
   // Add brewery filter
   if (breweryIds && breweryIds.length > 0) {
     query = sql`${query} AND b.brewery_id IN (${sql.join(
-      breweryIds.map(id => sql`${id}`),
+      breweryIds.map((id) => sql`${id}`),
       sql`, `
     )})`;
   }

@@ -14,17 +14,20 @@ Generate structured user stories from a Product Requirements Document. When the 
 ## Phase 1: LOAD
 
 Read the PRD file provided as input. If no path given, look for:
+
 1. `.agents/PRDs/*.prd.md` files
 2. `PRD.md` at project root
 3. Ask the user which PRD to use
 
 Extract:
+
 - User stories already defined in the PRD
 - Acceptance criteria from success criteria and requirements
 - Implementation phases and their deliverables
 - Technical constraints and dependencies
 
 Parse optional flags from arguments:
+
 - `--milestone` or `-m`: GitHub milestone title to assign issues to (e.g., `v1.0`)
 - `--label` or `-l`: Additional label(s) to apply to all created issues (e.g., `backend`)
 
@@ -37,11 +40,13 @@ Parse optional flags from arguments:
 For each feature or requirement in the PRD:
 
 1. **Create a user story** in the format:
+
    ```
    As a [user type], I want to [action], so that [benefit]
    ```
 
 2. **Define acceptance criteria** (3-5 per story):
+
    ```
    Given [context], when [action], then [expected result]
    ```
@@ -56,6 +61,7 @@ For each feature or requirement in the PRD:
 ### Story Categories
 
 Group stories by type:
+
 - **Feature**: New functionality (label: `feature`)
 - **Enhancement**: Improvement to existing functionality (label: `enhancement`)
 - **Bug**: Fix for known issues (label: `bug`)
@@ -79,19 +85,23 @@ Group stories by type:
 **Labels**: (relevant labels like `frontend`, `backend`, `api`, `database`)
 
 ### Description
+
 As a [user type], I want to [action], so that [benefit].
 
 ### Acceptance Criteria
+
 - [ ] Given [context], when [action], then [result]
 - [ ] Given [context], when [action], then [result]
 - [ ] Given [context], when [action], then [result]
 
 ### Technical Notes
+
 - Key implementation details
 - Files likely to be modified
 - Patterns to follow (reference CLAUDE.md or project conventions)
 
 ### Dependencies
+
 - Blocked by: [other story IDs]
 - Blocks: [other story IDs]
 ```
@@ -99,6 +109,7 @@ As a [user type], I want to [action], so that [benefit].
 ### Ordering
 
 Order stories by:
+
 1. Phase (from PRD implementation phases)
 2. Dependencies (blocked stories come after their blockers)
 3. Priority (High first within each phase)
@@ -108,6 +119,7 @@ Order stories by:
 ## Phase 4: VALIDATE
 
 Before output, verify:
+
 - [ ] Every PRD requirement maps to at least one story
 - [ ] No story is too large (break down if > 1 day of work)
 - [ ] Acceptance criteria are testable and specific
@@ -132,6 +144,7 @@ Save the stories to `.agents/stories/` directory as a markdown file.
 ### If gh CLI IS available:
 
 1. **Ask the user** before creating issues:
+
    ```
    I've generated {count} issues. Would you like me to create these on GitHub?
    - Milestone: {MILESTONE} (or "none" if not provided via --milestone)
@@ -139,6 +152,7 @@ Save the stories to `.agents/stories/` directory as a markdown file.
    ```
 
 2. **If user confirms**, create each issue with:
+
    ```bash
    gh issue create \
      --title "{story title}" \
@@ -149,18 +163,22 @@ Save the stories to `.agents/stories/` directory as a markdown file.
      [--milestone "{milestone}"] \
      [--label "{extra-label}"]
    ```
+
    Capture the returned issue URL for the report.
 
 3. **Add each issue to the GitHub project** with status **"Todo"**:
+
    ```bash
    gh project item-add 1 --owner dmcassel --url <issue-url>
    ```
+
    Then update the item's Status field to "Todo" using the project's field/option IDs
    (look up with `gh project field-list 1 --owner dmcassel --format json`).
 
 4. **If more than one issue was created**, also create an **Epic** issue:
    - Title: `EPIC: {feature/PRD name}`
    - Body: a list of links to all sub-issues (e.g. `- #42 Story title`)
+
    ```bash
    gh issue create \
      --title "EPIC: {feature name}" \
@@ -168,23 +186,27 @@ Save the stories to `.agents/stories/` directory as a markdown file.
      --label "epic" \
      --label "Claude"
    ```
+
    Add the Epic to the project with status **"Todo"** as well.
 
 5. **Report created issues**:
+
    ```markdown
    ## GitHub Issues Created
 
-   | # | Title | Labels | Project |
-   |---|-------|--------|---------|
-   | #42 | Story title | feature, high | Todo |
-   | #43 | Story title | technical, medium | Todo |
-   | #44 | EPIC: Feature name | epic | Todo |
+   | #   | Title              | Labels            | Project |
+   | --- | ------------------ | ----------------- | ------- |
+   | #42 | Story title        | feature, high     | Todo    |
+   | #43 | Story title        | technical, medium | Todo    |
+   | #44 | EPIC: Feature name | epic              | Todo    |
+
    ...
    ```
 
 ### If gh CLI is NOT available:
 
 Output the stories as markdown only and note:
+
 ```
 gh CLI is not installed or not authenticated. To push issues to GitHub automatically:
 1. Install gh: https://cli.github.com

@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { APP_LOGO, APP_TITLE } from "@/const";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 
 interface ManusDialogProps {
   title?: string;
@@ -48,10 +42,7 @@ export function ManusDialog({
   };
 
   return (
-    <Dialog
-      open={onOpenChange ? open : internalOpen}
-      onOpenChange={handleOpenChange}
-    >
+    <Dialog open={onOpenChange ? open : internalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="py-5 bg-[#f8f8f7] rounded-[20px] w-[400px] shadow-[0px_4px_11px_0px_rgba(0,0,0,0.08)] border border-[rgba(0,0,0,0.08)] backdrop-blur-2xl p-0 gap-0 text-center">
         <div className="flex flex-col items-center gap-2 p-5 pt-12">
           <div className="w-16 h-16 bg-white rounded-xl border border-[rgba(0,0,0,0.08)] flex items-center justify-center">

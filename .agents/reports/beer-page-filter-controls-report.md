@@ -10,22 +10,22 @@ Added filter controls to the BeerPage curator tab. A search input (debounced 300
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add filter state + debounced search | `client/src/pages/BeerPage.tsx` | ✅ |
-| 2 | Add menuCategory query, update beer.list query | `client/src/pages/BeerPage.tsx` | ✅ |
-| 3 | Add filter UI (search input + FilterControls grid) | `client/src/pages/BeerPage.tsx` | ✅ |
+| #   | Task                                               | File                            | Status |
+| --- | -------------------------------------------------- | ------------------------------- | ------ |
+| 1   | Add filter state + debounced search                | `client/src/pages/BeerPage.tsx` | ✅     |
+| 2   | Add menuCategory query, update beer.list query     | `client/src/pages/BeerPage.tsx` | ✅     |
+| 3   | Add filter UI (search input + FilterControls grid) | `client/src/pages/BeerPage.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
+| Check                        | Result                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------ |
 | Type check (`npm run check`) | ✅ No errors in BeerPage.tsx (pre-existing errors in other files unrelated to this change) |
 
 ## Files Changed
 
-| File | Action | Changes |
-|------|--------|---------|
+| File                            | Action | Changes   |
+| ------------------------------- | ------ | --------- |
 | `client/src/pages/BeerPage.tsx` | UPDATE | +31 lines |
 
 ## Deviations from Plan

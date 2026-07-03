@@ -10,26 +10,26 @@ Added a curator-only `/beer/inventory` route (`BeerInventory.tsx`) listing every
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Create curator-only inventory page with inline status editing | `client/src/pages/BeerInventory.tsx` | ✅ |
-| 2 | Register `/beer/inventory` route | `client/src/App.tsx` | ✅ |
+| #   | Task                                                          | File                                 | Status |
+| --- | ------------------------------------------------------------- | ------------------------------------ | ------ |
+| 1   | Create curator-only inventory page with inline status editing | `client/src/pages/BeerInventory.tsx` | ✅     |
+| 2   | Register `/beer/inventory` route                              | `client/src/App.tsx`                 | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check (`npm run check`) | ✅ Zero new errors (confirmed identical pre-existing errors on `main` via `git stash` comparison) |
-| Format (`npm run format`) | ⚠️ Ran once; discovered the repo is not currently Prettier-clean and `prettier --write .` reformatted ~160 unrelated tracked files. Reverted all of those via `git checkout -- .` and reapplied only the two intended lines in `App.tsx` by hand. `BeerInventory.tsx` (new/untracked) kept its Prettier formatting from that run since it needed formatting anyway. Did not re-run repo-wide format after that. |
-| Tests (`npm test`) | ✅ 90 passed (90), confirmed again after the revert |
-| Manual E2E (see below) | ✅ |
+| Check                        | Result                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type check (`npm run check`) | ✅ Zero new errors (confirmed identical pre-existing errors on `main` via `git stash` comparison)                                                                                                                                                                                                                                                                                                               |
+| Format (`npm run format`)    | ⚠️ Ran once; discovered the repo is not currently Prettier-clean and `prettier --write .` reformatted ~160 unrelated tracked files. Reverted all of those via `git checkout -- .` and reapplied only the two intended lines in `App.tsx` by hand. `BeerInventory.tsx` (new/untracked) kept its Prettier formatting from that run since it needed formatting anyway. Did not re-run repo-wide format after that. |
+| Tests (`npm test`)           | ✅ 90 passed (90), confirmed again after the revert                                                                                                                                                                                                                                                                                                                                                             |
+| Manual E2E (see below)       | ✅                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
-| `client/src/pages/BeerInventory.tsx` | CREATE | +103 |
-| `client/src/App.tsx` | UPDATE | +2 |
+| File                                 | Action | Lines |
+| ------------------------------------ | ------ | ----- |
+| `client/src/pages/BeerInventory.tsx` | CREATE | +103  |
+| `client/src/App.tsx`                 | UPDATE | +2    |
 
 ## Deviations from Plan
 

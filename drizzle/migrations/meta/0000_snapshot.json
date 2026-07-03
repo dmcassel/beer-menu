@@ -65,12 +65,8 @@
           "name": "beer_brewery_id_brewery_brewery_id_fk",
           "tableFrom": "beer",
           "tableTo": "brewery",
-          "columnsFrom": [
-            "brewery_id"
-          ],
-          "columnsTo": [
-            "brewery_id"
-          ],
+          "columnsFrom": ["brewery_id"],
+          "columnsTo": ["brewery_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -78,12 +74,8 @@
           "name": "beer_style_id_style_style_id_fk",
           "tableFrom": "beer",
           "tableTo": "style",
-          "columnsFrom": [
-            "style_id"
-          ],
-          "columnsTo": [
-            "style_id"
-          ],
+          "columnsFrom": ["style_id"],
+          "columnsTo": ["style_id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -210,12 +202,8 @@
           "name": "menu_category_beer_menu_cat_id_menu_category_menu_cat_id_fk",
           "tableFrom": "menu_category_beer",
           "tableTo": "menu_category",
-          "columnsFrom": [
-            "menu_cat_id"
-          ],
-          "columnsTo": [
-            "menu_cat_id"
-          ],
+          "columnsFrom": ["menu_cat_id"],
+          "columnsTo": ["menu_cat_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -223,12 +211,8 @@
           "name": "menu_category_beer_beer_id_beer_beer_id_fk",
           "tableFrom": "menu_category_beer",
           "tableTo": "beer",
-          "columnsFrom": [
-            "beer_id"
-          ],
-          "columnsTo": [
-            "beer_id"
-          ],
+          "columnsFrom": ["beer_id"],
+          "columnsTo": ["beer_id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -236,10 +220,7 @@
       "compositePrimaryKeys": {
         "menu_category_beer_menu_cat_id_beer_id_pk": {
           "name": "menu_category_beer_menu_cat_id_beer_id_pk",
-          "columns": [
-            "menu_cat_id",
-            "beer_id"
-          ]
+          "columns": ["menu_cat_id", "beer_id"]
         }
       },
       "uniqueConstraints": {},
@@ -288,12 +269,8 @@
           "name": "style_bjcp_id_bjcp_category_bjcp_id_fk",
           "tableFrom": "style",
           "tableTo": "bjcp_category",
-          "columnsFrom": [
-            "bjcp_id"
-          ],
-          "columnsTo": [
-            "bjcp_id"
-          ],
+          "columnsFrom": ["bjcp_id"],
+          "columnsTo": ["bjcp_id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -375,9 +352,7 @@
         "users_google_id_unique": {
           "name": "users_google_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "google_id"
-          ]
+          "columns": ["google_id"]
         }
       },
       "policies": {},
@@ -389,20 +364,12 @@
     "public.beer_status": {
       "name": "beer_status",
       "schema": "public",
-      "values": [
-        "on_tap",
-        "bottle_can",
-        "out"
-      ]
+      "values": ["on_tap", "bottle_can", "out"]
     },
     "public.role": {
       "name": "role",
       "schema": "public",
-      "values": [
-        "user",
-        "curator",
-        "admin"
-      ]
+      "values": ["user", "curator", "admin"]
     }
   },
   "schemas": {},

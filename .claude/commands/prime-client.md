@@ -18,6 +18,7 @@ Build comprehensive understanding of the client codebase by analyzing structure 
 The argument is an optional GitHub issue number or comma-separated list of issue numbers (e.g., `42` or `42,43,44`).
 
 If GitHub issue numbers are provided:
+
 1. For each issue number, run `gh issue view {number} --json title,body,labels,assignees,comments`
 2. Use the issue title, body, labels, and comments to inform your understanding of what work is expected
 

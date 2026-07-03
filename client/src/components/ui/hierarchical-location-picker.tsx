@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
 interface HierarchicalLocationPickerProps {
@@ -15,23 +9,19 @@ interface HierarchicalLocationPickerProps {
   disabled?: boolean;
 }
 
-export function HierarchicalLocationPicker({
-  value,
-  onChange,
-  disabled = false,
-}: HierarchicalLocationPickerProps) {
+export function HierarchicalLocationPicker({ value, onChange, disabled = false }: HierarchicalLocationPickerProps) {
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
   const [selectedArea, setSelectedArea] = useState<number | null>(null);
   const [selectedVineyard, setSelectedVineyard] = useState<number | null>(null);
 
   const { data: countries = [] } = trpc.location.getByType.useQuery({ type: "country" });
-  
+
   // Areas can have country OR area parents
   const { data: areas = [] } = trpc.location.getByParentId.useQuery(
     { parentId: selectedCountry || selectedArea },
     { enabled: selectedCountry !== null || selectedArea !== null }
   );
-  
+
   // Vineyards always have area parents
   const { data: vineyards = [] } = trpc.location.getByParentId.useQuery(
     { parentId: selectedArea },
@@ -79,11 +69,7 @@ export function HierarchicalLocationPicker({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label>Country</Label>
-        <Select
-          value={selectedCountry?.toString() || ""}
-          onValueChange={handleCountryChange}
-          disabled={disabled}
-        >
+        <Select value={selectedCountry?.toString() || ""} onValueChange={handleCountryChange} disabled={disabled}>
           <SelectTrigger>
             <SelectValue placeholder="Select country" />
           </SelectTrigger>
@@ -100,11 +86,7 @@ export function HierarchicalLocationPicker({
       {selectedCountry && filteredAreas.length > 0 && (
         <div className="space-y-2">
           <Label>Region/Area</Label>
-          <Select
-            value={selectedArea?.toString() || ""}
-            onValueChange={handleAreaChange}
-            disabled={disabled}
-          >
+          <Select value={selectedArea?.toString() || ""} onValueChange={handleAreaChange} disabled={disabled}>
             <SelectTrigger>
               <SelectValue placeholder="Select region or area" />
             </SelectTrigger>
@@ -122,11 +104,7 @@ export function HierarchicalLocationPicker({
       {selectedArea && vineyards.length > 0 && (
         <div className="space-y-2">
           <Label>Vineyard</Label>
-          <Select
-            value={selectedVineyard?.toString() || ""}
-            onValueChange={handleVineyardChange}
-            disabled={disabled}
-          >
+          <Select value={selectedVineyard?.toString() || ""} onValueChange={handleVineyardChange} disabled={disabled}>
             <SelectTrigger>
               <SelectValue placeholder="Select vineyard" />
             </SelectTrigger>

@@ -25,14 +25,9 @@ function HomeHeader() {
   if (user) {
     return (
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">
-          Welcome, {user.name || user.email}
-        </span>
+        <span className="text-sm text-gray-600">Welcome, {user.name || user.email}</span>
         {(user.role === "curator" || user.role === "admin") && (
-          <a
-            href="/dashboard"
-            className="text-sm text-amber-700 hover:text-amber-900 underline"
-          >
+          <a href="/dashboard" className="text-sm text-amber-700 hover:text-amber-900 underline">
             Manage Catalog
           </a>
         )}
@@ -44,10 +39,7 @@ function HomeHeader() {
   }
 
   return (
-    <a
-      href="/login?returnUrl=/"
-      className="text-sm text-amber-700 hover:text-amber-900 underline"
-    >
+    <a href="/login?returnUrl=/" className="text-sm text-amber-700 hover:text-amber-900 underline">
       Login
     </a>
   );
@@ -74,12 +66,8 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-12 flex flex-col items-center justify-center">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
-            Welcome
-          </h2>
-          <p className="text-xl text-amber-800">
-            Choose what you'd like to explore
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">Welcome</h2>
+          <p className="text-xl text-amber-800">Choose what you'd like to explore</p>
         </div>
 
         {/* Selection Cards */}

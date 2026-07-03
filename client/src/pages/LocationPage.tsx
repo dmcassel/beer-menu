@@ -8,13 +8,7 @@ import { Plus, Trash2, Edit2 } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function LocationPage() {
   const [open, setOpen] = useState(false);
@@ -36,7 +30,7 @@ export default function LocationPage() {
   const potentialParents = locations?.filter((loc: any) => {
     // Prevent a location from being its own parent
     if (editingId && loc.locationId === editingId) return false;
-    
+
     if (formData.type === "country") return false;
     if (formData.type === "area") return loc.type === "country" || loc.type === "area";
     if (formData.type === "vineyard") return loc.type === "area";
@@ -107,7 +101,7 @@ export default function LocationPage() {
   const getLocationHierarchy = (location: any): string => {
     const parts: string[] = [location.name];
     let current = location;
-    
+
     while (current.parentId) {
       const parent = locations?.find((l: any) => l.locationId === current.parentId);
       if (parent) {
@@ -117,7 +111,7 @@ export default function LocationPage() {
         break;
       }
     }
-    
+
     return parts.join(" → ");
   };
 
@@ -127,7 +121,12 @@ export default function LocationPage() {
         <h2 className="text-xl font-bold">Locations</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", type: "country", parentId: "" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "", type: "country", parentId: "" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Location
             </Button>

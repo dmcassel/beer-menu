@@ -33,11 +33,11 @@ function Input({
       // Otherwise, call the user's onKeyDown
       onKeyDown?.(e);
     },
-    onCompositionStart: e => {
+    onCompositionStart: (e) => {
       dialogComposition.setComposing(true);
       onCompositionStart?.(e);
     },
-    onCompositionEnd: e => {
+    onCompositionEnd: (e) => {
       // Mark that composition just ended - this helps handle the Enter key that confirms input
       dialogComposition.markCompositionEnd();
       // Delay setting composing to false to handle Safari's event order

@@ -97,11 +97,7 @@ export async function getUserByGoogleId(googleId: string) {
     return undefined;
   }
 
-  const result = await db
-    .select()
-    .from(users)
-    .where(eq(users.googleId, googleId))
-    .limit(1);
+  const result = await db.select().from(users).where(eq(users.googleId, googleId)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
@@ -116,11 +112,7 @@ export async function getUserById(id: number) {
 export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result[0];
 }
 
@@ -134,11 +126,7 @@ export async function getAllBJCPCategories() {
 export async function getBJCPCategoryById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(bjcpCategory)
-    .where(eq(bjcpCategory.bjcpId, id))
-    .limit(1);
+  const result = await db.select().from(bjcpCategory).where(eq(bjcpCategory.bjcpId, id)).limit(1);
   return result[0];
 }
 
@@ -149,10 +137,7 @@ export async function createBJCPCategory(data: InsertBJCPCategory) {
   return result;
 }
 
-export async function updateBJCPCategory(
-  id: number,
-  data: Partial<InsertBJCPCategory>
-) {
+export async function updateBJCPCategory(id: number, data: Partial<InsertBJCPCategory>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.update(bjcpCategory).set(data).where(eq(bjcpCategory.bjcpId, id));
@@ -174,11 +159,7 @@ export async function getAllStyles() {
 export async function getStyleById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(style)
-    .where(eq(style.styleId, id))
-    .limit(1);
+  const result = await db.select().from(style).where(eq(style.styleId, id)).limit(1);
   return result[0];
 }
 
@@ -210,11 +191,7 @@ export async function getAllBreweries() {
 export async function getBreweryById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(brewery)
-    .where(eq(brewery.breweryId, id))
-    .limit(1);
+  const result = await db.select().from(brewery).where(eq(brewery.breweryId, id)).limit(1);
   return result[0];
 }
 
@@ -286,31 +263,21 @@ export async function getAllBeers(filters: BeerFilters = {}) {
     .leftJoin(style, eq(beer.styleId, style.styleId));
 
   if (conditions.length > 0) {
-    return (await query.where(and(...conditions)).orderBy(asc(beer.name))).map(
-      r => r.beer
-    );
+    return (await query.where(and(...conditions)).orderBy(asc(beer.name))).map((r) => r.beer);
   }
-  return (await query.orderBy(asc(beer.name))).map(r => r.beer);
+  return (await query.orderBy(asc(beer.name))).map((r) => r.beer);
 }
 
 export async function getAllAvailableBeers() {
   const db = await getDb();
   if (!db) return [];
-  return db
-    .select()
-    .from(beer)
-    .where(ne(beer.status, "out"))
-    .orderBy(asc(beer.name));
+  return db.select().from(beer).where(ne(beer.status, "out")).orderBy(asc(beer.name));
 }
 
 export async function getBeerById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(beer)
-    .where(eq(beer.beerId, id))
-    .limit(1);
+  const result = await db.select().from(beer).where(eq(beer.beerId, id)).limit(1);
   return result[0];
 }
 
@@ -342,11 +309,7 @@ export async function getAllMenuCategories() {
 export async function getMenuCategoryById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(menuCategory)
-    .where(eq(menuCategory.menuCatId, id))
-    .limit(1);
+  const result = await db.select().from(menuCategory).where(eq(menuCategory.menuCatId, id)).limit(1);
   return result[0];
 }
 
@@ -356,16 +319,10 @@ export async function createMenuCategory(data: InsertMenuCategory) {
   return db.insert(menuCategory).values(data);
 }
 
-export async function updateMenuCategory(
-  id: number,
-  data: Partial<InsertMenuCategory>
-) {
+export async function updateMenuCategory(id: number, data: Partial<InsertMenuCategory>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  return db
-    .update(menuCategory)
-    .set(data)
-    .where(eq(menuCategory.menuCatId, id));
+  return db.update(menuCategory).set(data).where(eq(menuCategory.menuCatId, id));
 }
 
 export async function deleteMenuCategory(id: number) {
@@ -378,10 +335,7 @@ export async function deleteMenuCategory(id: number) {
 export async function getBeersInMenuCategory(menuCatId: number) {
   const db = await getDb();
   if (!db) return [];
-  return db
-    .select()
-    .from(menuCategoryBeer)
-    .where(eq(menuCategoryBeer.menuCatId, menuCatId));
+  return db.select().from(menuCategoryBeer).where(eq(menuCategoryBeer.menuCatId, menuCatId));
 }
 
 export async function addBeerToMenuCategory(data: InsertMenuCategoryBeer) {
@@ -390,18 +344,10 @@ export async function addBeerToMenuCategory(data: InsertMenuCategoryBeer) {
   return db.insert(menuCategoryBeer).values(data);
 }
 
-export async function removeBeerFromMenuCategory(
-  menuCatId: number,
-  beerId: number
-) {
+export async function removeBeerFromMenuCategory(menuCatId: number, beerId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db
     .delete(menuCategoryBeer)
-    .where(
-      and(
-        eq(menuCategoryBeer.menuCatId, menuCatId),
-        eq(menuCategoryBeer.beerId, beerId)
-      )
-    );
+    .where(and(eq(menuCategoryBeer.menuCatId, menuCatId), eq(menuCategoryBeer.beerId, beerId)));
 }

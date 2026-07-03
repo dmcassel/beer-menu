@@ -21,10 +21,7 @@ export default function BeerManagement() {
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
-    if (
-      !isLoading &&
-      (!user || (user.role !== "curator" && user.role !== "admin"))
-    ) {
+    if (!isLoading && (!user || (user.role !== "curator" && user.role !== "admin"))) {
       setLocation("/browser");
     }
   }, [user, isLoading, setLocation]);
@@ -80,9 +77,7 @@ export default function BeerManagement() {
             </Link>
             {user && (
               <>
-                <span className="text-sm text-gray-600">
-                  Welcome, {user.name}
-                </span>
+                <span className="text-sm text-gray-600">Welcome, {user.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>

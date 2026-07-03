@@ -10,20 +10,20 @@ Added a "confirmed present" action to each row in Beer Inventory Mode (`client/s
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add confirmed-IDs state and derive the visible list | `client/src/pages/BeerInventory.tsx` | ✅ |
-| 2 | Render the confirm button per row and switch rendering to `visibleBeers` | `client/src/pages/BeerInventory.tsx` | ✅ |
-| 3 | Show a remaining-count indicator in the header | `client/src/pages/BeerInventory.tsx` | ✅ |
+| #   | Task                                                                     | File                                 | Status |
+| --- | ------------------------------------------------------------------------ | ------------------------------------ | ------ |
+| 1   | Add confirmed-IDs state and derive the visible list                      | `client/src/pages/BeerInventory.tsx` | ✅     |
+| 2   | Render the confirm button per row and switch rendering to `visibleBeers` | `client/src/pages/BeerInventory.tsx` | ✅     |
+| 3   | Show a remaining-count indicator in the header                           | `client/src/pages/BeerInventory.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check | ✅ (pre-existing unrelated errors in `Map.tsx`, `BeerBrowser.tsx`, `Login.tsx`, `server/_core/oauth.ts`, `server/_core/sdk.ts` confirmed present on `main` before this change — none touch `BeerInventory.tsx`) |
-| Build (`npm run build`) | ✅ |
-| Tests (`npm test`) | ✅ (90 passed, 4 files — no server logic changed, no new tests needed for this purely client-side UI-state feature) |
-| E2E (browser, curator session) | ✅ — see below |
+| Check                          | Result                                                                                                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type check                     | ✅ (pre-existing unrelated errors in `Map.tsx`, `BeerBrowser.tsx`, `Login.tsx`, `server/_core/oauth.ts`, `server/_core/sdk.ts` confirmed present on `main` before this change — none touch `BeerInventory.tsx`) |
+| Build (`npm run build`)        | ✅                                                                                                                                                                                                              |
+| Tests (`npm test`)             | ✅ (90 passed, 4 files — no server logic changed, no new tests needed for this purely client-side UI-state feature)                                                                                             |
+| E2E (browser, curator session) | ✅ — see below                                                                                                                                                                                                  |
 
 ## E2E Verification
 
@@ -39,8 +39,8 @@ Screenshots taken during verification confirmed the confirm button renders corre
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
+| File                                 | Action | Lines   |
+| ------------------------------------ | ------ | ------- |
 | `client/src/pages/BeerInventory.tsx` | UPDATE | +30/-14 |
 
 ## Deviations from Plan

@@ -12,32 +12,30 @@ So that the server only returns beers matching my filters, enabling fast and acc
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | MEDIUM |
+| Field            | Value                                                    |
+| ---------------- | -------------------------------------------------------- |
+| Type             | ENHANCEMENT                                              |
+| Complexity       | MEDIUM                                                   |
 | Systems Affected | `server/db.ts`, `server/routers.ts`, `server/db.test.ts` |
-| GitHub Issue | 96 |
+| GitHub Issue     | 96                                                       |
 
 ---
 
 ## Patterns to Follow
 
 ### Existing where clause pattern
+
 ```typescript
 // SOURCE: server/db.ts:246-253
 export async function getAllAvailableBeers() {
   const db = await getDb();
   if (!db) return [];
-  return db
-    .select()
-    .from(beer)
-    .where(ne(beer.status, "out"))
-    .orderBy(asc(beer.name));
+  return db.select().from(beer).where(ne(beer.status, "out")).orderBy(asc(beer.name));
 }
 ```
 
 ### Input procedure pattern
+
 ```typescript
 // SOURCE: server/routers.ts:184-186
 getById: publicProcedure
@@ -46,6 +44,7 @@ getById: publicProcedure
 ```
 
 ### Tests — filtering with seed data
+
 ```typescript
 // SOURCE: server/db.test.ts:251-262
 describe("Beer Functions", () => {
@@ -67,11 +66,11 @@ describe("Beer Functions", () => {
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `server/db.ts` | UPDATE | Add optional `filters` param to `getAllBeers()`, left-join brewery/style, build `where` conditions |
-| `server/routers.ts` | UPDATE | Add Zod input schema to `beer.list` procedure and forward input to `getAllBeers()` |
-| `server/db.test.ts` | UPDATE | Add integration tests for `getAllBeers()` with each filter type and combined filters |
+| File                | Action | Purpose                                                                                            |
+| ------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `server/db.ts`      | UPDATE | Add optional `filters` param to `getAllBeers()`, left-join brewery/style, build `where` conditions |
+| `server/routers.ts` | UPDATE | Add Zod input schema to `beer.list` procedure and forward input to `getAllBeers()`                 |
+| `server/db.test.ts` | UPDATE | Add integration tests for `getAllBeers()` with each filter type and combined filters               |
 
 ---
 

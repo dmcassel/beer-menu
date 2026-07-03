@@ -7,10 +7,12 @@ This guide explains how to deploy database migrations and code updates to both l
 ### How Drizzle Migrations Work
 
 Drizzle Kit uses two commands:
+
 - **`drizzle-kit generate`**: Generates migration files by comparing your schema with the database
 - **`drizzle-kit migrate`**: Applies pending migrations to the database
 
 The current `db:push` script runs both commands, which can cause issues:
+
 ```json
 "db:push": "drizzle-kit generate && drizzle-kit migrate"
 ```
@@ -18,6 +20,7 @@ The current `db:push` script runs both commands, which can cause issues:
 ### Why Your Local Database Had Issues
 
 When you ran `npm run db:push`, Drizzle tried to:
+
 1. Generate new migrations (comparing schema to DB)
 2. Apply ALL migrations in the `drizzle/migrations/` folder
 
@@ -26,6 +29,7 @@ If your database already had the `role` enum from a previous migration, it faile
 ### The Problem with the Current Setup
 
 Drizzle Kit doesn't have built-in migration tracking like other ORMs (e.g., no `migrations` table in the database). It relies on you to:
+
 - Only run migrations once
 - Manually track what's been applied
 - Use `drizzle-kit push` for schema sync (which bypasses migrations entirely)
@@ -47,6 +51,7 @@ node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style
 ```
 
 This script:
+
 - Reads the SQL file
 - Connects to your local database
 - Executes the migration
@@ -173,6 +178,7 @@ docker-compose exec db psql -U your_user -d beer_menu -c "\d style"
 ### "drizzle-kit: command not found"
 
 This happens when:
+
 - You're running outside the container and `node_modules` isn't installed
 - You're inside the container and dependencies weren't copied
 
@@ -182,13 +188,15 @@ This happens when:
 
 This means the migration was partially applied or run multiple times.
 
-**Solution**: 
+**Solution**:
+
 - Check what's in your database: `\dT` in psql
 - Either skip that migration or reset the database
 
 ### "Cannot connect to database"
 
-**Solution**: 
+**Solution**:
+
 - Verify `DATABASE_URL` is set: `echo $DATABASE_URL`
 - Check database is running: `docker-compose ps`
 - Test connection: `psql $DATABASE_URL`
@@ -241,6 +249,7 @@ npx drizzle-kit studio
 ```
 
 This lets you:
+
 - View all tables and data
 - Run queries
 - See schema changes
@@ -251,11 +260,13 @@ This lets you:
 ## Summary
 
 **For Local (PR #22)**:
+
 ```bash
 node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
 ```
 
 **For Production**:
+
 ```bash
 # 1. Deploy code
 git pull && docker compose --env-file .env.compose.prod build && docker compose --env-file .env.compose.prod up -d
@@ -265,6 +276,7 @@ docker-compose exec app node scripts/run-migration.js drizzle/migrations/0001_ad
 ```
 
 **For Future Migrations**:
+
 - Use the migration runner script
 - Keep migrations in `drizzle/migrations/`
 - Test locally before production

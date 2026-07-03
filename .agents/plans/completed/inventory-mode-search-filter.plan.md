@@ -12,39 +12,35 @@ So that reviewing stays fast as the catalog grows
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | LOW |
+| Field            | Value                                         |
+| ---------------- | --------------------------------------------- |
+| Type             | ENHANCEMENT                                   |
+| Complexity       | LOW                                           |
 | Systems Affected | client (BeerInventory.tsx, WineInventory.tsx) |
-| GitHub Issue | 130 |
+| GitHub Issue     | 130                                           |
 
 ---
 
 ## Patterns to Follow
 
 ### Naming / Search Input
+
 ```tsx
 // SOURCE: client/src/pages/BeerPage.tsx:249-254
-<Input
-  placeholder="Search beers..."
-  value={search}
-  onChange={e => setSearch(e.target.value)}
-  className="flex-1"
-/>
+<Input placeholder="Search beers..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1" />
 ```
 
 ### Brewery name lookup (client-side join by ID)
+
 ```tsx
 // SOURCE: client/src/pages/BeerBrowser.tsx:145-148
 const getBreweryName = (breweryId: number | null | undefined) => {
-  return (
-    breweries.find(b => b.breweryId === breweryId)?.name || "Unknown Brewery"
-  );
+  return breweries.find((b) => b.breweryId === breweryId)?.name || "Unknown Brewery";
 };
 ```
 
 ### Existing derived-filter pattern already in BeerInventory/WineInventory (search will compose with this)
+
 ```tsx
 // SOURCE: client/src/pages/BeerInventory.tsx:19-20
 const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
@@ -52,6 +48,7 @@ const visibleBeers = beers?.filter((b) => !confirmedIds.has(b.beerId));
 ```
 
 ### Empty state
+
 ```tsx
 // SOURCE: client/src/pages/BeerInventory.tsx:84-85
 visibleBeers?.length === 0 ? (
@@ -60,6 +57,7 @@ visibleBeers?.length === 0 ? (
 ```
 
 ### Wine row already carries the field needed for search (no backend change for wine)
+
 ```ts
 // SOURCE: server/db_wine.ts:649-661 (getAvailableWinesFiltered, used by wine.listAvailable)
 .select({
@@ -75,9 +73,9 @@ visibleBeers?.length === 0 ? (
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `client/src/pages/BeerInventory.tsx` | UPDATE | Add search input, brewery-name lookup, and combined confirmed+search filter |
+| File                                 | Action | Purpose                                                                                 |
+| ------------------------------------ | ------ | --------------------------------------------------------------------------------------- |
+| `client/src/pages/BeerInventory.tsx` | UPDATE | Add search input, brewery-name lookup, and combined confirmed+search filter             |
 | `client/src/pages/WineInventory.tsx` | UPDATE | Add search input and combined confirmed+search filter using existing `wineryName` field |
 
 No server, schema, or router changes — both `listAvailable` queries already return everything needed (wine directly; beer via an existing separate `brewery.list` query already used elsewhere in the app for the same purpose).
@@ -102,10 +100,7 @@ No server, schema, or router changes — both `listAvailable` queries already re
       if (confirmedIds.has(b.beerId)) return false;
       if (!searchLower) return true;
       const breweryName = getBreweryName(b.breweryId);
-      return (
-        b.name.toLowerCase().includes(searchLower) ||
-        breweryName.toLowerCase().includes(searchLower)
-      );
+      return b.name.toLowerCase().includes(searchLower) || breweryName.toLowerCase().includes(searchLower);
     });
     ```
   - Render the search `Input` in `<main>`, above the list (before the `beersLoading ? ... : ...` block), always visible (not in a Sheet/dialog — this is a fast in-and-out phone workflow, not the persistent management page):
@@ -120,7 +115,9 @@ No server, schema, or router changes — both `listAvailable` queries already re
     ```
   - Update the empty-state message (line 85) to distinguish "search matched nothing" from "nothing available at all":
     ```tsx
-    {search ? "No beers match your search." : "No beers currently available."}
+    {
+      search ? "No beers match your search." : "No beers currently available.";
+    }
     ```
 - **Mirror**: `client/src/pages/BeerPage.tsx:249-254` (Input pattern), `client/src/pages/BeerBrowser.tsx:145-148` (brewery lookup)
 - **Validate**: `npm run check`
@@ -139,10 +136,7 @@ No server, schema, or router changes — both `listAvailable` queries already re
     const visibleWines = wines?.filter((w) => {
       if (confirmedIds.has(w.wineId)) return false;
       if (!searchLower) return true;
-      return (
-        w.label.toLowerCase().includes(searchLower) ||
-        (w.wineryName ?? "").toLowerCase().includes(searchLower)
-      );
+      return w.label.toLowerCase().includes(searchLower) || (w.wineryName ?? "").toLowerCase().includes(searchLower);
     });
     ```
   - Render the search `Input` in `<main>`, above the list (before the `winesLoading ? ... : ...` block), same style as Task 1:
@@ -157,7 +151,9 @@ No server, schema, or router changes — both `listAvailable` queries already re
     ```
   - Update the empty-state message (line 159):
     ```tsx
-    {search ? "No wines match your search." : "No wines currently available."}
+    {
+      search ? "No wines match your search." : "No wines currently available.";
+    }
     ```
 - **Mirror**: Task 1's pattern in `BeerInventory.tsx`; wine query already includes `wineryName` per `server/db_wine.ts:659`
 - **Validate**: `npm run check`
@@ -177,6 +173,7 @@ npm run build
 No `npm test` impact expected — this feature has no server-side changes and the project's Vitest suite covers `server/**/*.test.ts` only (no frontend test harness exists for these pages).
 
 Manual verification (dev server, phone-width viewport):
+
 1. Navigate to `/beer/inventory` as a curator. Type a brewery name that isn't in any beer's own name — confirm it still filters correctly (proves the brewery-name lookup path works, not just `beer.name`).
 2. Type a search term matching nothing — confirm the "No beers match your search." empty state appears, not an error.
 3. Clear the search box — confirm the full (minus any confirmed) list reappears.

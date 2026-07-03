@@ -12,47 +12,49 @@ So that I can understand and reset my current filter state without reopening dro
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | ENHANCEMENT |
-| Complexity | LOW |
+| Field            | Value                           |
+| ---------------- | ------------------------------- |
+| Type             | ENHANCEMENT                     |
+| Complexity       | LOW                             |
 | Systems Affected | `client/src/pages/BeerPage.tsx` |
-| GitHub Issue | 98 |
+| GitHub Issue     | 98                              |
 
 ---
 
 ## Patterns to Follow
 
 ### Badge Rendering
+
 ```tsx
 // SOURCE: client/src/pages/BeerBrowser.tsx:220-289
-{hasActiveFilters && (
-  <div className="mt-4 flex items-center gap-2 flex-wrap">
-    {selectedMenuCategories.map(id => {
-      const category = menuCategories.find(c => c.menu_cat_id === parseInt(id));
-      return category ? (
-        <Badge
-          key={`cat-${id}`}
-          variant="secondary"
-          className="cursor-pointer"
-          onClick={() =>
-            setSelectedMenuCategories(selectedMenuCategories.filter(catId => catId !== id))
-          }
-        >
-          {category.name}
-          <X className="w-3 h-3 ml-1" />
-        </Badge>
-      ) : null;
-    })}
-    {/* ...styles, breweries similarly... */}
-    <Button variant="ghost" size="sm" onClick={handleClearFilters} className="text-amber-700 hover:text-amber-900">
-      Clear All
-    </Button>
-  </div>
-)}
+{
+  hasActiveFilters && (
+    <div className="mt-4 flex items-center gap-2 flex-wrap">
+      {selectedMenuCategories.map((id) => {
+        const category = menuCategories.find((c) => c.menu_cat_id === parseInt(id));
+        return category ? (
+          <Badge
+            key={`cat-${id}`}
+            variant="secondary"
+            className="cursor-pointer"
+            onClick={() => setSelectedMenuCategories(selectedMenuCategories.filter((catId) => catId !== id))}
+          >
+            {category.name}
+            <X className="w-3 h-3 ml-1" />
+          </Badge>
+        ) : null;
+      })}
+      {/* ...styles, breweries similarly... */}
+      <Button variant="ghost" size="sm" onClick={handleClearFilters} className="text-amber-700 hover:text-amber-900">
+        Clear All
+      </Button>
+    </div>
+  );
+}
 ```
 
 ### Clear Filters + hasActiveFilters
+
 ```tsx
 // SOURCE: client/src/pages/BeerBrowser.tsx:152-166
 const handleClearFilters = () => {
@@ -61,18 +63,15 @@ const handleClearFilters = () => {
   setSelectedBreweries([]);
 };
 
-const hasActiveFilters =
-  selectedMenuCategories.length > 0 ||
-  selectedStyles.length > 0 ||
-  selectedBreweries.length > 0;
+const hasActiveFilters = selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0;
 ```
 
 ---
 
 ## Files to Change
 
-| File | Action | Purpose |
-|------|--------|---------|
+| File                            | Action | Purpose                                                    |
+| ------------------------------- | ------ | ---------------------------------------------------------- |
 | `client/src/pages/BeerPage.tsx` | UPDATE | Add Badge import, X icon, computed vars, and badge row JSX |
 
 ---
@@ -97,10 +96,7 @@ const hasActiveFilters =
 
   ```tsx
   const hasActiveFilters =
-    search.length > 0 ||
-    selectedMenuCategories.length > 0 ||
-    selectedStyles.length > 0 ||
-    selectedBreweries.length > 0;
+    search.length > 0 || selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0;
 
   const handleClearFilters = () => {
     setSearch("");
@@ -122,66 +118,57 @@ const hasActiveFilters =
 - **Implement**: After the closing `</div>` of the `grid grid-cols-3` filter controls div (currently line 248), but still inside the outer `bg-gray-50` container div, add:
 
   ```tsx
-  {hasActiveFilters && (
-    <div className="flex items-center gap-2 flex-wrap">
-      {selectedMenuCategories.map(id => {
-        const category = menuCategories.find(c => c.menu_cat_id === parseInt(id, 10));
-        return category ? (
-          <Badge
-            key={`cat-${id}`}
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() =>
-              setSelectedMenuCategories(selectedMenuCategories.filter(catId => catId !== id))
-            }
-          >
-            {category.name}
-            <X className="w-3 h-3 ml-1" />
-          </Badge>
-        ) : null;
-      })}
-      {selectedStyles.map(id => {
-        const style = styles?.find(s => s.styleId === parseInt(id, 10));
-        return style ? (
-          <Badge
-            key={`style-${id}`}
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() =>
-              setSelectedStyles(selectedStyles.filter(styleId => styleId !== id))
-            }
-          >
-            {style.name}
-            <X className="w-3 h-3 ml-1" />
-          </Badge>
-        ) : null;
-      })}
-      {selectedBreweries.map(id => {
-        const brewery = breweries?.find(b => b.breweryId === parseInt(id, 10));
-        return brewery ? (
-          <Badge
-            key={`brewery-${id}`}
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() =>
-              setSelectedBreweries(selectedBreweries.filter(breweryId => breweryId !== id))
-            }
-          >
-            {brewery.name}
-            <X className="w-3 h-3 ml-1" />
-          </Badge>
-        ) : null;
-      })}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleClearFilters}
-        className="text-amber-700 hover:text-amber-900"
-      >
-        Clear All
-      </Button>
-    </div>
-  )}
+  {
+    hasActiveFilters && (
+      <div className="flex items-center gap-2 flex-wrap">
+        {selectedMenuCategories.map((id) => {
+          const category = menuCategories.find((c) => c.menu_cat_id === parseInt(id, 10));
+          return category ? (
+            <Badge
+              key={`cat-${id}`}
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedMenuCategories(selectedMenuCategories.filter((catId) => catId !== id))}
+            >
+              {category.name}
+              <X className="w-3 h-3 ml-1" />
+            </Badge>
+          ) : null;
+        })}
+        {selectedStyles.map((id) => {
+          const style = styles?.find((s) => s.styleId === parseInt(id, 10));
+          return style ? (
+            <Badge
+              key={`style-${id}`}
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedStyles(selectedStyles.filter((styleId) => styleId !== id))}
+            >
+              {style.name}
+              <X className="w-3 h-3 ml-1" />
+            </Badge>
+          ) : null;
+        })}
+        {selectedBreweries.map((id) => {
+          const brewery = breweries?.find((b) => b.breweryId === parseInt(id, 10));
+          return brewery ? (
+            <Badge
+              key={`brewery-${id}`}
+              variant="secondary"
+              className="cursor-pointer"
+              onClick={() => setSelectedBreweries(selectedBreweries.filter((breweryId) => breweryId !== id))}
+            >
+              {brewery.name}
+              <X className="w-3 h-3 ml-1" />
+            </Badge>
+          ) : null;
+        })}
+        <Button variant="ghost" size="sm" onClick={handleClearFilters} className="text-amber-700 hover:text-amber-900">
+          Clear All
+        </Button>
+      </div>
+    );
+  }
   ```
 
 - **Mirror**: `client/src/pages/BeerBrowser.tsx:220-289`

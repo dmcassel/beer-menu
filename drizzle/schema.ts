@@ -1,24 +1,10 @@
-import {
-  integer,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-  numeric,
-  serial,
-  primaryKey,
-} from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, text, timestamp, varchar, numeric, serial, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Enum for role
 export const roleEnum = pgEnum("role", ["user", "curator", "admin"]);
 
-export const beerStatusEnum = pgEnum("beer_status", [
-  "on_tap",
-  "bottle_can",
-  "out",
-]);
+export const beerStatusEnum = pgEnum("beer_status", ["on_tap", "bottle_can", "out"]);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(), // Postgres auto-increment
@@ -27,15 +13,9 @@ export const users = pgTable("users", {
   name: text("name"),
   picture: text("picture"),
   role: roleEnum("role").default("user").notNull(),
-  createdAt: timestamp("createdAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  lastSignedIn: timestamp("lastSignedIn", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }).defaultNow().notNull(),
+  lastSignedIn: timestamp("lastSignedIn", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export type User = typeof users.$inferSelect;
@@ -118,7 +98,7 @@ export const menuCategoryBeer = pgTable(
       .notNull()
       .references(() => beer.beerId, { onDelete: "cascade" }),
   },
-  table => ({
+  (table) => ({
     pk: primaryKey({ columns: [table.menuCatId, table.beerId] }),
   })
 );
@@ -164,30 +144,23 @@ export const menuCategoryRelations = relations(menuCategory, ({ many }) => ({
   styles: many(style),
 }));
 
-export const menuCategoryBeerRelations = relations(
-  menuCategoryBeer,
-  ({ one }) => ({
-    menuCategory: one(menuCategory, {
-      fields: [menuCategoryBeer.menuCatId],
-      references: [menuCategory.menuCatId],
-    }),
-    beer: one(beer, {
-      fields: [menuCategoryBeer.beerId],
-      references: [beer.beerId],
-    }),
-  })
-);
+export const menuCategoryBeerRelations = relations(menuCategoryBeer, ({ one }) => ({
+  menuCategory: one(menuCategory, {
+    fields: [menuCategoryBeer.menuCatId],
+    references: [menuCategory.menuCatId],
+  }),
+  beer: one(beer, {
+    fields: [menuCategoryBeer.beerId],
+    references: [beer.beerId],
+  }),
+}));
 
 // ============================================================================
 // Wine-related tables
 // ============================================================================
 
 // Location Type Enum
-export const locationTypeEnum = pgEnum("location_type", [
-  "country",
-  "area",
-  "vineyard",
-]);
+export const locationTypeEnum = pgEnum("location_type", ["country", "area", "vineyard"]);
 
 // Location Table (Hierarchical)
 export const location = pgTable("location", {

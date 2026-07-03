@@ -16,10 +16,7 @@ export default function Dashboard() {
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
-    if (
-      !isLoading &&
-      (!user || (user.role !== "curator" && user.role !== "admin"))
-    ) {
+    if (!isLoading && (!user || (user.role !== "curator" && user.role !== "admin"))) {
       setLocation("/browser");
     }
   }, [user, isLoading, setLocation]);
@@ -64,9 +61,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             {user && (
               <>
-                <span className="text-sm text-gray-600">
-                  Welcome, {user.name}
-                </span>
+                <span className="text-sm text-gray-600">Welcome, {user.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>
@@ -85,9 +80,7 @@ export default function Dashboard() {
               <div className="flex flex-col items-center text-center space-y-4">
                 <Beer className="w-16 h-16 text-amber-600" />
                 <h2 className="text-2xl font-bold text-gray-900">Beer Management</h2>
-                <p className="text-gray-600">
-                  Manage beers, breweries, styles, BJCP categories, and menus
-                </p>
+                <p className="text-gray-600">Manage beers, breweries, styles, BJCP categories, and menus</p>
               </div>
             </div>
           </Link>
@@ -98,9 +91,7 @@ export default function Dashboard() {
               <div className="flex flex-col items-center text-center space-y-4">
                 <Wine className="w-16 h-16 text-purple-600" />
                 <h2 className="text-2xl font-bold text-gray-900">Wine Management</h2>
-                <p className="text-gray-600">
-                  Manage wines, wineries, varietals, and locations
-                </p>
+                <p className="text-gray-600">Manage wines, wineries, varietals, and locations</p>
               </div>
             </div>
           </Link>

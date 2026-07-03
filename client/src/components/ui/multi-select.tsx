@@ -2,11 +2,7 @@ import * as React from "react";
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -35,7 +31,7 @@ export function MultiSelect({
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const handleSelectAll = () => {
-    onChange(options.map(option => option.value));
+    onChange(options.map((option) => option.value));
   };
 
   const handleClearAll = () => {
@@ -44,7 +40,7 @@ export function MultiSelect({
 
   const handleToggle = (value: string) => {
     if (selected.includes(value)) {
-      onChange(selected.filter(item => item !== value));
+      onChange(selected.filter((item) => item !== value));
     } else {
       onChange([...selected, value]);
     }
@@ -52,9 +48,7 @@ export function MultiSelect({
 
   const filteredOptions = React.useMemo(() => {
     if (!searchQuery) return options;
-    return options.filter(option =>
-      option.label.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [options, searchQuery]);
 
   const displayText = React.useMemo(() => {
@@ -65,9 +59,7 @@ export function MultiSelect({
       return "All selected";
     }
     if (selected.length === 1) {
-      return (
-        options.find(opt => opt.value === selected[0])?.label || placeholder
-      );
+      return options.find((opt) => opt.value === selected[0])?.label || placeholder;
     }
     return `${selected.length} selected`;
   }, [selected, options, placeholder]);
@@ -110,20 +102,10 @@ export function MultiSelect({
             </div>
           </div>
           <div className="flex items-center justify-between px-2 pb-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSelectAll}
-              className="h-8 text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={handleSelectAll} className="h-8 text-xs">
               Select All
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearAll}
-              className="h-8 text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={handleClearAll} className="h-8 text-xs">
               Clear All
             </Button>
           </div>
@@ -136,28 +118,23 @@ export function MultiSelect({
             }}
           >
             {filteredOptions.length === 0 ? (
-              <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                No results found
-              </div>
+              <div className="px-2 py-6 text-center text-sm text-muted-foreground">No results found</div>
             ) : (
-              filteredOptions.map(option => (
-              <div
-                key={option.value}
-                className="flex items-center space-x-2 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm"
-                onClick={() => handleToggle(option.value)}
-              >
-                <Checkbox
-                  checked={selected.includes(option.value)}
-                  onCheckedChange={() => handleToggle(option.value)}
-                  onClick={e => e.stopPropagation()}
-                />
-                <label
-                  htmlFor={option.value}
-                  className="flex-1 text-sm cursor-pointer"
+              filteredOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className="flex items-center space-x-2 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm"
+                  onClick={() => handleToggle(option.value)}
                 >
-                  {option.label}
-                </label>
-              </div>
+                  <Checkbox
+                    checked={selected.includes(option.value)}
+                    onCheckedChange={() => handleToggle(option.value)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <label htmlFor={option.value} className="flex-1 text-sm cursor-pointer">
+                    {option.label}
+                  </label>
+                </div>
               ))
             )}
           </div>

@@ -6,18 +6,18 @@
  * Example: node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
  */
 
-import { readFileSync } from 'fs';
-import pg from 'pg';
-import dotenv from 'dotenv';
+import { readFileSync } from "fs";
+import pg from "pg";
+import dotenv from "dotenv";
 
-dotenv.config({ path: '.env.local' });
-dotenv.config({ path: '.env' });
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 const { Client } = pg;
 
 async function runMigration(migrationFile) {
   if (!process.env.DATABASE_URL) {
-    console.error('❌ DATABASE_URL environment variable is not set');
+    console.error("❌ DATABASE_URL environment variable is not set");
     process.exit(1);
   }
 
@@ -31,14 +31,14 @@ async function runMigration(migrationFile) {
     console.log(`✅ Connected to database`);
 
     console.log(`📄 Reading migration file: ${migrationFile}`);
-    const sql = readFileSync(migrationFile, 'utf-8');
+    const sql = readFileSync(migrationFile, "utf-8");
 
     console.log(`🚀 Executing migration...`);
     await client.query(sql);
     console.log(`✅ Migration completed successfully!`);
   } catch (error) {
     console.error(`❌ Migration failed:`, error.message);
-    if (error.code === '42710') {
+    if (error.code === "42710") {
       console.log(`ℹ️  This error usually means the migration was already applied.`);
     }
     process.exit(1);
@@ -49,8 +49,8 @@ async function runMigration(migrationFile) {
 
 const migrationFile = process.argv[2];
 if (!migrationFile) {
-  console.error('❌ Usage: node scripts/run-migration.js <migration-file>');
-  console.error('   Example: node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql');
+  console.error("❌ Usage: node scripts/run-migration.js <migration-file>");
+  console.error("   Example: node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql");
   process.exit(1);
 }
 

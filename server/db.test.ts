@@ -139,7 +139,7 @@ describe("Database Functions - CRUD Operations", () => {
 
       // Get the inserted ID (this depends on your Drizzle setup)
       const allCategories = await getAllBJCPCategories();
-      const testCat = allCategories.find(c => c.label === "TEST");
+      const testCat = allCategories.find((c) => c.label === "TEST");
       expect(testCat).toBeDefined();
 
       await deleteBJCPCategory(testCat!.bjcpId);
@@ -188,7 +188,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allStyles = await getAllStyles();
-      const tempStyle = allStyles.find(s => s.name === "Temporary Style");
+      const tempStyle = allStyles.find((s) => s.name === "Temporary Style");
       expect(tempStyle).toBeDefined();
 
       await deleteStyle(tempStyle!.styleId);
@@ -237,9 +237,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allBreweries = await getAllBreweries();
-      const tempBrewery = allBreweries.find(
-        b => b.name === "Temporary Brewery"
-      );
+      const tempBrewery = allBreweries.find((b) => b.name === "Temporary Brewery");
       expect(tempBrewery).toBeDefined();
 
       await deleteBrewery(tempBrewery!.breweryId);
@@ -277,7 +275,7 @@ describe("Database Functions - CRUD Operations", () => {
     it("should filter by text search on brewery name", async () => {
       const beers = await getAllBeers({ search: "Test Brewery A" });
       expect(beers.length).toBe(2);
-      const names = beers.map(b => b.name);
+      const names = beers.map((b) => b.name);
       expect(names).toContain("Hoppy Pale Ale");
       expect(names).toContain("West Coast IPA");
     });
@@ -293,7 +291,7 @@ describe("Database Functions - CRUD Operations", () => {
       const breweryB = seedData.breweries[1];
       const beers = await getAllBeers({ breweryIds: [breweryB.breweryId] });
       expect(beers.length).toBe(2);
-      const names = beers.map(b => b.name);
+      const names = beers.map((b) => b.name);
       expect(names).toContain("Crisp Lager");
       expect(names).toContain("Out of Stock Beer");
     });
@@ -363,7 +361,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allBeers = await getAllBeers();
-      const tempBeer = allBeers.find(b => b.name === "Temporary Beer");
+      const tempBeer = allBeers.find((b) => b.name === "Temporary Beer");
       expect(tempBeer).toBeDefined();
 
       await deleteBeer(tempBeer!.beerId);
@@ -412,9 +410,7 @@ describe("Database Functions - CRUD Operations", () => {
       });
 
       const allCategories = await getAllMenuCategories();
-      const tempCategory = allCategories.find(
-        c => c.name === "Temporary Category"
-      );
+      const tempCategory = allCategories.find((c) => c.name === "Temporary Category");
       expect(tempCategory).toBeDefined();
 
       await deleteMenuCategory(tempCategory!.menuCatId);

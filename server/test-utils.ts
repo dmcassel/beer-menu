@@ -1,6 +1,18 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { sql } from "drizzle-orm";
-import { brewery, style, beer, menuCategory, bjcpCategory, users, location, winery, wine, varietal, wineVarietal } from "../drizzle/schema";
+import {
+  brewery,
+  style,
+  beer,
+  menuCategory,
+  bjcpCategory,
+  users,
+  location,
+  winery,
+  wine,
+  varietal,
+  wineVarietal,
+} from "../drizzle/schema";
 
 let testDb: ReturnType<typeof drizzle> | null = null;
 
@@ -201,9 +213,7 @@ export async function seedWineDatabase() {
 
   const locations = await db
     .insert(location)
-    .values([
-      { name: "USA", type: "country", parentId: null },
-    ])
+    .values([{ name: "USA", type: "country", parentId: null }])
     .returning();
   const usa = locations[0];
 
@@ -219,9 +229,7 @@ export async function seedWineDatabase() {
 
   const subAreas = await db
     .insert(location)
-    .values([
-      { name: "Chester County", type: "vineyard", parentId: pa.locationId },
-    ])
+    .values([{ name: "Chester County", type: "vineyard", parentId: pa.locationId }])
     .returning();
   const chesterCounty = subAreas[0];
 
@@ -239,10 +247,7 @@ export async function seedWineDatabase() {
 
   const varietals = await db
     .insert(varietal)
-    .values([
-      { name: "Cabernet Sauvignon" },
-      { name: "Chardonnay" },
-    ])
+    .values([{ name: "Cabernet Sauvignon" }, { name: "Chardonnay" }])
     .returning();
   const cab = varietals[0];
   const chard = varietals[1];
@@ -251,9 +256,27 @@ export async function seedWineDatabase() {
     .insert(wine)
     .values([
       { label: "R5 Cab", wineryId: r5.wineryId, locationId: california.locationId, refrigerated: 3, cellared: 0 },
-      { label: "R5 Chardonnay", wineryId: r5.wineryId, locationId: california.locationId, refrigerated: 0, cellared: 5 },
-      { label: "Napa Cab", wineryId: napaWinery.wineryId, locationId: california.locationId, refrigerated: 2, cellared: 0 },
-      { label: "Out of Stock Wine", wineryId: r5.wineryId, locationId: california.locationId, refrigerated: 0, cellared: 0 },
+      {
+        label: "R5 Chardonnay",
+        wineryId: r5.wineryId,
+        locationId: california.locationId,
+        refrigerated: 0,
+        cellared: 5,
+      },
+      {
+        label: "Napa Cab",
+        wineryId: napaWinery.wineryId,
+        locationId: california.locationId,
+        refrigerated: 2,
+        cellared: 0,
+      },
+      {
+        label: "Out of Stock Wine",
+        wineryId: r5.wineryId,
+        locationId: california.locationId,
+        refrigerated: 0,
+        cellared: 0,
+      },
     ])
     .returning();
   const r5Cab = wines[0];

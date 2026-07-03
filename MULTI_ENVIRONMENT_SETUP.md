@@ -9,12 +9,12 @@ This document explains how to run the Beer Menu application in different environ
 We use two types of environment files to manage configuration:
 
 1.  **Docker Compose Configuration (`.env.compose.*`)**: These files configure the Docker environment itself, including service definitions, port mappings, and container-level environment variables. They are used with the `docker-compose --env-file` flag.
-    -   `.env.compose.local`: For local development (committed to git).
-    -   `.env.compose.prod`: For production (ignored by git).
+    - `.env.compose.local`: For local development (committed to git).
+    - `.env.compose.prod`: For production (ignored by git).
 
 2.  **Application Runtime Configuration (`.env.*`)**: These files provide runtime environment variables to the Node.js application (e.g., database URLs, API keys). They are loaded by the application code itself.
-    -   `.env.local`: For local development (already exists in the repo).
-    -   `.env.prod`: For production (ignored by git).
+    - `.env.local`: For local development (already exists in the repo).
+    - `.env.prod`: For production (ignored by git).
 
 This separation ensures that infrastructure configuration (Docker) is distinct from application configuration (Node.js), preventing conflicts.
 
@@ -35,9 +35,8 @@ To run the application in your local development environment:
     ```
 
 4.  **Access the Application**:
-
-    -   **Application**: [http://localhost:3000](http://localhost:3000)
-    -   **pgAdmin**: [http://localhost:8080](http://localhost:8080)
+    - **Application**: [http://localhost:3000](http://localhost:3000)
+    - **pgAdmin**: [http://localhost:8080](http://localhost:8080)
 
 ## Production Setup (Rocky 8 Server)
 
@@ -79,20 +78,21 @@ To deploy the application in a production environment:
     The `-d` flag runs the containers in detached mode, which is recommended for production.
 
 6.  **Access the Application**:
-
-    -   **Application**: `http://<your_server_ip>:3010`
-    -   **pgAdmin**: `http://<your_server_ip>:8080` (or the port you configured in `.env.compose.prod`)
+    - **Application**: `http://<your_server_ip>:3010`
+    - **pgAdmin**: `http://<your_server_ip>:8080` (or the port you configured in `.env.compose.prod`)
 
 ## Updating Application to Load `.env.prod`
 
 To complete the setup, you'll need to modify the application to load the `.env.prod` file when `NODE_ENV` is `production`. This can be done by updating the `start` script in `package.json`:
 
 **Current `start` script:**
+
 ```json
 "start": "cross-env NODE_ENV=production node dist/index.js"
 ```
 
 **Recommended `start` script:**
+
 ```json
 "start": "cross-env NODE_ENV=production tsx --env-file=.env.prod server/_core/index.ts"
 ```

@@ -10,24 +10,24 @@ Added a "New Vintage" button (CopyPlus icon) to each wine card on the curation p
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add `CopyPlus` to lucide-react import | `client/src/pages/ManageWinePage.tsx` | ✅ |
-| 2 | Add `handleNewVintage` handler function | `client/src/pages/ManageWinePage.tsx` | ✅ |
-| 3 | Add "New Vintage" button to each wine card | `client/src/pages/ManageWinePage.tsx` | ✅ |
+| #   | Task                                       | File                                  | Status |
+| --- | ------------------------------------------ | ------------------------------------- | ------ |
+| 1   | Add `CopyPlus` to lucide-react import      | `client/src/pages/ManageWinePage.tsx` | ✅     |
+| 2   | Add `handleNewVintage` handler function    | `client/src/pages/ManageWinePage.tsx` | ✅     |
+| 3   | Add "New Vintage" button to each wine card | `client/src/pages/ManageWinePage.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check (`npm run check`) | ✅ (pre-existing errors in unrelated files only) |
-| Tests | ⚠️ Skipped — test DB not running (port 5433 refused); all failures are `ECONNREFUSED`, not logic errors |
-| Browser preview | ⚠️ Skipped — dev server already running on port 3000 externally |
+| Check                        | Result                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Type check (`npm run check`) | ✅ (pre-existing errors in unrelated files only)                                                        |
+| Tests                        | ⚠️ Skipped — test DB not running (port 5433 refused); all failures are `ECONNREFUSED`, not logic errors |
+| Browser preview              | ⚠️ Skipped — dev server already running on port 3000 externally                                         |
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
+| File                                  | Action | Lines     |
+| ------------------------------------- | ------ | --------- |
 | `client/src/pages/ManageWinePage.tsx` | UPDATE | +17 lines |
 
 ## Deviations from Plan

@@ -17,12 +17,12 @@ export function WineFilterControls({
   setSelectedWineries,
   wineries,
 }: WineFilterControlsProps) {
-  const locationOptions: MultiSelectOption[] = locations.map(loc => ({
+  const locationOptions: MultiSelectOption[] = locations.map((loc) => ({
     label: loc.fullPath,
     value: loc.locationId.toString(),
   }));
 
-  const wineryOptions: MultiSelectOption[] = wineries.map(w => ({
+  const wineryOptions: MultiSelectOption[] = wineries.map((w) => ({
     label: w.name,
     value: w.wineryId.toString(),
   }));
@@ -30,9 +30,7 @@ export function WineFilterControls({
   return (
     <>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Location
-        </label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Location</label>
         <MultiSelect
           options={locationOptions}
           selected={selectedLocations}
@@ -41,9 +39,7 @@ export function WineFilterControls({
         />
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Winery
-        </label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Winery</label>
         <MultiSelect
           options={wineryOptions}
           selected={selectedWineries}

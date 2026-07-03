@@ -32,29 +32,29 @@ Layout is optimized for one-handed phone use while walking stock.
 
 ### MVP Scope
 
-| Priority | Capability | Rationale |
-|----------|------------|-----------|
-| Must | Beer Inventory list: available beers only (`on_tap`/`bottle_can`), inline status change | Core workflow this PRD exists to fix |
-| Must | Beer: changing status to `Out` removes the item from the current list | Item is no longer available stock |
-| Must | Wine Inventory list: wines with cellar or fridge count > 0, inline editing of both counts independently | Supports increases, decreases, and cellar↔fridge moves |
-| Must | Wine: item drops off the list once both cellar and fridge counts reach 0 | Item is no longer available stock |
-| Must | "Confirmed present" action per item (session-only, not persisted), distinct from editing, that removes it from the current list | Handles the common case where the count is already correct — no edit needed, just confirm and move on |
-| Must | Inline edits apply without navigating away or resetting scroll position | This is the specific pain point being solved |
-| Must | Mobile-browser-friendly layout and touch targets | Explicitly used while walking cellar/cooler with a phone |
-| Should | Search/filter within the inventory list | Helps as catalog grows, per stated concern about list length |
-| Won't (now) | Organize/group list by physical location | Explicitly deferred as a future feature |
-| Won't | Barcode scanning | Not requested; adds scope beyond the core fix |
-| Won't | Historical inventory audit log / change tracking over time | Not requested; out of scope for MVP |
-| Won't | "Last checked" timestamp per item | Explicitly not needed |
+| Priority    | Capability                                                                                                                      | Rationale                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Must        | Beer Inventory list: available beers only (`on_tap`/`bottle_can`), inline status change                                         | Core workflow this PRD exists to fix                                                                  |
+| Must        | Beer: changing status to `Out` removes the item from the current list                                                           | Item is no longer available stock                                                                     |
+| Must        | Wine Inventory list: wines with cellar or fridge count > 0, inline editing of both counts independently                         | Supports increases, decreases, and cellar↔fridge moves                                                |
+| Must        | Wine: item drops off the list once both cellar and fridge counts reach 0                                                        | Item is no longer available stock                                                                     |
+| Must        | "Confirmed present" action per item (session-only, not persisted), distinct from editing, that removes it from the current list | Handles the common case where the count is already correct — no edit needed, just confirm and move on |
+| Must        | Inline edits apply without navigating away or resetting scroll position                                                         | This is the specific pain point being solved                                                          |
+| Must        | Mobile-browser-friendly layout and touch targets                                                                                | Explicitly used while walking cellar/cooler with a phone                                              |
+| Should      | Search/filter within the inventory list                                                                                         | Helps as catalog grows, per stated concern about list length                                          |
+| Won't (now) | Organize/group list by physical location                                                                                        | Explicitly deferred as a future feature                                                               |
+| Won't       | Barcode scanning                                                                                                                | Not requested; adds scope beyond the core fix                                                         |
+| Won't       | Historical inventory audit log / change tracking over time                                                                      | Not requested; out of scope for MVP                                                                   |
+| Won't       | "Last checked" timestamp per item                                                                                               | Explicitly not needed                                                                                 |
 
 ## Success Metrics
 
-| Metric | Target | How Measured |
-|--------|--------|--------------|
+| Metric                                 | Target                                  | How Measured                                   |
+| -------------------------------------- | --------------------------------------- | ---------------------------------------------- |
 | Time to complete a full inventory pass | Noticeably shorter than current process | Informal before/after comparison by David/Dawn |
-| Curator sentiment after use | "Quicker, less painful" | Direct feedback after first real use |
+| Curator sentiment after use            | "Quicker, less painful"                 | Direct feedback after first real use           |
 
-*Note: no baseline timing exists yet — TBD whether it's worth instrumenting later.*
+_Note: no baseline timing exists yet — TBD whether it's worth instrumenting later._
 
 ## Open Questions
 
@@ -62,14 +62,14 @@ None outstanding for MVP.
 
 ## Implementation Phases
 
-| # | Phase | Description | Status | Depends |
-|---|-------|-------------|--------|---------|
-| 1 | Beer Inventory Mode | Filtered list of available beers with inline status editing, no scroll reset | pending | - |
-| 2 | Wine Inventory Mode | Filtered list of available wines with inline quantity editing, no scroll reset | pending | - |
-| 3 | Search/filter within inventory lists | Add lightweight filtering as catalog grows | pending | 1, 2 |
-| 4 | Location-based organization (future) | Group/sort inventory items by physical location | pending | 1, 2 |
+| #   | Phase                                | Description                                                                    | Status  | Depends |
+| --- | ------------------------------------ | ------------------------------------------------------------------------------ | ------- | ------- |
+| 1   | Beer Inventory Mode                  | Filtered list of available beers with inline status editing, no scroll reset   | pending | -       |
+| 2   | Wine Inventory Mode                  | Filtered list of available wines with inline quantity editing, no scroll reset | pending | -       |
+| 3   | Search/filter within inventory lists | Add lightweight filtering as catalog grows                                     | pending | 1, 2    |
+| 4   | Location-based organization (future) | Group/sort inventory items by physical location                                | pending | 1, 2    |
 
 ---
 
-*Generated: 2026-07-02T18:19:47-04:00*
-*Status: DRAFT - needs validation*
+_Generated: 2026-07-02T18:19:47-04:00_
+_Status: DRAFT - needs validation_

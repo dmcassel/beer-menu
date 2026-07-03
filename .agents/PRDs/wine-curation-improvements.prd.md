@@ -25,22 +25,22 @@ The location filter matches a wine if **either** the wine's own location **or** 
 
 ### MVP Scope
 
-| Priority | Capability | Rationale |
-|----------|------------|-----------|
-| Must | Winery filter on wine browse page | Enables filtering by producer; added to both pages together |
-| Must | Enhanced location filter on wine browse page | Matches wine if wine's location OR winery's location is within selected hierarchy |
-| Must | Winery filter + location filter on curation page | Mirrors wine browse page filters; same dual-location matching logic |
-| Must | Text search filter on curation page (by label, winery, or varietal) | User explicitly requested; not on browse page |
-| Must | "New Vintage" action on each wine card | Core ask; eliminates manual re-entry for same wine, new year |
-| Must | Mobile-friendly layout for filters and new vintage action | Primary use case is phone-based inventory updates |
-| Won't | Additional filters beyond location and winery (except text search on curation) | Explicitly out of scope per user |
+| Priority | Capability                                                                     | Rationale                                                                         |
+| -------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Must     | Winery filter on wine browse page                                              | Enables filtering by producer; added to both pages together                       |
+| Must     | Enhanced location filter on wine browse page                                   | Matches wine if wine's location OR winery's location is within selected hierarchy |
+| Must     | Winery filter + location filter on curation page                               | Mirrors wine browse page filters; same dual-location matching logic               |
+| Must     | Text search filter on curation page (by label, winery, or varietal)            | User explicitly requested; not on browse page                                     |
+| Must     | "New Vintage" action on each wine card                                         | Core ask; eliminates manual re-entry for same wine, new year                      |
+| Must     | Mobile-friendly layout for filters and new vintage action                      | Primary use case is phone-based inventory updates                                 |
+| Won't    | Additional filters beyond location and winery (except text search on curation) | Explicitly out of scope per user                                                  |
 
 ## Success Metrics
 
-| Metric | Target | How Measured |
-|--------|--------|--------------|
-| Task ease | User describes updating a new shipment as "easy" | Direct feedback from primary user |
-| Time on task | Noticeably faster than current process | Subjective — no baseline measurement exists |
+| Metric       | Target                                           | How Measured                                |
+| ------------ | ------------------------------------------------ | ------------------------------------------- |
+| Task ease    | User describes updating a new shipment as "easy" | Direct feedback from primary user           |
+| Time on task | Noticeably faster than current process           | Subjective — no baseline measurement exists |
 
 ## Open Questions
 
@@ -52,13 +52,13 @@ The location filter matches a wine if **either** the wine's own location **or** 
 
 ## Implementation Phases
 
-| # | Phase | Description | Status | Depends |
-|---|-------|-------------|--------|---------|
-| 1 | Winery filter + enhanced location filter on browse page | Add winery filter to WinePage/WineFilterControls; update location filter to match on wine location OR winery location; backend query changes | pending | - |
-| 2 | Filters on curation page | Add winery filter, location filter (same dual-location logic), and text search to ManageWinePage; mobile-friendly layout | pending | 1 |
-| 3 | New Vintage action | Add "New Vintage" button to each wine card; pre-populate with source wine data, vintage year+1, inventory at 0 | pending | - |
+| #   | Phase                                                   | Description                                                                                                                                  | Status  | Depends |
+| --- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
+| 1   | Winery filter + enhanced location filter on browse page | Add winery filter to WinePage/WineFilterControls; update location filter to match on wine location OR winery location; backend query changes | pending | -       |
+| 2   | Filters on curation page                                | Add winery filter, location filter (same dual-location logic), and text search to ManageWinePage; mobile-friendly layout                     | pending | 1       |
+| 3   | New Vintage action                                      | Add "New Vintage" button to each wine card; pre-populate with source wine data, vintage year+1, inventory at 0                               | pending | -       |
 
 ---
 
-*Generated: 2026-05-10*
-*Status: DRAFT - needs validation*
+_Generated: 2026-05-10_
+_Status: DRAFT - needs validation_

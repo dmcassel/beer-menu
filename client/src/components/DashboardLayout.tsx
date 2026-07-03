@@ -24,7 +24,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
+import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
 
 const menuItems = [
@@ -37,11 +37,7 @@ const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
@@ -53,7 +49,7 @@ export default function DashboardLayout({
   }, [sidebarWidth]);
 
   if (loading) {
-    return <DashboardLayoutSkeleton />
+    return <DashboardLayoutSkeleton />;
   }
 
   if (!user) {
@@ -63,18 +59,12 @@ export default function DashboardLayout({
           <div className="flex flex-col items-center gap-6">
             <div className="relative group">
               <div className="relative">
-                <img
-                  src={APP_LOGO}
-                  alt={APP_TITLE}
-                  className="h-20 w-20 rounded-xl object-cover shadow"
-                />
+                <img src={APP_LOGO} alt={APP_TITLE} className="h-20 w-20 rounded-xl object-cover shadow" />
               </div>
             </div>
             <div className="text-center space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">{APP_TITLE}</h1>
-              <p className="text-sm text-muted-foreground">
-                Please sign in to continue
-              </p>
+              <p className="text-sm text-muted-foreground">Please sign in to continue</p>
             </div>
           </div>
           <Button
@@ -99,9 +89,7 @@ export default function DashboardLayout({
         } as CSSProperties
       }
     >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
-        {children}
-      </DashboardLayoutContent>
+      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>{children}</DashboardLayoutContent>
     </SidebarProvider>
   );
 }
@@ -111,17 +99,14 @@ type DashboardLayoutContentProps = {
   setSidebarWidth: (width: number) => void;
 };
 
-function DashboardLayoutContent({
-  children,
-  setSidebarWidth,
-}: DashboardLayoutContentProps) {
+function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
+  const activeMenuItem = menuItems.find((item) => item.path === location);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -163,20 +148,12 @@ function DashboardLayoutContent({
   return (
     <>
       <div className="relative" ref={sidebarRef}>
-        <Sidebar
-          collapsible="icon"
-          className="border-r-0"
-          disableTransition={isResizing}
-        >
+        <Sidebar collapsible="icon" className="border-r-0" disableTransition={isResizing}>
           <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 pl-2 group-data-[collapsible=icon]:px-0 transition-all w-full">
               {isCollapsed ? (
                 <div className="relative h-8 w-8 shrink-0 group">
-                  <img
-                    src={APP_LOGO}
-                    className="h-8 w-8 rounded-md object-cover ring-1 ring-border"
-                    alt="Logo"
-                  />
+                  <img src={APP_LOGO} className="h-8 w-8 rounded-md object-cover ring-1 ring-border" alt="Logo" />
                   <button
                     onClick={toggleSidebar}
                     className="absolute inset-0 flex items-center justify-center bg-accent rounded-md ring-1 ring-border opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -192,9 +169,7 @@ function DashboardLayoutContent({
                       className="h-8 w-8 rounded-md object-cover ring-1 ring-border shrink-0"
                       alt="Logo"
                     />
-                    <span className="font-semibold tracking-tight truncate">
-                      {APP_TITLE}
-                    </span>
+                    <span className="font-semibold tracking-tight truncate">{APP_TITLE}</span>
                   </div>
                   <button
                     onClick={toggleSidebar}
@@ -209,7 +184,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
+              {menuItems.map((item) => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>
@@ -219,9 +194,7 @@ function DashboardLayoutContent({
                       tooltip={item.label}
                       className={`h-10 transition-all font-normal`}
                     >
-                      <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
-                      />
+                      <item.icon className={`h-4 w-4 ${isActive ? "text-primary" : ""}`} />
                       <span>{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -240,20 +213,13 @@ function DashboardLayoutContent({
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                    <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
-                    </p>
+                    <p className="text-sm font-medium truncate leading-none">{user?.name || "-"}</p>
+                    <p className="text-xs text-muted-foreground truncate mt-1.5">{user?.email || "-"}</p>
                   </div>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
+                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
                 </DropdownMenuItem>
@@ -278,9 +244,7 @@ function DashboardLayoutContent({
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <div className="flex items-center gap-3">
                 <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? APP_TITLE}
-                  </span>
+                  <span className="tracking-tight text-foreground">{activeMenuItem?.label ?? APP_TITLE}</span>
                 </div>
               </div>
             </div>

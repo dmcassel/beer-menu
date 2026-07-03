@@ -10,27 +10,27 @@ Added a curator-only `/wine/inventory` route (`WineInventory.tsx`) listing every
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Create curator-only inventory page with inline cellar/fridge steppers | `client/src/pages/WineInventory.tsx` | ✅ |
-| 2 | Register `/wine/inventory` route | `client/src/App.tsx` | ✅ |
+| #   | Task                                                                  | File                                 | Status |
+| --- | --------------------------------------------------------------------- | ------------------------------------ | ------ |
+| 1   | Create curator-only inventory page with inline cellar/fridge steppers | `client/src/pages/WineInventory.tsx` | ✅     |
+| 2   | Register `/wine/inventory` route                                      | `client/src/App.tsx`                 | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check (`npm run check`) | ✅ Zero new errors (confirmed identical pre-existing baseline errors via `git stash` comparison, all in unrelated files: `Map.tsx`, `BeerBrowser.tsx`, `Login.tsx`, `server/_core/oauth.ts`, `server/_core/sdk.ts`) |
-| Format (`npm run format`) | ⚠️ Ran once; the repo is not currently Prettier-clean and `prettier --write .` reformatted ~165 unrelated tracked files. Reverted all of those via `git checkout --` (same issue as #126's report) and kept only the intended `App.tsx` change. Did not re-run repo-wide format after that. |
-| Tests (`npm test`) | ✅ 90 passed (90) |
-| Manual E2E (see below) | ✅ |
+| Check                        | Result                                                                                                                                                                                                                                                                                      |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type check (`npm run check`) | ✅ Zero new errors (confirmed identical pre-existing baseline errors via `git stash` comparison, all in unrelated files: `Map.tsx`, `BeerBrowser.tsx`, `Login.tsx`, `server/_core/oauth.ts`, `server/_core/sdk.ts`)                                                                         |
+| Format (`npm run format`)    | ⚠️ Ran once; the repo is not currently Prettier-clean and `prettier --write .` reformatted ~165 unrelated tracked files. Reverted all of those via `git checkout --` (same issue as #126's report) and kept only the intended `App.tsx` change. Did not re-run repo-wide format after that. |
+| Tests (`npm test`)           | ✅ 90 passed (90)                                                                                                                                                                                                                                                                           |
+| Manual E2E (see below)       | ✅                                                                                                                                                                                                                                                                                          |
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
-| `client/src/pages/WineInventory.tsx` | CREATE | +192 |
-| `client/src/App.tsx` | UPDATE | +2 |
-| `CLAUDE.md` | UPDATE | +2 (documented that only Postgres runs in Docker for local dev; the middle tier runs directly via `npm run dev`, per user instruction encountered while starting the dev server for E2E testing) |
+| File                                 | Action | Lines                                                                                                                                                                                            |
+| ------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `client/src/pages/WineInventory.tsx` | CREATE | +192                                                                                                                                                                                             |
+| `client/src/App.tsx`                 | UPDATE | +2                                                                                                                                                                                               |
+| `CLAUDE.md`                          | UPDATE | +2 (documented that only Postgres runs in Docker for local dev; the middle tier runs directly via `npm run dev`, per user instruction encountered while starting the dev server for E2E testing) |
 
 ## Deviations from Plan
 

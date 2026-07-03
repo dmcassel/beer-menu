@@ -58,11 +58,13 @@ Report in this format:
 ## If Failures Found
 
 List each failure with:
+
 1. File and line number
 2. Error message
 3. Suggested fix (if obvious)
 
 Example:
+
 ```
 ### Failures
 

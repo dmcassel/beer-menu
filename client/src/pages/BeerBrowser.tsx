@@ -2,19 +2,8 @@ import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Beer, Droplet, Flame, Filter, X } from "lucide-react";
 import { Link } from "wouter";
@@ -41,14 +30,9 @@ function BrowserHeader() {
   if (user) {
     return (
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-600">
-          Welcome, {user.name || user.email}
-        </span>
+        <span className="text-sm text-gray-600">Welcome, {user.name || user.email}</span>
         {(user.role === "curator" || user.role === "admin") && (
-          <a
-            href="/dashboard"
-            className="text-sm text-amber-700 hover:text-amber-900 underline"
-          >
+          <a href="/dashboard" className="text-sm text-amber-700 hover:text-amber-900 underline">
             Manage Catalog
           </a>
         )}
@@ -60,37 +44,30 @@ function BrowserHeader() {
   }
 
   return (
-    <a
-      href="/login?returnUrl=/browser"
-      className="text-sm text-amber-700 hover:text-amber-900 underline"
-    >
+    <a href="/login?returnUrl=/browser" className="text-sm text-amber-700 hover:text-amber-900 underline">
       Login
     </a>
   );
 }
 
 export default function BeerBrowser() {
-  const [selectedMenuCategories, setSelectedMenuCategories] = useState<
-    string[]
-  >([]);
+  const [selectedMenuCategories, setSelectedMenuCategories] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [selectedBreweries, setSelectedBreweries] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Fetch all data
-  const { data: beers = [], isLoading: beersLoading } =
-    trpc.beer.listAvailable.useQuery();
+  const { data: beers = [], isLoading: beersLoading } = trpc.beer.listAvailable.useQuery();
   const { data: styles = [] } = trpc.style.listAvailable.useQuery({
-    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
-    breweryIds: selectedBreweries.map(id => parseInt(id)),
+    menuCategoryIds: selectedMenuCategories.map((id) => parseInt(id)),
+    breweryIds: selectedBreweries.map((id) => parseInt(id)),
   });
-  const { data: menuCategories = [] } =
-    trpc.menuCategory.listAvailable.useQuery();
+  const { data: menuCategories = [] } = trpc.menuCategory.listAvailable.useQuery();
 
   // Fetch available breweries based on selected filters
   const { data: breweries = [] } = trpc.brewery.listAvailable.useQuery({
-    menuCategoryIds: selectedMenuCategories.map(id => parseInt(id)),
-    styleIds: selectedStyles.map(id => parseInt(id)),
+    menuCategoryIds: selectedMenuCategories.map((id) => parseInt(id)),
+    styleIds: selectedStyles.map((id) => parseInt(id)),
   });
 
   // Filter beers based on selections
@@ -99,54 +76,38 @@ export default function BeerBrowser() {
 
     // Filter by menu categories (OR logic within filter)
     if (selectedMenuCategories.length > 0) {
-      result = result.filter(beer => {
+      result = result.filter((beer) => {
         const beerStyleId = beer.styleId;
         if (!beerStyleId) return false;
 
-        const beerStyle = styles.find(s => s.styleId === beerStyleId);
+        const beerStyle = styles.find((s) => s.styleId === beerStyleId);
         if (!beerStyle || !beerStyle.menuCategoryId) return false;
 
-        return selectedMenuCategories.includes(
-          beerStyle.menuCategoryId.toString()
-        );
+        return selectedMenuCategories.includes(beerStyle.menuCategoryId.toString());
       });
     }
 
     // Filter by styles (OR logic within filter)
     if (selectedStyles.length > 0) {
-      result = result.filter(
-        beer => beer.styleId && selectedStyles.includes(beer.styleId.toString())
-      );
+      result = result.filter((beer) => beer.styleId && selectedStyles.includes(beer.styleId.toString()));
     }
 
     // Filter by breweries (OR logic within filter)
     if (selectedBreweries.length > 0) {
-      result = result.filter(
-        beer =>
-          beer.breweryId &&
-          selectedBreweries.includes(beer.breweryId.toString())
-      );
+      result = result.filter((beer) => beer.breweryId && selectedBreweries.includes(beer.breweryId.toString()));
     }
 
     return result;
-  }, [
-    beers,
-    selectedMenuCategories,
-    selectedStyles,
-    selectedBreweries,
-    styles,
-  ]);
+  }, [beers, selectedMenuCategories, selectedStyles, selectedBreweries, styles]);
 
   const getStyleName = (styleId: number | null | undefined) => {
     if (!styleId) return "Unknown Style";
-    return styles.find(s => s.styleId === styleId)?.name || "Unknown Style";
+    return styles.find((s) => s.styleId === styleId)?.name || "Unknown Style";
   };
 
   const getBreweryName = (breweryId: number | null | undefined) => {
     if (!breweryId) return "Unknown Brewery";
-    return (
-      breweries.find(b => b.breweryId === breweryId)?.name || "Unknown Brewery"
-    );
+    return breweries.find((b) => b.breweryId === breweryId)?.name || "Unknown Brewery";
   };
 
   const handleClearFilters = () => {
@@ -156,14 +117,9 @@ export default function BeerBrowser() {
   };
 
   const hasActiveFilters =
-    selectedMenuCategories.length > 0 ||
-    selectedStyles.length > 0 ||
-    selectedBreweries.length > 0;
+    selectedMenuCategories.length > 0 || selectedStyles.length > 0 || selectedBreweries.length > 0;
 
-  const activeFilterCount =
-    selectedMenuCategories.length +
-    selectedStyles.length +
-    selectedBreweries.length;
+  const activeFilterCount = selectedMenuCategories.length + selectedStyles.length + selectedBreweries.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
@@ -174,19 +130,12 @@ export default function BeerBrowser() {
             <Link href="/">
               <div className="flex items-center gap-3">
                 <Beer className="w-8 h-8 text-amber-700" />
-                <h1 className="text-3xl font-bold text-amber-900">
-                  Beer Catalog
-                </h1>
+                <h1 className="text-3xl font-bold text-amber-900">Beer Catalog</h1>
               </div>
             </Link>
             <div className="flex items-center gap-3">
               {/* Mobile Filter Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsFilterOpen(true)}
-                className="md:hidden relative"
-              >
+              <Button variant="outline" size="sm" onClick={() => setIsFilterOpen(true)} className="md:hidden relative">
                 <Filter className="w-4 h-4" />
                 {activeFilterCount > 0 && (
                   <Badge
@@ -219,58 +168,42 @@ export default function BeerBrowser() {
           {/* Active Filters Display - Desktop and Mobile */}
           {hasActiveFilters && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              {selectedMenuCategories.map(id => {
-                const category = menuCategories.find(
-                  c => c.menu_cat_id === parseInt(id)
-                );
+              {selectedMenuCategories.map((id) => {
+                const category = menuCategories.find((c) => c.menu_cat_id === parseInt(id));
                 return category ? (
                   <Badge
                     key={`cat-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() =>
-                      setSelectedMenuCategories(
-                        selectedMenuCategories.filter(catId => catId !== id)
-                      )
-                    }
+                    onClick={() => setSelectedMenuCategories(selectedMenuCategories.filter((catId) => catId !== id))}
                   >
                     {category.name}
                     <X className="w-3 h-3 ml-1" />
                   </Badge>
                 ) : null;
               })}
-              {selectedStyles.map(id => {
-                const style = styles.find(s => s.styleId === parseInt(id));
+              {selectedStyles.map((id) => {
+                const style = styles.find((s) => s.styleId === parseInt(id));
                 return style ? (
                   <Badge
                     key={`style-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() =>
-                      setSelectedStyles(
-                        selectedStyles.filter(styleId => styleId !== id)
-                      )
-                    }
+                    onClick={() => setSelectedStyles(selectedStyles.filter((styleId) => styleId !== id))}
                   >
                     {style.name}
                     <X className="w-3 h-3 ml-1" />
                   </Badge>
                 ) : null;
               })}
-              {selectedBreweries.map(id => {
-                const brewery = breweries.find(
-                  b => b.breweryId === parseInt(id)
-                );
+              {selectedBreweries.map((id) => {
+                const brewery = breweries.find((b) => b.breweryId === parseInt(id));
                 return brewery ? (
                   <Badge
                     key={`brewery-${id}`}
                     variant="secondary"
                     className="cursor-pointer"
-                    onClick={() =>
-                      setSelectedBreweries(
-                        selectedBreweries.filter(breweryId => breweryId !== id)
-                      )
-                    }
+                    onClick={() => setSelectedBreweries(selectedBreweries.filter((breweryId) => breweryId !== id))}
                   >
                     {brewery.name}
                     <X className="w-3 h-3 ml-1" />
@@ -309,11 +242,7 @@ export default function BeerBrowser() {
               breweries={breweries}
             />
             {hasActiveFilters && (
-              <Button
-                variant="outline"
-                onClick={handleClearFilters}
-                className="w-full"
-              >
+              <Button variant="outline" onClick={handleClearFilters} className="w-full">
                 Clear All Filters
               </Button>
             )}
@@ -343,47 +272,27 @@ export default function BeerBrowser() {
               {filteredBeers.length !== 1 ? "s" : ""}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredBeers.map(beer => (
-                <Card
-                  key={beer.beerId}
-                  className="hover:shadow-lg transition-shadow border-amber-200"
-                >
+              {filteredBeers.map((beer) => (
+                <Card key={beer.beerId} className="hover:shadow-lg transition-shadow border-amber-200">
                   <CardHeader>
-                    <CardTitle className="text-amber-900">
-                      {beer.name}
-                    </CardTitle>
-                    <CardDescription className="text-amber-700">
-                      {getBreweryName(beer.breweryId)}
-                    </CardDescription>
+                    <CardTitle className="text-amber-900">{beer.name}</CardTitle>
+                    <CardDescription className="text-amber-700">{getBreweryName(beer.breweryId)}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {beer.description && (
-                      <p className="text-sm text-gray-700">
-                        {beer.description}
-                      </p>
-                    )}
+                    {beer.description && <p className="text-sm text-gray-700">{beer.description}</p>}
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm flex-wrap">
-                        <Badge
-                          variant="outline"
-                          className="bg-amber-50 text-amber-900 border-amber-300"
-                        >
+                        <Badge variant="outline" className="bg-amber-50 text-amber-900 border-amber-300">
                           {getStyleName(beer.styleId)}
                         </Badge>
                         {beer.status === "on_tap" && (
-                          <Badge
-                            variant="outline"
-                            className="bg-blue-50 text-blue-900 border-blue-300"
-                          >
+                          <Badge variant="outline" className="bg-blue-50 text-blue-900 border-blue-300">
                             On Tap
                           </Badge>
                         )}
                         {beer.status === "bottle_can" && (
-                          <Badge
-                            variant="outline"
-                            className="bg-green-50 text-green-900 border-green-300"
-                          >
+                          <Badge variant="outline" className="bg-green-50 text-green-900 border-green-300">
                             Bottle/Can
                           </Badge>
                         )}
@@ -395,9 +304,7 @@ export default function BeerBrowser() {
                             <Flame className="w-4 h-4 text-orange-600" />
                             <div>
                               <p className="text-xs text-gray-500">ABV</p>
-                              <p className="text-sm font-semibold text-gray-900">
-                                {beer.abv}%
-                              </p>
+                              <p className="text-sm font-semibold text-gray-900">{beer.abv}%</p>
                             </div>
                           </div>
                         )}
@@ -406,9 +313,7 @@ export default function BeerBrowser() {
                             <Droplet className="w-4 h-4 text-green-600" />
                             <div>
                               <p className="text-xs text-gray-500">IBU</p>
-                              <p className="text-sm font-semibold text-gray-900">
-                                {beer.ibu}
-                              </p>
+                              <p className="text-sm font-semibold text-gray-900">{beer.ibu}</p>
                             </div>
                           </div>
                         )}

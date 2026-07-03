@@ -31,6 +31,7 @@ Identify the file types and frameworks involved to focus the review.
 Review the code against these security categories, focusing on what's actually relevant to the changes:
 
 #### 1. Injection Vulnerabilities
+
 - **SQL Injection**: Raw SQL queries with string concatenation or template literals
 - **Command Injection**: `exec()`, `spawn()`, or `child_process` with user input
 - **XSS**: Unescaped user input in HTML/JSX, `dangerouslySetInnerHTML`
@@ -38,6 +39,7 @@ Review the code against these security categories, focusing on what's actually r
 - **Path Traversal**: User input in file paths without sanitization
 
 #### 2. Authentication & Authorization
+
 - Missing auth checks on protected routes
 - Hardcoded credentials, tokens, or API keys
 - Insecure session management
@@ -45,24 +47,28 @@ Review the code against these security categories, focusing on what's actually r
 - Overly permissive CORS configuration
 
 #### 3. Data Exposure
+
 - Sensitive data in logs (passwords, tokens, PII)
 - API responses leaking internal data (stack traces, DB schemas)
 - Secrets in source code or config files
 - Missing input validation on API boundaries
 
 #### 4. Dependency & Configuration
+
 - Known vulnerable dependencies (check package.json versions)
 - Insecure default configurations
 - Missing security headers
 - Debug mode enabled in production configs
 
 #### 5. Cryptography
+
 - Weak hashing algorithms (MD5, SHA1 for passwords)
 - Hardcoded encryption keys
 - Insecure random number generation for security-sensitive values
 - Missing HTTPS enforcement
 
 #### 6. Error Handling
+
 - Verbose error messages exposing internals
 - Unhandled promise rejections that could crash the server
 - Missing error boundaries
@@ -74,7 +80,7 @@ Review the code against these security categories, focusing on what's actually r
 
 For each finding, report:
 
-```markdown
+````markdown
 ### [SEVERITY] Finding Title
 
 **Category**: Injection | Auth | Data Exposure | Dependency | Crypto | Error Handling
@@ -86,12 +92,15 @@ For each finding, report:
 **Risk**: What could go wrong (1-2 sentences)
 
 **Fix**:
+
 ```language
 // Suggested fix
 ```
+````
 
 **Reference**: Link to OWASP or relevant security guidance
-```
+
+````
 
 ### Severity Definitions
 
@@ -131,7 +140,7 @@ For each finding, report:
 
 ### What Looks Good
 - {Positive security patterns observed}
-```
+````
 
 ---
 

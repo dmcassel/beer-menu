@@ -116,7 +116,12 @@ export default function MenuCategoryPage() {
         <h2 className="text-xl font-bold">Menu Categories</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "", description: "" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Menu Category
             </Button>
@@ -171,9 +176,7 @@ export default function MenuCategoryPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <p className="font-medium">{category.name}</p>
-                      {category.description && (
-                        <p className="text-sm text-gray-600">{category.description}</p>
-                      )}
+                      {category.description && <p className="text-sm text-gray-600">{category.description}</p>}
                     </div>
                     <div className="flex gap-1">
                       <Button
@@ -205,9 +208,7 @@ export default function MenuCategoryPage() {
         </div>
 
         <div>
-          <h3 className="font-semibold mb-4">
-            {selectedCategory ? "Beers in Category" : "Select a category"}
-          </h3>
+          <h3 className="font-semibold mb-4">{selectedCategory ? "Beers in Category" : "Select a category"}</h3>
           {selectedCategory && (
             <div className="space-y-3">
               <div className="flex gap-2">
@@ -234,11 +235,7 @@ export default function MenuCategoryPage() {
                   return (
                     <div key={item.beerId} className="flex justify-between items-center p-2 border rounded bg-gray-50">
                       <span className="text-sm">{beer?.name}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveBeer(item.beerId)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleRemoveBeer(item.beerId)}>
                         <X className="w-4 h-4" />
                       </Button>
                     </div>

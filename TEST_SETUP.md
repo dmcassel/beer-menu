@@ -18,12 +18,12 @@ A separate PostgreSQL container (`postgres-test`) is configured in `docker-compo
 
 ### Test Files
 
-| File | Purpose |
-|------|---------|
-| `server/test-utils.ts` | Utilities for database setup, seeding, and cleanup |
-| `server/db.test.ts` | Tests for CRUD operations in `db.ts` |
-| `server/db_additions.test.ts` | Tests for complex queries in `db_additions.ts` |
-| `.env.test` | Environment variables for test database connection |
+| File                          | Purpose                                            |
+| ----------------------------- | -------------------------------------------------- |
+| `server/test-utils.ts`        | Utilities for database setup, seeding, and cleanup |
+| `server/db.test.ts`           | Tests for CRUD operations in `db.ts`               |
+| `server/db_additions.test.ts` | Tests for complex queries in `db_additions.ts`     |
+| `.env.test`                   | Environment variables for test database connection |
 
 ### Test Data
 
@@ -47,6 +47,7 @@ npm run test:with-db
 ```
 
 This command will:
+
 1. Start the test database container
 2. Run migrations on the test database
 3. Execute all tests
@@ -57,33 +58,39 @@ This command will:
 For more control during development, you can manage the test database manually:
 
 **Start the test database:**
+
 ```bash
 npm run test:db:start
 # This runs: docker-compose --env-file .env.test up -d postgres-test
 ```
 
 **Run migrations:**
+
 ```bash
 npm run test:db:migrate
 ```
 
 **Run tests:**
+
 ```bash
 npm test
 ```
 
 **Watch mode (for development):**
+
 ```bash
 npm run test:watch
 ```
 
 **Stop the test database:**
+
 ```bash
 npm run test:db:stop
 # This runs: docker-compose --env-file .env.test down postgres-test
 ```
 
 **Reset the test database:**
+
 ```bash
 npm run test:db:reset
 # This stops and restarts the test database with a clean state
@@ -112,6 +119,7 @@ Tests for complex filtering and aggregation queries:
 - **getAvailableStyles**: Filters styles by menu categories and/or breweries
 
 Each function is tested with:
+
 - No filters (baseline behavior)
 - Single filter
 - Multiple filters
@@ -182,11 +190,13 @@ If port 5433 is already in use, update `POSTGRES_TEST_PORT` in `.env.test` and r
 ### Database Connection Issues
 
 Ensure the test database is running:
+
 ```bash
 docker ps | grep beer_menu_test_db
 ```
 
 Check database health:
+
 ```bash
 docker exec beer_menu_test_db pg_isready -U test_user -d beer_menu_test
 ```
@@ -194,6 +204,7 @@ docker exec beer_menu_test_db pg_isready -U test_user -d beer_menu_test
 ### Test Data Issues
 
 Reset the test database to clear any corrupted state:
+
 ```bash
 npm run test:db:reset
 npm run test:db:migrate

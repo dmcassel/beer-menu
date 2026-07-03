@@ -10,25 +10,25 @@ Added a mobile-responsive bottom sheet drawer to `BeerPage.tsx`. On small screen
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | Add Sheet imports, Badge import, Filter icon | `client/src/pages/BeerPage.tsx` | ✅ |
-| 2 | Add `isFilterOpen` state and `activeFilterCount` derived value | `client/src/pages/BeerPage.tsx` | ✅ |
-| 3 | Restructure filter section: mobile button + `hidden md:grid` desktop filters | `client/src/pages/BeerPage.tsx` | ✅ |
-| 4 | Add Sheet drawer with FilterControls and Clear All Filters button | `client/src/pages/BeerPage.tsx` | ✅ |
+| #   | Task                                                                         | File                            | Status |
+| --- | ---------------------------------------------------------------------------- | ------------------------------- | ------ |
+| 1   | Add Sheet imports, Badge import, Filter icon                                 | `client/src/pages/BeerPage.tsx` | ✅     |
+| 2   | Add `isFilterOpen` state and `activeFilterCount` derived value               | `client/src/pages/BeerPage.tsx` | ✅     |
+| 3   | Restructure filter section: mobile button + `hidden md:grid` desktop filters | `client/src/pages/BeerPage.tsx` | ✅     |
+| 4   | Add Sheet drawer with FilterControls and Clear All Filters button            | `client/src/pages/BeerPage.tsx` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check | ⚠️ Could not run — `node_modules` not installed in worktree environment |
-| Code review | ✅ Direct structural match to working BeerBrowser.tsx pattern |
-| Tests | N/A — no test file for BeerPage |
+| Check       | Result                                                                  |
+| ----------- | ----------------------------------------------------------------------- |
+| Type check  | ⚠️ Could not run — `node_modules` not installed in worktree environment |
+| Code review | ✅ Direct structural match to working BeerBrowser.tsx pattern           |
+| Tests       | N/A — no test file for BeerPage                                         |
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
+| File                            | Action | Lines   |
+| ------------------------------- | ------ | ------- |
 | `client/src/pages/BeerPage.tsx` | UPDATE | +40/-10 |
 
 ## Deviations from Plan

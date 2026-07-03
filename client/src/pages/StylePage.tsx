@@ -94,7 +94,12 @@ export default function StylePage() {
         <h2 className="text-xl font-bold">Beer Styles</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingId(null); setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" }); }}>
+            <Button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: "", description: "", bjcpId: "", bjcpLink: "", menuCategoryId: "" });
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Style
             </Button>
@@ -185,22 +190,15 @@ export default function StylePage() {
                     </p>
                   )}
                   <p className="text-xs text-gray-500">
-                    Menu Category: {menuCategories?.find((c) => c.menuCatId === style.menuCategoryId)?.name || "Unassigned"}
+                    Menu Category:{" "}
+                    {menuCategories?.find((c) => c.menuCatId === style.menuCategoryId)?.name || "Unassigned"}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(style)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(style)}>
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteClick(style.styleId, style.name)}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(style.styleId, style.name)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
