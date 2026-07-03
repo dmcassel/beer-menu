@@ -61,7 +61,7 @@ For more control during development, you can manage the test database manually:
 
 ```bash
 npm run test:db:start
-# This runs: docker-compose --env-file .env.test up -d postgres-test
+# This runs: docker compose --env-file .env.test up -d postgres-test
 ```
 
 **Run migrations:**
@@ -86,7 +86,7 @@ npm run test:watch
 
 ```bash
 npm run test:db:stop
-# This runs: docker-compose --env-file .env.test down postgres-test
+# This runs: docker compose --env-file .env.test down postgres-test
 ```
 
 **Reset the test database:**
@@ -130,7 +130,7 @@ Each function is tested with:
 
 ### Environment Variables
 
-The `.env.test` file contains test database configuration. All test-related docker-compose commands use the `--env-file .env.test` flag to ensure the test database uses these settings instead of your development environment variables.
+The `.env.test` file contains test database configuration. All test-related `docker compose` commands use the `--env-file .env.test` flag to ensure the test database uses these settings instead of your development environment variables.
 
 ```bash
 POSTGRES_TEST_USER=test_user

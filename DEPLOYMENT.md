@@ -158,15 +158,15 @@ docker exec <container-name> node scripts/run-migration.js drizzle/migrations/00
 **Option C: Use Docker Compose Exec**
 
 ```bash
-# Run migration inside the container using docker-compose
-docker-compose exec app node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
+# Run migration inside the container using docker compose
+docker compose exec app node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
 ```
 
 #### Step 3: Verify Deployment
 
 ```bash
 # Check if the column was added
-docker-compose exec db psql -U your_user -d beer_menu -c "\d style"
+docker compose exec db psql -U your_user -d beer_menu -c "\d style"
 
 # You should see menu_category_id in the style table
 ```
@@ -198,7 +198,7 @@ This means the migration was partially applied or run multiple times.
 **Solution**:
 
 - Verify `DATABASE_URL` is set: `echo $DATABASE_URL`
-- Check database is running: `docker-compose ps`
+- Check database is running: `docker compose ps`
 - Test connection: `psql $DATABASE_URL`
 
 ---
@@ -272,7 +272,7 @@ node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style
 git pull && docker compose --env-file .env.compose.prod build && docker compose --env-file .env.compose.prod up -d
 
 # 2. Run migration
-docker-compose exec app node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
+docker compose exec app node scripts/run-migration.js drizzle/migrations/0001_add_menu_category_to_style.sql
 ```
 
 **For Future Migrations**:

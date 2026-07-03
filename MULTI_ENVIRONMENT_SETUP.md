@@ -8,7 +8,7 @@ This document explains how to run the Beer Menu application in different environ
 
 We use two types of environment files to manage configuration:
 
-1.  **Docker Compose Configuration (`.env.compose.*`)**: These files configure the Docker environment itself, including service definitions, port mappings, and container-level environment variables. They are used with the `docker-compose --env-file` flag.
+1.  **Docker Compose Configuration (`.env.compose.*`)**: These files configure the Docker environment itself, including service definitions, port mappings, and container-level environment variables. They are used with the `docker compose --env-file` flag.
     - `.env.compose.local`: For local development (committed to git).
     - `.env.compose.prod`: For production (ignored by git).
 
@@ -31,7 +31,7 @@ To run the application in your local development environment:
     Use the following command to start the application. This command tells Docker Compose to use the `.env.compose.local` file for its configuration. The application inside the container will automatically pick up the `.env.local` file.
 
     ```bash
-    docker-compose --env-file .env.compose.local up --build
+    docker compose --env-file .env.compose.local up --build
     ```
 
 4.  **Access the Application**:
@@ -72,7 +72,7 @@ To deploy the application in a production environment:
     Use the following command to start the application in production mode. This command tells Docker Compose to use the `.env.compose.prod` file. The application will need to be configured to load the `.env.prod` file in a production environment.
 
     ```bash
-    docker-compose --env-file .env.compose.prod up -d --build
+    docker compose --env-file .env.compose.prod up -d --build
     ```
 
     The `-d` flag runs the containers in detached mode, which is recommended for production.

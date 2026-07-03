@@ -24,7 +24,7 @@ Beer Menu is a full-stack web application for managing a craft beverage catalog 
 | Zod                     | Input validation (tRPC inputs)               |
 | Vite                    | Frontend bundler                             |
 | Vitest                  | Testing                                      |
-| Docker / docker-compose | Local dev database and production deployment |
+| Docker / Docker Compose | Local dev database and production deployment |
 | Google Auth Library     | OAuth sign-in                                |
 
 ---
@@ -52,7 +52,7 @@ npm test
 # Start test database (uses the postgres-test service in docker-compose.yml)
 npm run test:db:start
 # Equivalent direct command:
-# docker-compose --env-file .env.test up -d postgres-test
+# docker compose --env-file .env.test up -d postgres-test
 
 # Run tests with DB lifecycle managed automatically
 npm run test:with-db
@@ -139,7 +139,7 @@ Schema types are defined in `drizzle/schema.ts` using `$inferSelect` / `$inferIn
 
 - **Run tests**: `npm test` (requires the test DB to be running first)
 - **Test location**: `server/**/*.test.ts`
-- **DB for tests**: separate PostgreSQL instance via docker-compose on port 5433, configured by `.env.test`
+- **DB for tests**: separate PostgreSQL instance via `docker compose` on port 5433, configured by `.env.test`
 - Tests run sequentially (`fileParallelism: false`) because multiple test files share the database
 
 ---
