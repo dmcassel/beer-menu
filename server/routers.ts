@@ -390,8 +390,8 @@ export const appRouter = router({
           wineryId: z.number().optional(),
           vintage: z.number().optional(),
           locationId: z.number().optional(),
-          refrigerated: z.number().optional(),
-          cellared: z.number().optional(),
+          refrigerated: z.number().nonnegative().optional(),
+          cellared: z.number().nonnegative().optional(),
           description: z.string().optional(),
           varietalIds: z.array(z.number()).optional(),
         })
@@ -405,8 +405,8 @@ export const appRouter = router({
           wineryId: z.number().optional(),
           vintage: z.number().optional(),
           locationId: z.number().optional(),
-          refrigerated: z.number().optional(),
-          cellared: z.number().optional(),
+          refrigerated: z.number().nonnegative().optional(),
+          cellared: z.number().nonnegative().optional(),
           description: z.string().optional(),
           varietalIds: z.array(z.number()).optional(),
         })

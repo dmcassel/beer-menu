@@ -31,6 +31,8 @@ Beer Menu is a full-stack web application for managing a craft beverage catalog 
 
 ## Commands
 
+For local development, only Postgres runs in Docker (`postgres` and `postgres-test` services). The middle tier (Express + Vite) runs directly on the host via `npm run dev` — do not use the `app` service in `docker-compose.yml` for development; that service builds the production image and is for deployment only (see `DEPLOYMENT.md`).
+
 ```bash
 # Development (starts Express + Vite HMR together)
 npm run dev
