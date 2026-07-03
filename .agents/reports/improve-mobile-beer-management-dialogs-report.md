@@ -8,34 +8,36 @@
 
 Fixed two mobile display bugs from issue #145: the Add Beer dialog was clipped on tall/narrow viewports (no max-height or scroll on the base Dialog component), and the Add Brewery dialog could be hidden by the on-screen keyboard on Android Chrome (viewport meta tag didn't opt into layout-viewport resizing). Both fixes were applied globally in the base `DialogContent` component and `index.html` rather than per-page, so every dialog in the app benefits, and a redundant duplicate of the fix was removed from `ManageWinePage.tsx`.
 
+**Follow-up after manual testing**: the user tested with Chrome DevTools device emulation (Pixel 7) and found the dialog still appeared vertically centered with its top roughly mid-screen — for a short dialog like Add Brewery (2 fields), that leaves little margin before the keyboard would cover the inputs, and relying solely on `interactive-widget=resizes-content` isn't enough since iOS Safari doesn't support it at all. Changed `DialogContent` to anchor near the top of the viewport (`top-[5%]`, no vertical translate) on mobile widths, reverting to true vertical centering (`sm:top-[50%] sm:translate-y-[-50%]`) at the `sm` breakpoint and up, where keyboard overlap isn't a concern.
+
 ## Tasks Completed
 
-| #   | Task                                                          | File                                   | Status |
-| --- | -------------------------------------------------------------- | --------------------------------------- | ------ |
-| 1   | Add `interactive-widget=resizes-content` to viewport meta tag | `client/index.html`                    | ✅     |
-| 2   | Add `max-h-[90vh] overflow-y-auto` to base `DialogContent`    | `client/src/components/ui/dialog.tsx`  | ✅     |
-| 3   | Remove now-redundant override in ManageWinePage               | `client/src/pages/ManageWinePage.tsx`  | ✅     |
+| #   | Task                                                          | File                                  | Status |
+| --- | ------------------------------------------------------------- | ------------------------------------- | ------ |
+| 1   | Add `interactive-widget=resizes-content` to viewport meta tag | `client/index.html`                   | ✅     |
+| 2   | Add `max-h-[90vh] overflow-y-auto` to base `DialogContent`    | `client/src/components/ui/dialog.tsx` | ✅     |
+| 3   | Remove now-redundant override in ManageWinePage               | `client/src/pages/ManageWinePage.tsx` | ✅     |
 
 ## Validation Results
 
-| Check      | Result                         |
-| ---------- | ------------------------------- |
-| Format     | ✅                              |
-| Type check | ✅                              |
-| Build      | ✅                              |
-| Tests      | ✅ (90 passed, 4 test files)    |
+| Check      | Result                       |
+| ---------- | ---------------------------- |
+| Format     | ✅                           |
+| Type check | ✅                           |
+| Build      | ✅                           |
+| Tests      | ✅ (90 passed, 4 test files) |
 
 ## Files Changed
 
-| File                                    | Action | Lines |
-| ---------------------------------------- | ------ | ----- |
-| `client/index.html`                     | UPDATE | +4/-1 |
-| `client/src/components/ui/dialog.tsx`   | UPDATE | +1/-1 |
-| `client/src/pages/ManageWinePage.tsx`   | UPDATE | +1/-1 |
+| File                                  | Action | Lines |
+| ------------------------------------- | ------ | ----- |
+| `client/index.html`                   | UPDATE | +4/-1 |
+| `client/src/components/ui/dialog.tsx` | UPDATE | +1/-1 |
+| `client/src/pages/ManageWinePage.tsx` | UPDATE | +1/-1 |
 
 ## Deviations from Plan
 
-None. Implementation matched the plan exactly.
+Added one change beyond the original plan, based on user feedback from manual testing: anchoring `DialogContent` near the top of the viewport on mobile (`top-[5%]`, no vertical translate) instead of relying only on vertical centering, since centering alone put short dialogs' inputs too close to where an on-screen keyboard would appear, and `interactive-widget=resizes-content` isn't supported on all browsers (notably iOS Safari).
 
 ## Tests Written
 
