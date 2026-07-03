@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Beer, Check } from "lucide-react";
+import { Beer, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
 type BeerStatus = "on_tap" | "bottle_can" | "out";
@@ -95,13 +95,27 @@ export default function BeerInventory() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
-        <Input
-          placeholder="Search beers..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-11 text-base"
-          aria-label="Search beers"
-        />
+        <div className="relative">
+          <Input
+            placeholder="Search beers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 text-base pr-9"
+            aria-label="Search beers"
+          />
+          {search && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setSearch("")}
+              className="absolute right-1 top-1/2 -translate-y-1/2"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
 
         {beersLoading ? (
           <div className="text-center py-8">Loading...</div>

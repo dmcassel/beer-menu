@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Wine as WineIcon, Minus, Plus, Check, CircleCheck } from "lucide-react";
+import { Wine as WineIcon, Minus, Plus, Check, CircleCheck, X } from "lucide-react";
 import { toast } from "sonner";
 
 type WineCounts = { cellared: number; refrigerated: number };
@@ -165,13 +165,27 @@ export default function WineInventory() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
-        <Input
-          placeholder="Search wines..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-11 text-base"
-          aria-label="Search wines"
-        />
+        <div className="relative">
+          <Input
+            placeholder="Search wines..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-11 text-base pr-9"
+            aria-label="Search wines"
+          />
+          {search && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setSearch("")}
+              className="absolute right-1 top-1/2 -translate-y-1/2"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
 
         {winesLoading ? (
           <div className="text-center py-8">Loading...</div>
