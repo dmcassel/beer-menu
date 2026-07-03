@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Wine as WineIcon, Minus, Plus, Check, CircleCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ type WineRow = {
   vintage: number | null;
   cellared: number | null;
   refrigerated: number | null;
+  wineryName: string | null;
 };
 
 function QuantityStepper({
@@ -67,7 +69,17 @@ export default function WineInventory() {
   const utils = trpc.useUtils();
   const [pending, setPending] = useState<Record<number, WineCounts>>({});
   const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
-  const visibleWines = wines?.filter((w) => !confirmedIds.has(w.wineId));
+  const [search, setSearch] = useState("");
+
+  const searchLower = search.trim().toLowerCase();
+  const visibleWines = wines?.filter((w) => {
+    if (confirmedIds.has(w.wineId)) return false;
+    if (!searchLower) return true;
+    return (
+      w.label.toLowerCase().includes(searchLower) ||
+      (w.wineryName ?? "").toLowerCase().includes(searchLower)
+    );
+  });
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
@@ -153,10 +165,20 @@ export default function WineInventory() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
+        <Input
+          placeholder="Search wines..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-11 text-base"
+          aria-label="Search wines"
+        />
+
         {winesLoading ? (
           <div className="text-center py-8">Loading...</div>
         ) : visibleWines?.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">No wines currently available.</div>
+          <div className="text-center py-8 text-gray-500">
+            {search ? "No wines match your search." : "No wines currently available."}
+          </div>
         ) : (
           visibleWines?.map((wine) => {
             const counts = getCounts(wine);
