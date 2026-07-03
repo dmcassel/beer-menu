@@ -7,6 +7,7 @@ import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import WinePage from "@/pages/WinePage";
 import BeerManagement from "@/pages/BeerManagement";
+import BeerInventory from "@/pages/BeerInventory";
 import WineManagement from "@/pages/WineManagement";
 import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/beer-management" component={BeerManagement} />
+      <Route path="/beer/inventory" component={BeerInventory} />
       <Route path="/wine-management" component={WineManagement} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
