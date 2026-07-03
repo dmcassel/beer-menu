@@ -75,10 +75,7 @@ export default function WineInventory() {
   const visibleWines = wines?.filter((w) => {
     if (confirmedIds.has(w.wineId)) return false;
     if (!searchLower) return true;
-    return (
-      w.label.toLowerCase().includes(searchLower) ||
-      (w.wineryName ?? "").toLowerCase().includes(searchLower)
-    );
+    return w.label.toLowerCase().includes(searchLower) || (w.wineryName ?? "").toLowerCase().includes(searchLower);
   });
 
   // Redirect to login if not authenticated or not a curator/admin

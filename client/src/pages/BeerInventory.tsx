@@ -29,10 +29,7 @@ export default function BeerInventory() {
     if (confirmedIds.has(b.beerId)) return false;
     if (!searchLower) return true;
     const breweryName = getBreweryName(b.breweryId);
-    return (
-      b.name.toLowerCase().includes(searchLower) ||
-      breweryName.toLowerCase().includes(searchLower)
-    );
+    return b.name.toLowerCase().includes(searchLower) || breweryName.toLowerCase().includes(searchLower);
   });
 
   // Redirect to login if not authenticated or not a curator/admin
