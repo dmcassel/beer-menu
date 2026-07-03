@@ -4,7 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wine as WineIcon, Minus, Plus, Check } from "lucide-react";
+import { Wine as WineIcon, Minus, Plus, Check, CircleCheck } from "lucide-react";
 import { toast } from "sonner";
 
 type WineCounts = { cellared: number; refrigerated: number };
@@ -66,6 +66,8 @@ export default function WineInventory() {
   const updateMutation = trpc.wine.update.useMutation();
   const utils = trpc.useUtils();
   const [pending, setPending] = useState<Record<number, WineCounts>>({});
+  const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
+  const visibleWines = wines?.filter((w) => !confirmedIds.has(w.wineId));
 
   // Redirect to login if not authenticated or not a curator/admin
   useEffect(() => {
@@ -114,6 +116,10 @@ export default function WineInventory() {
     }
   };
 
+  const handleConfirm = (wineId: number) => {
+    setConfirmedIds((prev) => new Set(prev).add(wineId));
+  };
+
   if (userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,7 +142,7 @@ export default function WineInventory() {
           <div className="flex items-center gap-3">
             <WineIcon className="w-8 h-8 text-purple-600" />
             <h1 className="text-2xl font-bold text-gray-900">Wine Inventory</h1>
-            {!winesLoading && <Badge variant="secondary">{wines?.length ?? 0} in stock</Badge>}
+            {!winesLoading && <Badge variant="secondary">{visibleWines?.length ?? 0} remaining</Badge>}
           </div>
           <Link href="/dashboard">
             <Button variant="outline" size="sm">
@@ -149,10 +155,10 @@ export default function WineInventory() {
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-3">
         {winesLoading ? (
           <div className="text-center py-8">Loading...</div>
-        ) : wines?.length === 0 ? (
+        ) : visibleWines?.length === 0 ? (
           <div className="text-center py-8 text-gray-500">No wines currently available.</div>
         ) : (
-          wines?.map((wine) => {
+          visibleWines?.map((wine) => {
             const counts = getCounts(wine);
             return (
               <Card key={wine.wineId}>
@@ -161,11 +167,26 @@ export default function WineInventory() {
                     <span className="text-lg font-medium">
                       {wine.label} {wine.vintage ? `(${wine.vintage})` : ""}
                     </span>
-                    {isDirty(wine) && (
-                      <Button variant="ghost" size="icon-sm" onClick={() => handleSave(wine)} aria-label="Save changes">
-                        <Check className="w-4 h-4" />
+                    <div className="flex items-center gap-1">
+                      {isDirty(wine) && (
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => handleSave(wine)}
+                          aria-label="Save changes"
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleConfirm(wine.wineId)}
+                        aria-label="Confirm present"
+                      >
+                        <CircleCheck className="w-4 h-4" />
                       </Button>
-                    )}
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <QuantityStepper
