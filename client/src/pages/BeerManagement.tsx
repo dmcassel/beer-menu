@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Beer, Layers, MapPin, Menu, Tag } from "lucide-react";
+import { Beer, Layers, ListChecks, MapPin, Menu, Tag } from "lucide-react";
 import { toast } from "sonner";
 import BJCPCategoryPage from "./BJCPCategoryPage";
 import StylePage from "./StylePage";
@@ -67,6 +67,12 @@ export default function BeerManagement() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/beer/inventory">
+              <Button variant="outline" size="sm">
+                <ListChecks className="w-4 h-4 mr-1" />
+                Inventory Mode
+              </Button>
+            </Link>
             <Link href="/dashboard">
               <Button variant="outline" size="sm">
                 Back to Dashboard
