@@ -1,11 +1,32 @@
 import { sql } from "drizzle-orm";
 import { getDb } from "./db";
 
+// `db.execute()` on raw SQL loses row typing (resolves to `any`), which then
+// poisons every caller's inferred type. These interfaces describe the actual
+// columns each query selects so callers get real types back.
+interface AvailableMenuCategoryRow {
+  menu_cat_id: number;
+  name: string;
+  description: string | null;
+}
+
+interface AvailableBreweryRow {
+  breweryId: number;
+  name: string;
+  location: string | null;
+}
+
+interface AvailableStyleRow {
+  styleId: number;
+  name: string;
+  menuCategoryId: number | null;
+}
+
 /**
  * Get menu categories that have at least one beer style associated with them
  * and at least one beer in that style with status not "out"
  */
-export async function getAvailableMenuCategories() {
+export async function getAvailableMenuCategories(): Promise<AvailableMenuCategoryRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -18,7 +39,7 @@ export async function getAvailableMenuCategories() {
     ORDER BY mc.name
   `);
 
-  return result.rows;
+  return result.rows as AvailableMenuCategoryRow[];
 }
 
 /**
@@ -44,7 +65,10 @@ export async function getBeersByMenuCategory(menuCatId: number) {
  * Get breweries that have at least one available beer,
  * optionally filtered by menu categories and/or beer styles
  */
-export async function getAvailableBreweries(menuCategoryIds?: number[], styleIds?: number[]) {
+export async function getAvailableBreweries(
+  menuCategoryIds?: number[],
+  styleIds?: number[]
+): Promise<AvailableBreweryRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -83,14 +107,17 @@ export async function getAvailableBreweries(menuCategoryIds?: number[], styleIds
   query = sql`${query} ORDER BY br.name`;
 
   const result = await db.execute(query);
-  return result.rows;
+  return result.rows as AvailableBreweryRow[];
 }
 
 /**
  * Get styles that have at least one available beer,
  * optionally filtered by menu categories and/or breweries
  */
-export async function getAvailableStyles(menuCategoryIds?: number[], breweryIds?: number[]) {
+export async function getAvailableStyles(
+  menuCategoryIds?: number[],
+  breweryIds?: number[]
+): Promise<AvailableStyleRow[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -122,5 +149,5 @@ export async function getAvailableStyles(menuCategoryIds?: number[], breweryIds?
   query = sql`${query} ORDER BY s.name`;
 
   const result = await db.execute(query);
-  return result.rows;
+  return result.rows as AvailableStyleRow[];
 }

@@ -80,12 +80,6 @@ import { useEffect, useRef } from "react";
 import { usePersistFn } from "@/hooks/usePersistFn";
 import { cn } from "@/lib/utils";
 
-declare global {
-  interface Window {
-    google?: typeof google;
-  }
-}
-
 const API_KEY = import.meta.env.VITE_FRONTEND_FORGE_API_KEY;
 const FORGE_BASE_URL = import.meta.env.VITE_FRONTEND_FORGE_API_URL || "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
@@ -129,7 +123,7 @@ export function MapView({
       console.error("Map container not found");
       return;
     }
-    map.current = new window.google.maps.Map(mapContainer.current, {
+    const newMap = new window.google.maps.Map(mapContainer.current, {
       zoom: initialZoom,
       center: initialCenter,
       mapTypeControl: true,
@@ -138,8 +132,9 @@ export function MapView({
       streetViewControl: true,
       mapId: "DEMO_MAP_ID",
     });
+    map.current = newMap;
     if (onMapReady) {
-      onMapReady(map.current);
+      onMapReady(newMap);
     }
   });
 

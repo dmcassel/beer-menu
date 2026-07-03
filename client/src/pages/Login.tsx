@@ -5,12 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Beer } from "lucide-react";
 
-declare global {
-  interface Window {
-    google: any;
-  }
-}
-
 export default function Login() {
   const [location, setLocation] = useLocation();
   const googleCallbackMutation = trpc.auth.googleCallback.useMutation();
