@@ -31,6 +31,7 @@ Load the plan file and extract:
 - **GitHub Issue** - Check the plan's Metadata table for a GitHub Issue number (e.g., `42`). If present, this issue will be updated after implementation is complete.
 
 **If plan not found:**
+
 ```
 Error: Plan not found at $ARGUMENTS
 Create a plan first: /plan "feature description"
@@ -47,11 +48,11 @@ git branch --show-current
 git status
 ```
 
-| State | Action |
-|-------|--------|
-| On main, clean | Create branch: `git checkout -b {issue-number}/{plan-name}` (issue number from plan metadata) |
-| On main, dirty | STOP: "Stash or commit changes first" |
-| On feature branch | Use it |
+| State             | Action                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| On main, clean    | Create branch: `git checkout -b {issue-number}/{plan-name}` (issue number from plan metadata) |
+| On main, dirty    | STOP: "Stash or commit changes first"                                                         |
+| On feature branch | Use it                                                                                        |
 
 ---
 
@@ -79,10 +80,14 @@ Before writing any code for a task:
 **After EVERY task:**
 
 ```bash
+npm run format
 npm run build
 ```
 
+`npm run format` auto-fixes formatting in place (Prettier). Let it rewrite files — do not hand-format code to match the style yourself, and don't fight its output.
+
 **If it fails:**
+
 1. Read the error
 2. Fix the issue
 3. Re-run validation
@@ -104,27 +109,29 @@ Task 2: UPDATE src/y.ts ✅
 ### Run All Checks
 
 ```bash
+# Format (auto-fixes in place)
+npm run format
+
 # Type check
 npm run build
-
-# Lint
-npm run lint
 
 # Tests
 npm test
 ```
 
-**All must pass with zero errors.**
+**All must pass with zero errors.** If `npm run format` changes any files, that's expected — it's writing fixes, not just checking. Re-run `git diff` mentally (or literally) to confirm the changes are pure formatting before moving on.
 
 ### Write Tests
 
 You MUST write tests for new code:
+
 - Every new function needs at least one test
 - Error cases and edge cases need tests
 - Update existing tests if behavior changed
 - **Test across boundaries** — don't just test functions in isolation. If you added an API endpoint, test that the endpoint returns the correct response shape and data. If you added a service method, test that it integrates correctly with its callers.
 
 **If tests fail:**
+
 1. Determine: bug in implementation or test?
 2. Fix the actual issue
 3. Re-run until green
@@ -171,24 +178,24 @@ mkdir -p .agents/reports
 
 ## Tasks Completed
 
-| # | Task | File | Status |
-|---|------|------|--------|
-| 1 | {description} | `src/x.ts` | ✅ |
-| 2 | {description} | `src/y.ts` | ✅ |
+| #   | Task          | File       | Status |
+| --- | ------------- | ---------- | ------ |
+| 1   | {description} | `src/x.ts` | ✅     |
+| 2   | {description} | `src/y.ts` | ✅     |
 
 ## Validation Results
 
-| Check | Result |
-|-------|--------|
-| Type check | ✅ |
-| Lint | ✅ |
-| Tests | ✅ ({N} passed) |
+| Check      | Result          |
+| ---------- | --------------- |
+| Format     | ✅              |
+| Type check | ✅              |
+| Tests      | ✅ ({N} passed) |
 
 ## Files Changed
 
-| File | Action | Lines |
-|------|--------|-------|
-| `src/x.ts` | CREATE | +{N} |
+| File       | Action | Lines     |
+| ---------- | ------ | --------- |
+| `src/x.ts` | CREATE | +{N}      |
 | `src/y.ts` | UPDATE | +{N}/-{M} |
 
 ## Deviations from Plan
@@ -197,9 +204,9 @@ mkdir -p .agents/reports
 
 ## Tests Written
 
-| Test File | Test Cases |
-|-----------|------------|
-| `src/x.test.ts` | {list} |
+| Test File       | Test Cases |
+| --------------- | ---------- |
+| `src/x.test.ts` | {list}     |
 ```
 
 ### Archive Plan
@@ -269,11 +276,11 @@ gh issue comment {number} --body "## Implementation Complete
 
 ### Validation
 
-| Check | Result |
-|-------|--------|
-| Type check | ✅ |
-| Lint | ✅ |
-| Tests | ✅ |
+| Check      | Result |
+| ---------- | ------ |
+| Format     | ✅     |
+| Type check | ✅     |
+| Tests      | ✅     |
 
 ### Files Changed
 
@@ -308,9 +315,9 @@ gh issue comment {number} --body "## Implementation Complete
 
 ## Handling Failures
 
-| Failure | Action |
-|---------|--------|
-| Type check fails | Read error, fix issue, re-run |
-| Tests fail | Fix implementation or test, re-run |
-| Lint fails | Run `npm run lint --fix`, then manual fixes |
-| Build fails | Check error output, fix and re-run |
+| Failure          | Action                                      |
+| ---------------- | ------------------------------------------- |
+| Type check fails | Read error, fix issue, re-run               |
+| Tests fail       | Fix implementation or test, re-run          |
+| Format fails     | Run `npm run format` (auto-fixes), re-run   |
+| Build fails      | Check error output, fix and re-run          |

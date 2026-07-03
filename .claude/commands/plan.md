@@ -21,12 +21,12 @@ Transform the input into a battle-tested implementation plan through codebase ex
 
 ### Determine Input Type
 
-| Input | Action |
-|-------|--------|
-| `.prd.md` file | Read PRD, extract next pending phase |
+| Input            | Action                               |
+| ---------------- | ------------------------------------ |
+| `.prd.md` file   | Read PRD, extract next pending phase |
 | Other `.md` file | Read and extract feature description |
-| Free-form text | Use directly as feature input |
-| Blank | Use conversation context |
+| Free-form text   | Use directly as feature input        |
+| Blank            | Use conversation context             |
 
 ### Extract Feature Understanding
 
@@ -66,12 +66,12 @@ Use the Explore agent to find:
 
 ### Document Patterns
 
-| Category | File:Lines | Pattern |
-|----------|------------|---------|
-| NAMING | `path/to/file.ts:10-15` | {pattern description} |
-| ERRORS | `path/to/file.ts:20-30` | {pattern description} |
-| TYPES | `path/to/file.ts:1-10` | {pattern description} |
-| TESTS | `path/to/test.ts:1-25` | {pattern description} |
+| Category | File:Lines              | Pattern               |
+| -------- | ----------------------- | --------------------- |
+| NAMING   | `path/to/file.ts:10-15` | {pattern description} |
+| ERRORS   | `path/to/file.ts:20-30` | {pattern description} |
+| TYPES    | `path/to/file.ts:1-10`  | {pattern description} |
+| TESTS    | `path/to/test.ts:1-25`  | {pattern description} |
 
 ---
 
@@ -91,6 +91,7 @@ and split it into multiple sequential plans, each targeting its own PR.
 
 A concern is independent if it could be reviewed and merged without the other.
 Examples that must be split:
+
 - Schema migration + feature using that schema → two plans
 - Backend tRPC router + frontend UI → one plan only if both are trivially small
 - Refactor + new feature → always two plans
@@ -99,8 +100,8 @@ Each plan should be completable as a PR reviewable in under 30 minutes.
 
 ### Identify Risks
 
-| Risk | Mitigation |
-|------|------------|
+| Risk              | Mitigation      |
+| ----------------- | --------------- |
 | {potential issue} | {how to handle} |
 
 ---
@@ -130,12 +131,12 @@ So that {benefit}
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| Type | {type} |
-| Complexity | {LOW/MEDIUM/HIGH} |
-| Systems Affected | {list} |
-| GitHub Issue | {issue number if available, e.g. 42, or "N/A"} |
+| Field            | Value                                          |
+| ---------------- | ---------------------------------------------- |
+| Type             | {type}                                         |
+| Complexity       | {LOW/MEDIUM/HIGH}                              |
+| Systems Affected | {list}                                         |
+| GitHub Issue     | {issue number if available, e.g. 42, or "N/A"} |
 
 ---
 
@@ -143,21 +144,27 @@ So that {benefit}
 
 ### Naming
 ```
+
 // SOURCE: {file:lines}
 {actual code snippet}
+
 ```
 
 ### Error Handling
 ```
+
 // SOURCE: {file:lines}
 {actual code snippet}
+
 ```
 
 ### Tests
 ```
+
 // SOURCE: {file:lines}
 {actual code snippet}
-```
+
+````
 
 ---
 
@@ -197,15 +204,15 @@ Execute in order. Each task is atomic and verifiable.
 ## Validation
 
 ```bash
+# Format (auto-fixes in place)
+npm run format
+
 # Type check
 npm run build
 
-# Lint
-npm run lint
-
 # Tests
 npm test
-```
+````
 
 ---
 
@@ -215,7 +222,8 @@ npm test
 - [ ] Type check passes
 - [ ] Tests pass
 - [ ] Follows existing patterns
-```
+
+````
 
 ---
 
@@ -229,7 +237,7 @@ If the plan has a GitHub Issue number in its Metadata table:
    gh project item-add 1 --owner dmcassel --url <issue-url>
    # Update Status field to "In Progress"
    # (look up field/option IDs with: gh project field-list 1 --owner dmcassel --format json)
-   ```
+````
 
 2. If the issue belongs to an Epic (check for issues that link to it, or ask the user), also move the Epic to **"In Progress"** if this is the first sub-issue being planned.
 
@@ -245,11 +253,13 @@ If the plan has a GitHub Issue number in its Metadata table:
 **Summary**: {2-3 sentence overview}
 
 **Scope**:
+
 - {N} files to CREATE
 - {M} files to UPDATE
 - {K} total tasks
 
 **Key Patterns**:
+
 - {Pattern 1 with file:line}
 - {Pattern 2 with file:line}
 
