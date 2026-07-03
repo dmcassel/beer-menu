@@ -142,7 +142,7 @@ export default function WineInventory() {
           <div className="flex items-center gap-3">
             <WineIcon className="w-8 h-8 text-purple-600" />
             <h1 className="text-2xl font-bold text-gray-900">Wine Inventory</h1>
-            {!winesLoading && <Badge variant="secondary">{wines?.length ?? 0} in stock</Badge>}
+            {!winesLoading && <Badge variant="secondary">{visibleWines?.length ?? 0} remaining</Badge>}
           </div>
           <Link href="/dashboard">
             <Button variant="outline" size="sm">
