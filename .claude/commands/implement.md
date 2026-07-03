@@ -81,10 +81,12 @@ Before writing any code for a task:
 
 ```bash
 npm run format
-npm run build
+npm run check
 ```
 
 `npm run format` auto-fixes formatting in place (Prettier). Let it rewrite files — do not hand-format code to match the style yourself, and don't fight its output.
+
+`npm run check` (`tsc --noEmit`) is the actual type checker. `npm run build` runs Vite/esbuild, which strip types without checking them — it will happily "pass" on code with real type errors. Never substitute `build` for `check` when validating types.
 
 **If it fails:**
 
@@ -113,6 +115,9 @@ Task 2: UPDATE src/y.ts ✅
 npm run format
 
 # Type check
+npm run check
+
+# Production build (catches bundling issues npm run check won't)
 npm run build
 
 # Tests
@@ -189,6 +194,7 @@ mkdir -p .agents/reports
 | ---------- | --------------- |
 | Format     | ✅              |
 | Type check | ✅              |
+| Build      | ✅              |
 | Tests      | ✅ ({N} passed) |
 
 ## Files Changed
@@ -280,6 +286,7 @@ gh issue comment {number} --body "## Implementation Complete
 | ---------- | ------ |
 | Format     | ✅     |
 | Type check | ✅     |
+| Build      | ✅     |
 | Tests      | ✅     |
 
 ### Files Changed
@@ -315,9 +322,9 @@ gh issue comment {number} --body "## Implementation Complete
 
 ## Handling Failures
 
-| Failure          | Action                                      |
-| ---------------- | ------------------------------------------- |
-| Type check fails | Read error, fix issue, re-run               |
-| Tests fail       | Fix implementation or test, re-run          |
-| Format fails     | Run `npm run format` (auto-fixes), re-run   |
-| Build fails      | Check error output, fix and re-run          |
+| Failure          | Action                                    |
+| ---------------- | ----------------------------------------- |
+| Type check fails | Read error, fix issue, re-run             |
+| Tests fail       | Fix implementation or test, re-run        |
+| Format fails     | Run `npm run format` (auto-fixes), re-run |
+| Build fails      | Check error output, fix and re-run        |

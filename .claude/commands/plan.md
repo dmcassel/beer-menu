@@ -187,7 +187,7 @@ Execute in order. Each task is atomic and verifiable.
 - **Action**: CREATE / UPDATE
 - **Implement**: {what to do}
 - **Mirror**: `path/to/example.ts:lines` - follow this pattern
-- **Validate**: `npm run build`
+- **Validate**: `npm run check`
 
 ### Task 2: {Description}
 
@@ -195,7 +195,7 @@ Execute in order. Each task is atomic and verifiable.
 - **Action**: CREATE / UPDATE
 - **Implement**: {what to do}
 - **Mirror**: `path/to/example.ts:lines`
-- **Validate**: `npm run build`
+- **Validate**: `npm run check`
 
 {Continue for each task...}
 
@@ -208,6 +208,9 @@ Execute in order. Each task is atomic and verifiable.
 npm run format
 
 # Type check
+npm run check
+
+# Production build (catches bundling issues npm run check won't)
 npm run build
 
 # Tests

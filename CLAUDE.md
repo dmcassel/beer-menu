@@ -115,6 +115,8 @@ Read operations use `publicProcedure`; all writes use `curatorProcedure`.
 
 All DB functions in `server/db.ts` and `server/db_wine.ts` follow the same pattern: call `getDb()`, guard against null (return empty/undefined for reads, throw for writes), then run the Drizzle query.
 
+**Raw SQL (`db.execute(sql\`...\`)`) must have an explicit row type.** Calling `db.execute()` without a type argument silently resolves to `any` — not a type error, just a quiet loss of type safety that propagates through every caller (including across tRPC to the client; `npm run check` will not catch this). Define an interface for the query's actual selected columns and cast the result, e.g. `return result.rows as MyRowInterface[];` — see `server/db_additions.ts` for the pattern. Prefer Drizzle's query builder over raw SQL when the query doesn't need it, since the builder infers row types correctly on its own.
+
 ### Types
 
 Schema types are defined in `drizzle/schema.ts` using `$inferSelect` / `$inferInsert` and re-exported from `shared/types.ts`. Import shared types via `@shared/types` on the client.

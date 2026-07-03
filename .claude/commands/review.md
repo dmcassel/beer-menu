@@ -120,6 +120,9 @@ Run automated checks:
 npm run format
 
 # Type check
+npm run check
+
+# Production build (catches bundling issues npm run check won't)
 npm run build
 
 # Tests
