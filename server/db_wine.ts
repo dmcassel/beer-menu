@@ -22,6 +22,21 @@ export async function getAllWineries() {
   return db.select().from(winery).orderBy(winery.name);
 }
 
+export async function getAvailableWineries() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .selectDistinct({ wineryId: wine.wineryId })
+    .from(wine)
+    .where(or(gt(wine.refrigerated, 0), gt(wine.cellared, 0)));
+
+  const ids = rows.map(r => r.wineryId).filter((id): id is number => id !== null);
+  if (ids.length === 0) return [];
+
+  return db.select().from(winery).where(inArray(winery.wineryId, ids)).orderBy(winery.name);
+}
+
 export async function getWineryById(id: number) {
   const db = await getDb();
   if (!db) return null;

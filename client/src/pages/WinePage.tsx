@@ -77,8 +77,8 @@ export default function WinePage() {
   // Fetch only locations that have available wines (for filter options)
   const { data: locations = [] } = trpc.location.listAvailable.useQuery();
 
-  // Fetch all wineries (for filter options)
-  const { data: wineries = [] } = trpc.winery.list.useQuery();
+  // Fetch only wineries that have available wines (for filter options)
+  const { data: wineries = [] } = trpc.winery.listAvailable.useQuery();
 
   const handleClearFilters = () => {
     setSelectedLocations([]);

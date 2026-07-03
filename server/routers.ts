@@ -276,6 +276,7 @@ export const appRouter = router({
   // Wine management routes
   winery: router({
     list: publicProcedure.query(() => dbWine.getAllWineries()),
+    listAvailable: publicProcedure.query(() => dbWine.getAvailableWineries()),
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(({ input }) => dbWine.getWineryById(input.id)),
