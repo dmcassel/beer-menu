@@ -1,5 +1,5 @@
-import { eq, sql, or, gt, inArray, and, ilike } from "drizzle-orm";
-import { getDb } from "./db";
+import { eq, sql, or, gt, inArray, and } from "drizzle-orm";
+import { getDb, unaccentIlike } from "./db";
 import {
   winery,
   wine,
@@ -220,12 +220,12 @@ export async function getAllWines(filters?: { wineryIds?: number[]; locationIds?
       ${
         searchTerm
           ? sql`AND (
-            w.label ILIKE ${"%" + searchTerm + "%"}
-            OR wr.name ILIKE ${"%" + searchTerm + "%"}
+            unaccent(w.label) ILIKE unaccent(${"%" + searchTerm + "%"})
+            OR unaccent(wr.name) ILIKE unaccent(${"%" + searchTerm + "%"})
             OR EXISTS (
               SELECT 1 FROM wine_varietal wv
               JOIN varietal v ON wv.varietal_id = v.varietal_id
-              WHERE wv.wine_id = w.wine_id AND v.name ILIKE ${"%" + searchTerm + "%"}
+              WHERE wv.wine_id = w.wine_id AND unaccent(v.name) ILIKE unaccent(${"%" + searchTerm + "%"})
             )
           )`
           : sql``
@@ -245,12 +245,12 @@ export async function getAllWines(filters?: { wineryIds?: number[]; locationIds?
     if (searchTerm) {
       conditions.push(
         or(
-          ilike(wine.label, `%${searchTerm}%`),
-          ilike(winery.name, `%${searchTerm}%`),
+          unaccentIlike(wine.label, searchTerm),
+          unaccentIlike(winery.name, searchTerm),
           sql`EXISTS (
             SELECT 1 FROM wine_varietal wv
             JOIN varietal v ON wv.varietal_id = v.varietal_id
-            WHERE wv.wine_id = ${wine.wineId} AND v.name ILIKE ${"%" + searchTerm + "%"}
+            WHERE wv.wine_id = ${wine.wineId} AND unaccent(v.name) ILIKE unaccent(${`%${searchTerm}%`})
           )`
         )!
       );

@@ -281,6 +281,28 @@ describe("Database Functions - CRUD Operations", () => {
       expect(names).toContain("West Coast IPA");
     });
 
+    it("should match diacritic characters when searching without them", async () => {
+      const testStyle = seedData.styles[0];
+      await createBrewery({ name: "Tröegs Independent Brewing" });
+      const accentedBrewery = (await getAllBreweries()).find((b) => b.name === "Tröegs Independent Brewing")!;
+      await createBeer({
+        name: "Rosé Ale",
+        breweryId: accentedBrewery.breweryId,
+        styleId: testStyle.styleId,
+        status: "on_tap",
+      });
+      const accentedBeer = (await getAllBeers()).find((b) => b.name === "Rosé Ale")!;
+
+      const byBeerName = await getAllBeers({ search: "rose" });
+      expect(byBeerName.some((b) => b.name === "Rosé Ale")).toBe(true);
+
+      const byBreweryName = await getAllBeers({ search: "troegs" });
+      expect(byBreweryName.some((b) => b.name === "Rosé Ale")).toBe(true);
+
+      await deleteBeer(accentedBeer.beerId);
+      await deleteBrewery(accentedBrewery.breweryId);
+    });
+
     it("should filter by styleId", async () => {
       const ipaStyle = seedData.styles[1];
       const beers = await getAllBeers({ styleIds: [ipaStyle.styleId] });

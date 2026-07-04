@@ -1,4 +1,4 @@
-import { asc, eq, and, ne, ilike, inArray, or } from "drizzle-orm";
+import { asc, eq, and, ne, inArray, or, sql, type SQL, type AnyColumn } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import {
   InsertUser,
@@ -30,6 +30,11 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+// Matches ignoring both case and diacritics, e.g. "rose" matches "Rosé".
+export function unaccentIlike(column: AnyColumn, term: string): SQL {
+  return sql`unaccent(${column}) ILIKE unaccent(${`%${term}%`})`;
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
@@ -231,10 +236,10 @@ export async function getAllBeers(filters: BeerFilters = {}) {
   if (search) {
     conditions.push(
       or(
-        ilike(beer.name, `%${search}%`),
-        ilike(beer.description, `%${search}%`),
-        ilike(brewery.name, `%${search}%`),
-        ilike(style.name, `%${search}%`)
+        unaccentIlike(beer.name, search),
+        unaccentIlike(beer.description, search),
+        unaccentIlike(brewery.name, search),
+        unaccentIlike(style.name, search)
       )
     );
   }

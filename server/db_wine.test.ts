@@ -1,5 +1,14 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { getAllWines, getAvailableWinesFiltered, getAvailableLocations, getAvailableWineries } from "./db_wine";
+import {
+  getAllWines,
+  getAvailableWinesFiltered,
+  getAvailableLocations,
+  getAvailableWineries,
+  createWinery,
+  createWine,
+  deleteWinery,
+  deleteWine,
+} from "./db_wine";
 import { seedWineDatabase, clearDatabase } from "./test-utils";
 
 describe("getAllWines — curator filters", () => {
@@ -70,6 +79,44 @@ describe("getAllWines — curator filters", () => {
     expect(wines).toHaveLength(2);
     const labels = wines.map((w) => w.label).sort();
     expect(labels).toEqual(["Napa Cab", "R5 Cab"]);
+  });
+
+  it("text search — diacritic-insensitive match, no location filter (Drizzle path)", async () => {
+    const accentedWinery = await createWinery({ name: "Château Rosé" });
+    const accentedWine = await createWine({
+      label: "Rosé Blend",
+      wineryId: accentedWinery.wineryId,
+      refrigerated: 1,
+      cellared: 0,
+    });
+
+    const wines = await getAllWines({ search: "chateau" });
+    expect(wines.some((w) => w.label === "Rosé Blend")).toBe(true);
+
+    await deleteWine(accentedWine.wineId);
+    await deleteWinery(accentedWinery.wineryId);
+  });
+
+  it("text search — diacritic-insensitive match, with location filter (CTE path)", async () => {
+    const accentedWinery = await createWinery({
+      name: "Château Rosé",
+      locationId: seedData.locations.california.locationId,
+    });
+    const accentedWine = await createWine({
+      label: "Rosé Blend",
+      wineryId: accentedWinery.wineryId,
+      refrigerated: 1,
+      cellared: 0,
+    });
+
+    const wines = await getAllWines({
+      search: "rose",
+      locationIds: [seedData.locations.california.locationId],
+    });
+    expect(wines.some((w) => w.label === "Rosé Blend")).toBe(true);
+
+    await deleteWine(accentedWine.wineId);
+    await deleteWinery(accentedWinery.wineryId);
   });
 
   it("winery + location filters use AND semantics across dimensions", async () => {

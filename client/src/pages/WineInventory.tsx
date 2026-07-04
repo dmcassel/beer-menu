@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { normalizeSearchText } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -71,11 +72,14 @@ export default function WineInventory() {
   const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
 
-  const searchLower = search.trim().toLowerCase();
+  const searchNormalized = normalizeSearchText(search.trim());
   const visibleWines = wines?.filter((w) => {
     if (confirmedIds.has(w.wineId)) return false;
-    if (!searchLower) return true;
-    return w.label.toLowerCase().includes(searchLower) || (w.wineryName ?? "").toLowerCase().includes(searchLower);
+    if (!searchNormalized) return true;
+    return (
+      normalizeSearchText(w.label).includes(searchNormalized) ||
+      normalizeSearchText(w.wineryName ?? "").includes(searchNormalized)
+    );
   });
 
   // Redirect to login if not authenticated or not a curator/admin
