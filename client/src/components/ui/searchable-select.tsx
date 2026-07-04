@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, normalizeSearchText } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -20,13 +20,6 @@ interface SearchableSelectProps {
   className?: string;
 }
 
-// Normalize strings to remove diacritics
-const normalizeString = (str: string) =>
-  str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
 export function SearchableSelect({
   options,
   value,
@@ -42,7 +35,7 @@ export function SearchableSelect({
   const normalizedOptionsMap = React.useMemo(() => {
     const map = new Map<string, string>();
     options.forEach((option) => {
-      map.set(option.value, normalizeString(option.label));
+      map.set(option.value, normalizeSearchText(option.label));
     });
     return map;
   }, [options]);
@@ -69,7 +62,7 @@ export function SearchableSelect({
             const normalizedLabel = normalizedOptionsMap.get(value);
             if (!normalizedLabel) return 0;
 
-            const normalizedSearch = normalizeString(search);
+            const normalizedSearch = normalizeSearchText(search);
 
             // Match if search term appears anywhere in the label
             return normalizedLabel.includes(normalizedSearch) ? 1 : 0;

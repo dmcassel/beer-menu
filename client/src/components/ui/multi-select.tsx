@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Check, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, normalizeSearchText } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,7 +48,8 @@ export function MultiSelect({
 
   const filteredOptions = React.useMemo(() => {
     if (!searchQuery) return options;
-    return options.filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()));
+    const normalizedQuery = normalizeSearchText(searchQuery);
+    return options.filter((option) => normalizeSearchText(option.label).includes(normalizedQuery));
   }, [options, searchQuery]);
 
   const displayText = React.useMemo(() => {

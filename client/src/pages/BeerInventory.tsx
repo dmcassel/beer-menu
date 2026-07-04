@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { normalizeSearchText } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,11 +21,14 @@ export default function BeerInventory() {
   const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
 
-  const searchLower = search.trim().toLowerCase();
+  const searchNormalized = normalizeSearchText(search.trim());
   const visibleBeers = beers?.filter((b) => {
     if (confirmedIds.has(b.beerId)) return false;
-    if (!searchLower) return true;
-    return b.name.toLowerCase().includes(searchLower) || (b.breweryName ?? "").toLowerCase().includes(searchLower);
+    if (!searchNormalized) return true;
+    return (
+      normalizeSearchText(b.name).includes(searchNormalized) ||
+      normalizeSearchText(b.breweryName ?? "").includes(searchNormalized)
+    );
   });
 
   // Redirect to login if not authenticated or not a curator/admin
