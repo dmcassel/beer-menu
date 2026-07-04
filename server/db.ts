@@ -271,7 +271,22 @@ export async function getAllBeers(filters: BeerFilters = {}) {
 export async function getAllAvailableBeers() {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(beer).where(ne(beer.status, "out")).orderBy(asc(beer.name));
+  return db
+    .select({
+      beerId: beer.beerId,
+      name: beer.name,
+      description: beer.description,
+      breweryId: beer.breweryId,
+      styleId: beer.styleId,
+      abv: beer.abv,
+      ibu: beer.ibu,
+      status: beer.status,
+      breweryName: brewery.name,
+    })
+    .from(beer)
+    .leftJoin(brewery, eq(beer.breweryId, brewery.breweryId))
+    .where(ne(beer.status, "out"))
+    .orderBy(asc(beer.name));
 }
 
 export async function getBeerById(id: number) {

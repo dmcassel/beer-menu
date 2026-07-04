@@ -15,21 +15,16 @@ export default function BeerInventory() {
   const [, setLocation] = useLocation();
   const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery();
   const { data: beers, isLoading: beersLoading } = trpc.beer.listAvailable.useQuery();
-  const { data: breweries } = trpc.brewery.list.useQuery();
   const updateMutation = trpc.beer.update.useMutation();
   const utils = trpc.useUtils();
   const [confirmedIds, setConfirmedIds] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
 
-  const getBreweryName = (breweryId: number | null | undefined) =>
-    breweries?.find((b) => b.breweryId === breweryId)?.name ?? "";
-
   const searchLower = search.trim().toLowerCase();
   const visibleBeers = beers?.filter((b) => {
     if (confirmedIds.has(b.beerId)) return false;
     if (!searchLower) return true;
-    const breweryName = getBreweryName(b.breweryId);
-    return b.name.toLowerCase().includes(searchLower) || breweryName.toLowerCase().includes(searchLower);
+    return b.name.toLowerCase().includes(searchLower) || (b.breweryName ?? "").toLowerCase().includes(searchLower);
   });
 
   // Redirect to login if not authenticated or not a curator/admin
@@ -124,7 +119,10 @@ export default function BeerInventory() {
           visibleBeers?.map((beer) => (
             <Card key={beer.beerId}>
               <CardContent className="flex items-center justify-between gap-4 py-4">
-                <span className="text-lg font-medium">{beer.name}</span>
+                <div>
+                  <span className="text-lg font-medium">{beer.name}</span>
+                  {beer.breweryName && <p className="text-sm text-gray-600 mt-1">{beer.breweryName}</p>}
+                </div>
                 <div className="flex items-center gap-2">
                   <Select
                     value={beer.status ?? "out"}
