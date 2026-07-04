@@ -12,6 +12,10 @@ Fixed two mobile display bugs from issue #145: the Add Beer dialog was clipped o
 
 **Follow-up after manual testing (round 2)**: the user reported the dialog was now correctly positioned near the top but still horizontally offset with side margins, and asked for it to take the full width on phone-sized viewports. Changed `DialogContent` to drop the `max-w-[calc(100%-2rem)]` cap and horizontal centering transform on mobile (`left-0`, no `translate-x`, `w-full` with no max-width), so it spans edge-to-edge, while keeping the centered card look (`sm:left-[50%] sm:-translate-x-1/2 sm:max-w-lg`) at the `sm` breakpoint and up.
 
+**Follow-up after manual testing (round 3)**: the user reported the dialog was still wider than the screen. A console check (`getBoundingClientRect()` vs `window.innerWidth`/`document.documentElement.clientWidth`) showed `dialogWidth: 448` (exactly `max-w-md`, 28rem) against a visible `clientWidth: 412`, while `window.innerWidth`/`scrollWidth` both read `686`. Two compounding bugs:
+1. `BeerPage.tsx`, `StylePage.tsx`, and `ManageWinePage.tsx` override `DialogContent` with an unprefixed `max-w-md`/`max-w-2xl`, which — being unprefixed — applies at every breakpoint including mobile, capping the dialog at a fixed pixel width regardless of the phone's actual width (per user: "different phones will have different widths... we want to use 100% of the width, not a fixed pixel width"). Fixed by making these `sm:max-w-md` / `sm:max-w-2xl` so they only take effect at the `sm` breakpoint and up, leaving the base component's unconstrained mobile width in effect on phones.
+2. `BeerManagement.tsx`'s header row (logo, 3 buttons, and a "Welcome, {name}" string) had no `flex-wrap` and needed ~606px to lay out — wider than a 412px phone screen. This forced the browser's CSS layout viewport itself to inflate (explaining `innerWidth: 686`), corrupting every percentage/vw-based width calculation on the page, not just the dialog's. Fixed by adding `flex-wrap` to the header's outer and inner flex containers, hiding the "Welcome, {name}" text below `sm`, and tightening the mobile gap — verified with an isolated Playwright check that the header now fits exactly within a 412px viewport (was 606px, now 412px, no overflow).
+
 ## Tasks Completed
 
 | #   | Task                                                          | File                                  | Status |
@@ -31,17 +35,22 @@ Fixed two mobile display bugs from issue #145: the Add Beer dialog was clipped o
 
 ## Files Changed
 
-| File                                  | Action | Lines |
-| ------------------------------------- | ------ | ----- |
-| `client/index.html`                   | UPDATE | +4/-1 |
-| `client/src/components/ui/dialog.tsx` | UPDATE | +1/-1 |
-| `client/src/pages/ManageWinePage.tsx` | UPDATE | +1/-1 |
+| File                                    | Action | Lines |
+| --------------------------------------- | ------ | ----- |
+| `client/index.html`                     | UPDATE | +4/-1 |
+| `client/src/components/ui/dialog.tsx`   | UPDATE | +1/-1 |
+| `client/src/pages/ManageWinePage.tsx`   | UPDATE | +1/-1 |
+| `client/src/pages/BeerPage.tsx`         | UPDATE | +1/-1 |
+| `client/src/pages/StylePage.tsx`        | UPDATE | +1/-1 |
+| `client/src/pages/BeerManagement.tsx`   | UPDATE | +4/-4 |
 
 ## Deviations from Plan
 
 Added two changes beyond the original plan, based on user feedback from manual testing:
+
 1. Anchoring `DialogContent` near the top of the viewport on mobile (`top-[5%]`, no vertical translate) instead of relying only on vertical centering, since centering alone put short dialogs' inputs too close to where an on-screen keyboard would appear, and `interactive-widget=resizes-content` isn't supported on all browsers (notably iOS Safari).
 2. Making `DialogContent` full-width edge-to-edge on mobile (dropping the side margin and horizontal centering transform below the `sm` breakpoint) per explicit user request, while preserving the centered card layout on larger screens.
+3. Making per-page `DialogContent` width overrides (`BeerPage.tsx`, `StylePage.tsx`, `ManageWinePage.tsx`) responsive (`sm:max-w-*` instead of unprefixed `max-w-*`), and fixing `BeerManagement.tsx`'s header to wrap on mobile instead of forcing horizontal page overflow — both found via user-provided console diagnostics during manual testing.
 
 ## Tests Written
 

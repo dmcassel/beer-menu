@@ -104,7 +104,7 @@ export default function StylePage() {
               Add Style
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{editingId ? "Edit" : "Add"} Beer Style</DialogTitle>
             </DialogHeader>

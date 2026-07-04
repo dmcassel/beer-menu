@@ -203,7 +203,7 @@ export default function ManageWinePage() {
                 Add Wine
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editingId ? "Edit Wine" : "Add Wine"}</DialogTitle>
               </DialogHeader>
