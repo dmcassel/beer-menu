@@ -55,14 +55,14 @@ export default function WineManagement() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-y-2">
           <Link href="/">
             <div className="flex items-center gap-3">
               <Wine className="w-8 h-8 text-purple-600" />
               <h1 className="text-2xl font-bold text-gray-900">Wine Management</h1>
             </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Link href="/wine/inventory">
               <Button variant="outline" size="sm">
                 <ListChecks className="w-4 h-4 mr-1" />
@@ -76,7 +76,7 @@ export default function WineManagement() {
             </Link>
             {user && (
               <>
-                <span className="text-sm text-gray-600">Welcome, {user.name}</span>
+                <span className="hidden sm:inline text-sm text-gray-600">Welcome, {user.name}</span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
                 </Button>
