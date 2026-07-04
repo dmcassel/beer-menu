@@ -8,7 +8,9 @@
 
 Fixed two mobile display bugs from issue #145: the Add Beer dialog was clipped on tall/narrow viewports (no max-height or scroll on the base Dialog component), and the Add Brewery dialog could be hidden by the on-screen keyboard on Android Chrome (viewport meta tag didn't opt into layout-viewport resizing). Both fixes were applied globally in the base `DialogContent` component and `index.html` rather than per-page, so every dialog in the app benefits, and a redundant duplicate of the fix was removed from `ManageWinePage.tsx`.
 
-**Follow-up after manual testing**: the user tested with Chrome DevTools device emulation (Pixel 7) and found the dialog still appeared vertically centered with its top roughly mid-screen — for a short dialog like Add Brewery (2 fields), that leaves little margin before the keyboard would cover the inputs, and relying solely on `interactive-widget=resizes-content` isn't enough since iOS Safari doesn't support it at all. Changed `DialogContent` to anchor near the top of the viewport (`top-[5%]`, no vertical translate) on mobile widths, reverting to true vertical centering (`sm:top-[50%] sm:translate-y-[-50%]`) at the `sm` breakpoint and up, where keyboard overlap isn't a concern.
+**Follow-up after manual testing (round 1)**: the user tested with Chrome DevTools device emulation (Pixel 7) and found the dialog still appeared vertically centered with its top roughly mid-screen — for a short dialog like Add Brewery (2 fields), that leaves little margin before the keyboard would cover the inputs, and relying solely on `interactive-widget=resizes-content` isn't enough since iOS Safari doesn't support it at all. Changed `DialogContent` to anchor near the top of the viewport (`top-[5%]`, no vertical translate) on mobile widths, reverting to true vertical centering (`sm:top-[50%] sm:translate-y-[-50%]`) at the `sm` breakpoint and up, where keyboard overlap isn't a concern.
+
+**Follow-up after manual testing (round 2)**: the user reported the dialog was now correctly positioned near the top but still horizontally offset with side margins, and asked for it to take the full width on phone-sized viewports. Changed `DialogContent` to drop the `max-w-[calc(100%-2rem)]` cap and horizontal centering transform on mobile (`left-0`, no `translate-x`, `w-full` with no max-width), so it spans edge-to-edge, while keeping the centered card look (`sm:left-[50%] sm:-translate-x-1/2 sm:max-w-lg`) at the `sm` breakpoint and up.
 
 ## Tasks Completed
 
@@ -37,7 +39,9 @@ Fixed two mobile display bugs from issue #145: the Add Beer dialog was clipped o
 
 ## Deviations from Plan
 
-Added one change beyond the original plan, based on user feedback from manual testing: anchoring `DialogContent` near the top of the viewport on mobile (`top-[5%]`, no vertical translate) instead of relying only on vertical centering, since centering alone put short dialogs' inputs too close to where an on-screen keyboard would appear, and `interactive-widget=resizes-content` isn't supported on all browsers (notably iOS Safari).
+Added two changes beyond the original plan, based on user feedback from manual testing:
+1. Anchoring `DialogContent` near the top of the viewport on mobile (`top-[5%]`, no vertical translate) instead of relying only on vertical centering, since centering alone put short dialogs' inputs too close to where an on-screen keyboard would appear, and `interactive-widget=resizes-content` isn't supported on all browsers (notably iOS Safari).
+2. Making `DialogContent` full-width edge-to-edge on mobile (dropping the side margin and horizontal centering transform below the `sm` breakpoint) per explicit user request, while preserving the centered card layout on larger screens.
 
 ## Tests Written
 
