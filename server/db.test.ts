@@ -20,6 +20,7 @@ import {
   updateBrewery,
   deleteBrewery,
   getAllBeers,
+  getAllAvailableBeers,
   getBeerById,
   createBeer,
   updateBeer,
@@ -321,6 +322,15 @@ describe("Database Functions - CRUD Operations", () => {
       });
       expect(beers.length).toBe(1);
       expect(beers[0].name).toBe("West Coast IPA");
+    });
+
+    it("should get available beers with brewery name, excluding out-of-stock beers", async () => {
+      const beers = await getAllAvailableBeers();
+      expect(beers.length).toBe(4);
+      expect(beers.some((b) => b.name === "Out of Stock Beer")).toBe(false);
+
+      const hoppy = beers.find((b) => b.name === "Hoppy Pale Ale");
+      expect(hoppy?.breweryName).toBe("Test Brewery A");
     });
 
     it("should create beer", async () => {
