@@ -156,7 +156,7 @@ export default function BeerPage() {
               Add Beer
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{editingId ? "Edit" : "Add"} Beer</DialogTitle>
             </DialogHeader>
